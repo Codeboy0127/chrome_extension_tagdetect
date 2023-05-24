@@ -1,0 +1,39 @@
+{
+  "name": "TAGLAB",
+  "version": "1.0.0",
+  "description": "Detect analytics tags and data layer values for implementation debugging purposes.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "webNavigation",
+    "scripting"
+  ],
+  "devtools_page": "devtools.html",
+  "icons": {
+    "16": "images/icon-16x16.png",
+    "48": "images/icon-48x48.png",
+    "128": "images/icon-128x128.png"
+  },
+  "incognito": "split",
+  "background": { "service_worker": "service_worker.js" },
+  "manifest_version": 3,
+  "action": {
+    "default_icon": "images/icon-48x48.png",
+    "default_title": "TAGLAB",
+    "default_popup": "popup/popup.html"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline' "
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["content/inject.js", "content/recorder_inject.js"],
+      "matches": [ "https://*/*" ]
+    }
+  ],
+  "host_permissions": [
+    "http://*/",
+    "https://*/",
+    "<all_urls>"
+  ]
+}
