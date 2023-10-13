@@ -1,0 +1,59 @@
+IMPORTANT FOR V3: 
+https://developer.chrome.com/docs/extensions/migrating/to-service-workers/#register-listeners
+https://developer.chrome.com/docs/extensions/migrating/to-service-workers/#persist-states
+
+Service worker: 
+    service_worker js captures and stores the tabId locally
+    service_worker opens popup.html in a new window
+
+Popup.vue:
+    popup.vue is created and mounted
+    on mounted popup.vue gets the tabId from localstorage
+    tabId is fed into captureXHR
+    captureXHR listns to webrequests urls and compares them to a regexlist
+    if a match is found the tag is pushed onto an object
+
+
+
+What we need soo far:
+    - add and sync regex lists
+    - record events such as page load and user clicks
+    - keep track of the number of pages visited and the number of times a regex is found across pages
+
+OFFSCREEN: https://developer.chrome.com/docs/extensions/reference/offscreen/
+WEB NAVIGATION: https://developer.chrome.com/docs/extensions/reference/webNavigation/
+FIXES:
+- Always call sendResponse() inside chrome.runtime.onMessage.
+- Vet for all incoming traffic. They have to come from either the relevant tab or extension
+
+Exceptions to be handled
+-Form validation
+-Tag Vierwer should only start capturing when at least one regex is present
+-Disable regex fields while catpuring ?
+-Handle feld playback commands
+
+A)Bugs
+    Tags aren't recorded on the first pages while crawling or scenario processing(sometimes)
+    Content scripts are being injected as many times as the extension is loaded...
+
+B)Missing Features!!!
+    Exporting data
+    get click events for tags and dl
+    count the unique instances of a regex of all pages
+    pause unpause inspection(will open new tab if old one was lost)
+
+C)Quality of life features
+    Tag Viewer:
+        Add ignore regex in settings
+        Add icons ? (could be more trouble than it's worth)
+        Add Count unique instances of each regex for each page
+        have add regex as a modal
+
+    Crawler:
+        Maybe close the crawling window even on pause (could mean a loss of data though..)
+        
+Add a minimum and maximum timeout for crawling each page
+add custom jsobject tags
+add csv export
+remove any listeners on record/playback and Crawler
+add scenario indicator for pass/fail
