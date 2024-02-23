@@ -24,6 +24,7 @@ function getUrlsInPage(params){
         if(!url.href){
             continue
         }
+        if(!url.href.includes('http')) continue
         const externalLink = url.host !== window.location.host
         const ignoreSelf = url.href !== window.location.href
         const includesAnchor = url.href.includes('#')
@@ -32,13 +33,25 @@ function getUrlsInPage(params){
         const ignoreUrlWithAnchor = params.includeAnchors ? true : !includesAnchor
         const ignoreUrlWithParams = params.includeParams ? true : !includesParam
         const ignoresSubdomaine = params.includeSubdomain ? true : !includesSubdomaine
+        
+        if(!ignoreSelf) continue
+        //if(externalLink) continue
+        if(includesAnchor && !params.includeAnchors) continue
+        if(includesParam && !params.includeParams) continue
+        if(includesSubdomaine && !params.includeSubdomain) continue
+        
+        /*if(ignoresSubdomaine)
+        console.log('subdomaine', ignoresSubdomaine,  url.href);*/
         var regexRule = params.regexRule ? isRegExValid(params.regexRule) : false
         regexRule = regexRule ? regexRule.test(url.href) : true
-        if(url.href && url.href.indexOf('://')!==-1 && !externalLink && ignoreSelf && ignoreUrlWithAnchor && ignoreUrlWithParams && regexRule && ignoresSubdomaine) 
+        if(!regexRule) continue
+        //if(url.href && url.href.indexOf('://')!==-1 && !externalLink && ignoreSelf && ignoreUrlWithAnchor && ignoreUrlWithParams && regexRule && ignoresSubdomaine) 
             results.push({
                 url: url.href
             }) // url.rel
     }
+
+    console.log({results});
 
     return results
 }
@@ -80,7 +93,6 @@ function subDomain(url) {
      
     // CHECK TO SEE IF THERE IS A DOT '.' LEFT IN THE STRING
     var subDomain = (url.match(new RegExp(/\./g))) ? true : false;
-     
     return(subDomain);
      
-    }
+}

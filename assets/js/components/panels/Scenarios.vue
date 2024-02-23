@@ -1,7 +1,7 @@
 <template>
     <div class="scenario-panel">
         <div class="panel-top">
-            <control-bar :isInspecting="false" :controlBar="controlBar" @toggleInspection="openCreateScenarioModal" @resetData="resetData" @collapseAll="collapseAll" @expandAll="expandAll"/>
+            <control-bar :isInspecting="false" :controlBar="controlBar" @toggleInspection="openCreateScenarioModal" @resetData="resetData" @collapseAll="collapseAll" @expandAll="expandAll" :panel="'Scenarios'"/>
         </div>
         <transition name="modal">
             <modal v-if="showModal" @close="showModal = false" key="new-scenario-modal">

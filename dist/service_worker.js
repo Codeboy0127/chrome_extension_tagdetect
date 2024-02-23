@@ -1,1 +1,263 @@
-(()=>{var e,a={896:()=>{var e=[{name:"Bing Ads",pattern:"bat\\.bing\\.com\\/(bat|action)",iconPath:"bing_ads.svg",ignore:!0,canBeDeleted:!1},{name:"Double Click Remarketing",pattern:"googleads\\.g\\.doubleclick\\.net\\/pagead\\/viewthroughconversion",iconPath:"doubleclick.png",ignore:!0,canBeDeleted:!1},{name:"LinkedIn Conversion",pattern:"(dc|px)\\.ads\\.linkedin\\.com\\/collect",iconPath:"linkedin.png",ignore:!0,canBeDeleted:!1},{name:"Inspectlet",pattern:"cdn\\.inspectlet\\.com\\/inspectlet\\.js",iconPath:"inspectlet.svg",ignore:!0,canBeDeleted:!1},{name:"Hotjar",pattern:"static\\.hotjar\\.com\\/c",iconPath:"hotjar.svg",ignore:!0,canBeDeleted:!1},{name:"Google Ads Conversion",pattern:"(google|googleadservices)\\.com\\/(ads|pagead)\\/conversion",iconPath:"google_ads.svg",ignore:!0,canBeDeleted:!1},{name:"TikTok Pixel",pattern:"analytics\\.tiktok\\.com\\/api\\/v2\\/pixel",iconPath:"tiktok.svg",ignore:!0,canBeDeleted:!1},{name:"Facebook Event",pattern:"facebook.com\\/tr",iconPath:"facebook.svg",ignore:!0,canBeDeleted:!1},{name:"Facebook Connect",pattern:"connect\\.facebook\\.net\\/signals\\/config",iconPath:"facebook.svg",ignore:!0,canBeDeleted:!1},{name:"Adobe Analytics",pattern:"b/ss",iconPath:"adobe_analytics.svg",ignore:!0,canBeDeleted:!1},{name:"Google Analytics 3",pattern:"[a-z]*\\.google-analytics\\.com\\/[a-z]*\\/collect\\?v=1|[a-z]*.google-analytics.com\\/collect\\?v=1",iconPath:"google_analytics.svg",ignore:!0,canBeDeleted:!1},{name:"Google Analytics 4",pattern:"[a-z]*\\.google-analytics.com\\/[a-z]*\\/collect\\?v=2|[a-z]*.analytics\\.google\\.com\\/[a-z]*\\/collect\\?v=2",iconPath:"google_analytics.svg",ignore:!0,canBeDeleted:!1}],a=["digitalLayer","dataLayer","utag","utag_data"];chrome.runtime.onInstalled.addListener((function(n){"install"==n.reason&&(chrome.storage.local.set({regExPatterns:e}),chrome.storage.local.set({dataLayers:a}))}))},541:()=>{}},n={};function o(e){var t=n[e];if(void 0!==t)return t.exports;var c=n[e]={exports:{}};return a[e](c,c.exports,o),c.exports}o.m=a,e=[],o.O=(a,n,t,c)=>{if(!n){var i=1/0;for(s=0;s<e.length;s++){for(var[n,t,c]=e[s],l=!0,r=0;r<n.length;r++)(!1&c||i>=c)&&Object.keys(o.O).every((e=>o.O[e](n[r])))?n.splice(r--,1):(l=!1,c<i&&(i=c));if(l){e.splice(s--,1);var g=t();void 0!==g&&(a=g)}}return a}c=c||0;for(var s=e.length;s>0&&e[s-1][2]>c;s--)e[s]=e[s-1];e[s]=[n,t,c]},o.o=(e,a)=>Object.prototype.hasOwnProperty.call(e,a),(()=>{var e={486:0,721:0};o.O.j=a=>0===e[a];var a=(a,n)=>{var t,c,[i,l,r]=n,g=0;if(i.some((a=>0!==e[a]))){for(t in l)o.o(l,t)&&(o.m[t]=l[t]);if(r)var s=r(o)}for(a&&a(n);g<i.length;g++)c=i[g],o.o(e,c)&&e[c]&&e[c][0](),e[c]=0;return o.O(s)},n=self.webpackChunk=self.webpackChunk||[];n.forEach(a.bind(null,0)),n.push=a.bind(null,n.push.bind(n))})(),o.O(void 0,[721],(()=>o(896)));var t=o.O(void 0,[721],(()=>o(541)));t=o.O(t)})();
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./assets/js/service_worker.js":
+/*!*************************************!*\
+  !*** ./assets/js/service_worker.js ***!
+  \*************************************/
+/***/ (() => {
+
+/*chrome.action.onClicked.addListener(function(tab) {
+  chrome.storage.local.set({ tabId: tab.id }).then(() => {
+    chrome.storage.local.set({ regExPatterns: default_regex });
+    chrome.windows.create({
+      url: chrome.runtime.getURL("popup.html"),
+      type: "popup",
+      width: 850
+    });
+  });
+});*/
+
+var default_regex = [{
+  "name": "Bing Ads",
+  "pattern": "bat\\.bing\\.com\\/(bat|action)",
+  "iconPath": "bing_ads.svg",
+  "ignore": true,
+  "canBeDeleted": false
+}, {
+  "name": "Double Click Remarketing",
+  "pattern": "googleads\\.g\\.doubleclick\\.net\\/pagead\\/viewthroughconversion",
+  "iconPath": "doubleclick.png",
+  "ignore": true,
+  "canBeDeleted": false
+}, {
+  "name": "LinkedIn Conversion",
+  "pattern": "(dc|px)\\.ads\\.linkedin\\.com\\/collect",
+  "iconPath": "linkedin.png",
+  "ignore": true,
+  "canBeDeleted": false
+}, {
+  "name": "Inspectlet",
+  "pattern": "cdn\\.inspectlet\\.com\\/inspectlet\\.js",
+  "iconPath": "inspectlet.svg",
+  "ignore": true,
+  "canBeDeleted": false
+}, {
+  "name": "Hotjar",
+  "pattern": "static\\.hotjar\\.com\\/c",
+  "iconPath": "hotjar.svg",
+  "ignore": true,
+  "canBeDeleted": false
+}, {
+  "name": "Google Ads Conversion",
+  "pattern": "(google|googleadservices)\\.com\\/(ads|pagead)\\/conversion",
+  "iconPath": "google_ads.svg",
+  "ignore": true,
+  "canBeDeleted": false
+}, {
+  "name": "TikTok Pixel",
+  "pattern": "analytics\\.tiktok\\.com\\/api\\/v2\\/pixel",
+  "iconPath": "tiktok.svg",
+  "ignore": true,
+  "canBeDeleted": false
+}, {
+  "name": "Facebook Event",
+  "pattern": "facebook.com\\/tr",
+  "iconPath": "facebook.svg",
+  "ignore": true,
+  "canBeDeleted": false
+}, {
+  "name": "Facebook Connect",
+  "pattern": "connect\\.facebook\\.net\\/signals\\/config",
+  "iconPath": "facebook.svg",
+  "ignore": true,
+  "canBeDeleted": false
+}, {
+  "name": "Adobe Analytics",
+  "pattern": "b/ss",
+  "iconPath": "adobe_analytics.svg",
+  "ignore": true,
+  "canBeDeleted": false
+}, {
+  "name": "Google Analytics 3",
+  "pattern": "[a-z]*\\.google-analytics\\.com\\/[a-z]*\\/collect\\?v=1|[a-z]*.google-analytics.com\\/collect\\?v=1",
+  "iconPath": "google_analytics.svg",
+  "ignore": true,
+  "canBeDeleted": false
+}, {
+  "name": "Google Analytics 4",
+  "pattern": "[a-z]*\\.google-analytics.com\\/[a-z]*\\/collect\\?v=2|[a-z]*.analytics\\.google\\.com\\/[a-z]*\\/collect\\?v=2",
+  "iconPath": "google_analytics.svg",
+  "ignore": true,
+  "canBeDeleted": false
+}];
+var presetJSObjects = ['digitalLayer', 'dataLayer', 'utag', 'utag_data'];
+chrome.runtime.onInstalled.addListener(function (details) {
+  if (details.reason == "install") {
+    chrome.storage.local.set({
+      regExPatterns: default_regex
+    });
+    chrome.storage.local.set({
+      dataLayers: presetJSObjects
+    });
+  }
+});
+
+/***/ }),
+
+/***/ "./assets/sass/popup.scss":
+/*!********************************!*\
+  !*** ./assets/sass/popup.scss ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	(() => {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var [chunkIds, fn, priority] = deferred[i];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"/dist/service_worker": 0,
+/******/ 			"dist/css/popup": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
+/******/ 			var [chunkIds, moreModules, runtime] = data;
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 			return __webpack_require__.O(result);
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunk"] = self["webpackChunk"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 	__webpack_require__.O(undefined, ["dist/css/popup"], () => (__webpack_require__("./assets/js/service_worker.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["dist/css/popup"], () => (__webpack_require__("./assets/sass/popup.scss")))
+/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
+/******/ 	
+/******/ })()
+;

@@ -1,11 +1,10 @@
 {
   "name": "TAGLAB",
   "version": "1.0.0",
-  "description": "Detect analytics tags and data layer values for implementation debugging purposes.",
+  "description": "Detects determined network calls for debugging analytics post messages and navigate through determined JS arrays.",
   "permissions": [
     "storage",
     "activeTab",
-    "webNavigation",
     "scripting"
   ],
   "devtools_page": "devtools.html",

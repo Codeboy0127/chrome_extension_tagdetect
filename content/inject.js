@@ -620,7 +620,7 @@ dataslayer.initializeTimers = function() {
   .getAttribute('data-interval');
 
   if (!dataslayer.updateInterval || isNaN(Number(dataslayer.updateInterval))) {
-    dataslayer.updateInterval = 10;
+    dataslayer.updateInterval = 1;
   }
   if (dataslayer.updateInterval > 0) {
     if (window._satellite && window._satellite._container && window._satellite._container.dataElements) {
