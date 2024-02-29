@@ -20,7 +20,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 var GA_ENDPOINT = "https://www.google-analytics.com/mp/collect";
 var MEASUREMENT_ID = "G-5F4Y35MFBZ";
 var API_SECRET = "ni9H17IASviLVAlUXXifiA";
-
+var SESSION_EXPIRATION_IN_MIN = 30;
+function getOrCreateSessionId() {
+  return _getOrCreateSessionId.apply(this, arguments);
+}
 /**
  * generate a unique identifier for a specific device/user, the client_id.
  * The id should stay the same, as long as the extension is installed on a user’s browser.
@@ -30,37 +33,95 @@ var API_SECRET = "ni9H17IASviLVAlUXXifiA";
  * Using chrome.storage.local requires the storage permission in your manifest file:
  *
  */
-function getOrCreateClientId() {
-  return _getOrCreateClientId.apply(this, arguments);
-}
-function _getOrCreateClientId() {
-  _getOrCreateClientId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-    var result, clientId;
+function _getOrCreateSessionId() {
+  _getOrCreateSessionId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    var _yield$chrome$storage, sessionData, currentTimeInMs, durationInMin;
     return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) switch (_context3.prev = _context3.next) {
         case 0:
           _context3.next = 2;
-          return chrome.storage.local.get("clientId");
+          return chrome.storage.session.get("sessionData");
         case 2:
-          result = _context3.sent;
-          clientId = result.clientId;
-          if (clientId) {
-            _context3.next = 8;
+          _yield$chrome$storage = _context3.sent;
+          sessionData = _yield$chrome$storage.sessionData;
+          // Check if session exists and is still valid
+          currentTimeInMs = Date.now();
+          if (!(sessionData && sessionData.timestamp)) {
+            _context3.next = 14;
             break;
           }
-          // Generate a unique client ID, the actual value is not relevant
-          clientId = self.crypto.randomUUID();
-          _context3.next = 8;
-          return chrome.storage.local.set({
-            clientId: clientId
+          // Calculate how long ago the session was last updated
+          durationInMin = (currentTimeInMs - sessionData.timestamp) / 60000; // Check if last update lays past the session expiration threshold
+          if (!(durationInMin > SESSION_EXPIRATION_IN_MIN)) {
+            _context3.next = 11;
+            break;
+          }
+          // Delete old session id to start a new session
+          sessionData = null;
+          _context3.next = 14;
+          break;
+        case 11:
+          // Update timestamp to keep session alive
+          sessionData.timestamp = currentTimeInMs;
+          _context3.next = 14;
+          return chrome.storage.session.set({
+            sessionData: sessionData
           });
-        case 8:
-          return _context3.abrupt("return", clientId);
-        case 9:
+        case 14:
+          if (sessionData) {
+            _context3.next = 18;
+            break;
+          }
+          // Create and store a new session
+          sessionData = {
+            session_id: currentTimeInMs.toString(),
+            timestamp: currentTimeInMs.toString()
+          };
+          _context3.next = 18;
+          return chrome.storage.session.set({
+            sessionData: sessionData
+          });
+        case 18:
+          return _context3.abrupt("return", sessionData.session_id);
+        case 19:
         case "end":
           return _context3.stop();
       }
     }, _callee3);
+  }));
+  return _getOrCreateSessionId.apply(this, arguments);
+}
+function getOrCreateClientId() {
+  return _getOrCreateClientId.apply(this, arguments);
+}
+function _getOrCreateClientId() {
+  _getOrCreateClientId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+    var result, clientId;
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) switch (_context4.prev = _context4.next) {
+        case 0:
+          _context4.next = 2;
+          return chrome.storage.local.get("clientId");
+        case 2:
+          result = _context4.sent;
+          clientId = result.clientId;
+          if (clientId) {
+            _context4.next = 8;
+            break;
+          }
+          // Generate a unique client ID, the actual value is not relevant
+          clientId = self.crypto.randomUUID();
+          _context4.next = 8;
+          return chrome.storage.local.set({
+            clientId: clientId
+          });
+        case 8:
+          return _context4.abrupt("return", clientId);
+        case 9:
+        case "end":
+          return _context4.stop();
+      }
+    }, _callee4);
   }));
   return _getOrCreateClientId.apply(this, arguments);
 }
@@ -76,23 +137,31 @@ var pageSelectEvent = /*#__PURE__*/function () {
           return getOrCreateClientId();
         case 5:
           _context.t3 = _context.sent;
-          _context.t4 = [{
-            name: "page_view",
-            params: {
-              page_title: page
-            }
-          }];
-          _context.t5 = {
-            client_id: _context.t3,
-            events: _context.t4
+          _context.next = 8;
+          return getOrCreateSessionId();
+        case 8:
+          _context.t4 = _context.sent;
+          _context.t5 = page;
+          _context.t6 = {
+            session_id: _context.t4,
+            page_title: _context.t5
           };
-          _context.t6 = _context.t2.stringify.call(_context.t2, _context.t5);
           _context.t7 = {
-            method: "POST",
-            body: _context.t6
+            name: "page_view",
+            params: _context.t6
           };
-          (0, _context.t0)(_context.t1, _context.t7);
-        case 11:
+          _context.t8 = [_context.t7];
+          _context.t9 = {
+            client_id: _context.t3,
+            events: _context.t8
+          };
+          _context.t10 = _context.t2.stringify.call(_context.t2, _context.t9);
+          _context.t11 = {
+            method: "POST",
+            body: _context.t10
+          };
+          (0, _context.t0)(_context.t1, _context.t11);
+        case 17:
         case "end":
           return _context.stop();
       }
@@ -114,24 +183,33 @@ var pageInteractionEvent = /*#__PURE__*/function () {
           return getOrCreateClientId();
         case 5:
           _context2.t3 = _context2.sent;
-          _context2.t4 = [{
-            name: "interaction",
-            params: {
-              page_title: page,
-              action_title: interaction
-            }
-          }];
-          _context2.t5 = {
-            client_id: _context2.t3,
-            events: _context2.t4
-          };
-          _context2.t6 = _context2.t2.stringify.call(_context2.t2, _context2.t5);
+          _context2.next = 8;
+          return getOrCreateSessionId();
+        case 8:
+          _context2.t4 = _context2.sent;
+          _context2.t5 = page;
+          _context2.t6 = interaction;
           _context2.t7 = {
-            method: "POST",
-            body: _context2.t6
+            session_id: _context2.t4,
+            page_title: _context2.t5,
+            action_title: _context2.t6
           };
-          (0, _context2.t0)(_context2.t1, _context2.t7);
-        case 11:
+          _context2.t8 = {
+            name: "interaction",
+            params: _context2.t7
+          };
+          _context2.t9 = [_context2.t8];
+          _context2.t10 = {
+            client_id: _context2.t3,
+            events: _context2.t9
+          };
+          _context2.t11 = _context2.t2.stringify.call(_context2.t2, _context2.t10);
+          _context2.t12 = {
+            method: "POST",
+            body: _context2.t11
+          };
+          (0, _context2.t0)(_context2.t1, _context2.t12);
+        case 18:
         case "end":
           return _context2.stop();
       }
