@@ -1710,7 +1710,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_json_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-json-component */ "./node_modules/vue-json-component/dist/index.module.js");
 /* harmony import */ var _ControlBar_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../ControlBar.vue */ "./assets/js/components/ControlBar.vue");
 /* harmony import */ var _settings_DataLayerSettings_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../settings/DataLayerSettings.vue */ "./assets/js/components/settings/DataLayerSettings.vue");
+/* harmony import */ var _google_analytics__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../google-analytics */ "./assets/js/google-analytics.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
 
 
 
@@ -1796,6 +1798,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       } else {
         $(".search-box").first().removeClass("active");
       }
+    },
+    searchFocus: function searchFocus() {
+      (0,_google_analytics__WEBPACK_IMPORTED_MODULE_4__.pageInteractionEvent)("Tags View", "search_focus");
     },
     collapseAll: function collapseAll() {
       $(".dl-panel .accordion").find("h3").each(function (index, element) {
@@ -2192,6 +2197,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Accordion_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Accordion.vue */ "./assets/js/components/Accordion.vue");
 /* harmony import */ var _ControlBar_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../ControlBar.vue */ "./assets/js/components/ControlBar.vue");
 /* harmony import */ var _settings_TagSettings_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../settings/TagSettings.vue */ "./assets/js/components/settings/TagSettings.vue");
+/* harmony import */ var _google_analytics__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../google-analytics */ "./assets/js/google-analytics.js");
+
 
 
 
@@ -2254,6 +2261,7 @@ __webpack_require__.r(__webpack_exports__);
       this.count = 0;
     },
     searchNext: function searchNext() {
+      (0,_google_analytics__WEBPACK_IMPORTED_MODULE_3__.pageInteractionEvent)("Tags View", "search_next");
       if (".search-hit".length > 0) {
         this.expandAll();
         this.searchFilterIndex = (this.searchFilterIndex + 1) % this.searchResultCount;
@@ -2275,6 +2283,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     searchPrev: function searchPrev() {
+      (0,_google_analytics__WEBPACK_IMPORTED_MODULE_3__.pageInteractionEvent)("Tags View", "search_previous");
       if (".search-hit".length > 0) {
         this.expandAll();
         this.searchFilterIndex = this.searchFilterIndex - 1 < 0 ? this.searchResultCount - 1 : this.searchFilterIndex - 1;
@@ -2293,6 +2302,9 @@ __webpack_require__.r(__webpack_exports__);
         $(".currentHit").first().removeClass("currentHit");
         $(".search-hit").eq(this.searchFilterIndex).addClass("currentHit");
       }
+    },
+    searchFocus: function searchFocus() {
+      (0,_google_analytics__WEBPACK_IMPORTED_MODULE_3__.pageInteractionEvent)("Tags View", "search_focus");
     },
     search: function search() {
       if (".search-hit".length > 0) {
@@ -3527,6 +3539,7 @@ var render = function render() {
     },
     on: {
       keyup: _vm.updateSearch,
+      focus: _vm.searchFocus,
       input: function input($event) {
         if ($event.target.composing) return;
         _vm.searchFilter = $event.target.value;
@@ -3898,6 +3911,7 @@ var render = function render() {
     },
     on: {
       keyup: _vm.updateSearch,
+      focus: _vm.searchFocus,
       input: function input($event) {
         if ($event.target.composing) return;
         _vm.searchFilter = $event.target.value;
