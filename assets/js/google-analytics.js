@@ -2,6 +2,7 @@ const GA_ENDPOINT = "https://www.google-analytics.com/mp/collect";
 const MEASUREMENT_ID = `G-5F4Y35MFBZ`;
 const API_SECRET = `ni9H17IASviLVAlUXXifiA`;
 const SESSION_EXPIRATION_IN_MIN = 30;
+const DEFAULT_ENGAGEMENT_TIME_IN_MSEC = 100;
 
 async function getOrCreateSessionId() {
   // Store session in memory storage
@@ -64,6 +65,7 @@ export const pageSelectEvent = async (page) => {
             name: "page_view",
             params: {
               session_id: await getOrCreateSessionId(),
+              engagement_time_msec: DEFAULT_ENGAGEMENT_TIME_IN_MSEC,
               page_title: page,
             },
           },
@@ -85,6 +87,7 @@ export const pageInteractionEvent = async (page, interaction) => {
             name: "interaction",
             params: {
               session_id: await getOrCreateSessionId(),
+              engagement_time_msec: DEFAULT_ENGAGEMENT_TIME_IN_MSEC,
               page_title: page,
               action_title: interaction,
             },

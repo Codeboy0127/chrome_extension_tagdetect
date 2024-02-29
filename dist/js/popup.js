@@ -21,6 +21,7 @@ var GA_ENDPOINT = "https://www.google-analytics.com/mp/collect";
 var MEASUREMENT_ID = "G-5F4Y35MFBZ";
 var API_SECRET = "ni9H17IASviLVAlUXXifiA";
 var SESSION_EXPIRATION_IN_MIN = 30;
+var DEFAULT_ENGAGEMENT_TIME_IN_MSEC = 100;
 function getOrCreateSessionId() {
   return _getOrCreateSessionId.apply(this, arguments);
 }
@@ -141,27 +142,29 @@ var pageSelectEvent = /*#__PURE__*/function () {
           return getOrCreateSessionId();
         case 8:
           _context.t4 = _context.sent;
-          _context.t5 = page;
-          _context.t6 = {
-            session_id: _context.t4,
-            page_title: _context.t5
-          };
+          _context.t5 = DEFAULT_ENGAGEMENT_TIME_IN_MSEC;
+          _context.t6 = page;
           _context.t7 = {
+            session_id: _context.t4,
+            engagement_time_msec: _context.t5,
+            page_title: _context.t6
+          };
+          _context.t8 = {
             name: "page_view",
-            params: _context.t6
+            params: _context.t7
           };
-          _context.t8 = [_context.t7];
-          _context.t9 = {
+          _context.t9 = [_context.t8];
+          _context.t10 = {
             client_id: _context.t3,
-            events: _context.t8
+            events: _context.t9
           };
-          _context.t10 = _context.t2.stringify.call(_context.t2, _context.t9);
-          _context.t11 = {
+          _context.t11 = _context.t2.stringify.call(_context.t2, _context.t10);
+          _context.t12 = {
             method: "POST",
-            body: _context.t10
+            body: _context.t11
           };
-          (0, _context.t0)(_context.t1, _context.t11);
-        case 17:
+          (0, _context.t0)(_context.t1, _context.t12);
+        case 18:
         case "end":
           return _context.stop();
       }
@@ -187,29 +190,31 @@ var pageInteractionEvent = /*#__PURE__*/function () {
           return getOrCreateSessionId();
         case 8:
           _context2.t4 = _context2.sent;
-          _context2.t5 = page;
-          _context2.t6 = interaction;
-          _context2.t7 = {
-            session_id: _context2.t4,
-            page_title: _context2.t5,
-            action_title: _context2.t6
-          };
+          _context2.t5 = DEFAULT_ENGAGEMENT_TIME_IN_MSEC;
+          _context2.t6 = page;
+          _context2.t7 = interaction;
           _context2.t8 = {
+            session_id: _context2.t4,
+            engagement_time_msec: _context2.t5,
+            page_title: _context2.t6,
+            action_title: _context2.t7
+          };
+          _context2.t9 = {
             name: "interaction",
-            params: _context2.t7
+            params: _context2.t8
           };
-          _context2.t9 = [_context2.t8];
-          _context2.t10 = {
+          _context2.t10 = [_context2.t9];
+          _context2.t11 = {
             client_id: _context2.t3,
-            events: _context2.t9
+            events: _context2.t10
           };
-          _context2.t11 = _context2.t2.stringify.call(_context2.t2, _context2.t10);
-          _context2.t12 = {
+          _context2.t12 = _context2.t2.stringify.call(_context2.t2, _context2.t11);
+          _context2.t13 = {
             method: "POST",
-            body: _context2.t11
+            body: _context2.t12
           };
-          (0, _context2.t0)(_context2.t1, _context2.t12);
-        case 18:
+          (0, _context2.t0)(_context2.t1, _context2.t13);
+        case 19:
         case "end":
           return _context2.stop();
       }
