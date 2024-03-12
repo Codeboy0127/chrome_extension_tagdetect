@@ -1,10 +1,10 @@
 <template lang="html">
   <div class="tabs">
     <div class="header-nav">
-      <div class="logo-wrapper">
+      <a target="_blank" href="https://console.taglab.net" class="logo-wrapper">
         <img src="../../images/icon-128x128.png" style="width: 56px" />
         <img src="../../images/logo.png" style="height: 48px;" />
-      </div>
+      </a>
       <ul class="tabs-header">
         <li
           v-for="(tab, index) in tabs"

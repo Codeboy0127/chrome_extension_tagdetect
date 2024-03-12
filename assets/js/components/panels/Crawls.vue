@@ -218,7 +218,10 @@ export default {
         setTimeout(() => {
           this.stepIntoNextUrl();
         }, this.minWaitTime);
-      } else if (this.urlQueueNumber === this.urlQueue.length) {
+      } else if (
+        this.urlQueueNumber === this.urlQueue.length ||
+        this.urlQueueNumber >= this.maxUrlCrawl
+      ) {
         this.$emit("stopInspection");
         this.isCrawling = false;
         this.isCrawlingPaused = false;
@@ -239,6 +242,26 @@ export default {
     },
     stepIntoNextUrl() {
       this.urlQueueNumber++;
+
+      if (this.urlQueueNumber >= this.maxUrlCrawl) {
+        this.pauseCrawling();
+        clearTimeout(this.waitTimeCounter);
+        this.$emit("stopInspection");
+        this.urlQueueNumber = 0;
+        this.isCrawling = false;
+        this.isCrawlingPaused = false;
+        const CrawlSuccessMessage = {
+          type: "success",
+          title: "Crawl Complete",
+          message: "",
+        };
+        this.$parent.$parent.$parent.$refs.notification.makeNotification(
+          CrawlSuccessMessage
+        );
+
+        return;
+      }
+
       if (
         this.urlQueueNumber < this.urlQueue.length &&
         !this.isCrawlingPaused
@@ -337,6 +360,7 @@ export default {
       includeParams: false,
       urlQueue: [],
       urlQueueNumber: 0,
+      maxUrlCrawl: 10,
       controlBar: {
         record: false,
         clear: true,

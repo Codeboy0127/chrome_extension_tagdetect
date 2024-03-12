@@ -739,6 +739,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
       this.tabId = chrome.devtools.inspectedWindow.tabId;
       this.init();
     }
+    this.toggleInspection();
   },
   methods: {
     primeExport: function primeExport() {
@@ -1652,7 +1653,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _context3.next = 10;
               break;
             case 9:
-              if (_this3.urlQueueNumber === _this3.urlQueue.length) {
+              if (_this3.urlQueueNumber === _this3.urlQueue.length || _this3.urlQueueNumber >= _this3.maxUrlCrawl) {
                 _this3.$emit("stopInspection");
                 _this3.isCrawling = false;
                 _this3.isCrawlingPaused = false;
@@ -1677,6 +1678,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     stepIntoNextUrl: function stepIntoNextUrl() {
       this.urlQueueNumber++;
+      if (this.urlQueueNumber >= this.maxUrlCrawl) {
+        this.pauseCrawling();
+        clearTimeout(this.waitTimeCounter);
+        this.$emit("stopInspection");
+        this.urlQueueNumber = 0;
+        this.isCrawling = false;
+        this.isCrawlingPaused = false;
+        var CrawlSuccessMessage = {
+          type: "success",
+          title: "Crawl Complete",
+          message: ""
+        };
+        this.$parent.$parent.$parent.$refs.notification.makeNotification(CrawlSuccessMessage);
+        return;
+      }
       if (this.urlQueueNumber < this.urlQueue.length && !this.isCrawlingPaused) {
         this.urlQueue[this.urlQueueNumber].state = "processing";
         _lib_chromeHelpers_js__WEBPACK_IMPORTED_MODULE_0__["default"].updateTab(this.tabId, {
@@ -1693,12 +1709,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         this.urlQueueNumber = 0;
         this.isCrawling = false;
         this.isCrawlingPaused = false;
-        var CrawlSuccessMessage = {
+        var _CrawlSuccessMessage = {
           type: "success",
           title: "Crawl Complete",
           message: ""
         };
-        this.$parent.$parent.$parent.$refs.notification.makeNotification(CrawlSuccessMessage);
+        this.$parent.$parent.$parent.$refs.notification.makeNotification(_CrawlSuccessMessage);
       }
     },
     pauseCrawling: function pauseCrawling() {
@@ -1763,6 +1779,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       includeParams: false,
       urlQueue: [],
       urlQueueNumber: 0,
+      maxUrlCrawl: 10,
       controlBar: {
         record: false,
         clear: true,
@@ -3260,8 +3277,12 @@ var render = function render() {
 var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "logo-wrapper"
+  return _c("a", {
+    staticClass: "logo-wrapper",
+    attrs: {
+      target: "_blank",
+      href: "https://console.taglab.net"
+    }
   }, [_c("img", {
     staticStyle: {
       width: "56px"

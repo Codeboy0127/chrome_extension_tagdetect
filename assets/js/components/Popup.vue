@@ -62,21 +62,22 @@ export default {
         Modal,
         Notification
     },
-    mounted(){
-        if(isDevTools()) {
+    mounted() {
+        if (isDevTools()) {
             this.tabId = chrome.devtools.inspectedWindow.tabId
-            this.init()
+            this.init();
         }
+        this.toggleInspection()
     },
     methods: {
-        primeExport(){
+        primeExport() {
             let exportData = { tags: [], dLs: [] }
-            console.log({dataExport: this.data})
+            console.log({ dataExport: this.data })
             this.data.map((url, index) => {
-                    console.log(url.pageUrl)
+                console.log(url.pageUrl)
                 url.events.map((event, index) => {
-                    console.log({event})
-                    
+                    console.log({ event })
+
                     let exportTags = {
                         Url: url.pageUrl,
                         Event: event.name,
@@ -86,26 +87,26 @@ export default {
                         Event: event.name,
                     }
                     //Tags
-                    if(event.tags !== undefined && event.tags.length > 0){
+                    if (event.tags !== undefined && event.tags.length > 0) {
                         event.tags.map((tag, index) => {
-                            if(tag.content !== undefined){
+                            if (tag.content !== undefined) {
                                 exportTags = {
                                     ...exportTags,
                                     Technology: tag.name,
                                     ...tag.content
-                                } 
+                                }
                             }
                             exportData.tags.push(exportTags)
                         })
-                    }else{
+                    } else {
                         exportData.tags.push(exportTags)
                     }
                     //DLs
-                    if(event.dataLayers !== undefined && event.dataLayers.length > 0){
-                        console.log({dataLayers: event.dataLayers});
+                    if (event.dataLayers !== undefined && event.dataLayers.length > 0) {
+                        console.log({ dataLayers: event.dataLayers });
                         event.dataLayers.map((dL, index) => {
-                            
-                            if(dL.data !== undefined){
+
+                            if (dL.data !== undefined) {
                                 Object.keys(dL.data).forEach((key) => {
                                     exportData.dLs.push({
                                         ...exportDls,
@@ -116,11 +117,11 @@ export default {
                                 })
                             }
                         })
-                    }else{
+                    } else {
                         exportData.dLs.push(exportDls)
                     }
-                    
-                    console.log({exportData})
+
+                    console.log({ exportData })
 
                 })
             })
@@ -128,156 +129,156 @@ export default {
             return exportData
         },
 
-        editEventTitle(title, urlIndex, eventIndex){
-            console.log({data:this.data});
+        editEventTitle(title, urlIndex, eventIndex) {
+            console.log({ data: this.data });
 
             this.data[urlIndex].events[eventIndex].name = title
         },
-        async init(){
+        async init() {
             this.regexList = await this.getRegexList()
             this.dispatchListeners()
         },
-        parsePostData(postData){
-            if(postData !== undefined){
-                console.log({postData})
+        parsePostData(postData) {
+            if (postData !== undefined) {
+                console.log({ postData })
                 const KeywordRegex = /[a-z]+=/;
-                var keyword = postData.match(KeywordRegex)[0] ;
+                var keyword = postData.match(KeywordRegex)[0];
                 console.log('keyword: ', keyword);
-                
+
                 //const regex = new RegExp( `${keyword}.*?(?=${keyword} | &${keyword}|$)` , 'gm');
                 //const substrings = url.match(regex);
-                const substrings = postData.replaceAll(/\n|\r/g, '').replaceAll(keyword,';'+keyword).replace(';', '').split(';')
+                const substrings = postData.replaceAll(/\n|\r/g, '').replaceAll(keyword, ';' + keyword).replace(';', '').split(';')
                 let parsedData = []
                 substrings.map((ele) => {
-                    parsedData.push(this.getUrlParams('https://www.bienspasser.com?'+ele))
+                    parsedData.push(this.getUrlParams('https://www.bienspasser.com?' + ele))
                 })
                 console.log('splits: ', parsedData);
                 return parsedData || [];
-            }else{
+            } else {
                 return []
             }
         },
-        parseInitiator(initiator){
+        parseInitiator(initiator) {
             let initiatiorData = {}
-            if(initiator.type==='script'){
-                
+            if (initiator.type === 'script') {
+
                 initiatiorData = {
                     type: 'script',
                     origin: initiator.stack.callFrames[0]?.url || initiator.stack.parent.callFrames[0]?.url
                 }
                 //console.log({initiatiorData});
-            }else if(initiator.type==='parser'){
+            } else if (initiator.type === 'parser') {
                 initiatiorData = {
                     type: 'parser',
                     origin: initiator.url
                 }
-                
-                console.log({initiatiorData, initiator});
-            }else{
-                console.log({Else: 'Else', initiator});
+
+                console.log({ initiatiorData, initiator });
+            } else {
+                console.log({ Else: 'Else', initiator });
             }
 
             return initiatiorData
         },
-        devtoolsNetworkRequest(request){
+        devtoolsNetworkRequest(request) {
 
 
             const details = request.request
             this.regexList.forEach((element, index) => {
-                if(RegExp(element.pattern).test(details.url) && element.ignore && details.hasOwnProperty('url') && this.isInspecting){
+                if (RegExp(element.pattern).test(details.url) && element.ignore && details.hasOwnProperty('url') && this.isInspecting) {
                     var initiatorChain = [];
                     var initiator = request.initiator;
                     while (initiator) {
                         initiatorChain.push(initiator);
                         initiator = initiator.stack.callFrames[0].url;
                     }
-                    console.log({initiatorChain});
+                    console.log({ initiatorChain });
 
-                    console.log({request});
+                    console.log({ request });
                     const urlParams = details.url
                     const postData = this.parsePostData(details.postData?.text)
                     const initiatior = this.parseInitiator(request._initiator)
-                    const content = {...{request: details.url}, ...initiatior, ...this.getUrlParams(urlParams)}
-                    if(!this.regexOccurances[element.name].passed){
+                    const content = { ...{ request: details.url }, ...initiatior, ...this.getUrlParams(urlParams) }
+                    if (!this.regexOccurances[element.name].passed) {
                         this.regexOccurances[element.name].passed = true
-                        const occurences = this.regexOccurances[element.name].occurences+1
+                        const occurences = this.regexOccurances[element.name].occurences + 1
                         this.$set(this.regexOccurances[element.name], 'occurences', occurences)
                     }
-                    const data = {name: element.name, occurences: 0, content: content, timeStamp: Date.now(), payload: postData, initiatior : initiatior}
+                    const data = { name: element.name, occurences: 0, content: content, timeStamp: Date.now(), payload: postData, initiatior: initiatior }
                     this.pushData(data, 'tags', element.name, element.iconPath)
                 }
             })
         },
-        dispatchListeners(){
-            this.removeListeners(); 
+        dispatchListeners() {
+            this.removeListeners();
             this.addEventListeners()
         },
-        async getRegexList(){
+        async getRegexList() {
             var regexList = await chromeHelper.localStorageGet(["regExPatterns"])
             const regexWarnMessage = {
                 type: "warning",
                 title: "Empty Regex Patterns List",
                 message: "Regex patterns must be provided for recording tags"
             }
-            if(!regexList.regExPatterns){
-                regexList.regExPatterns= []
+            if (!regexList.regExPatterns) {
+                regexList.regExPatterns = []
                 this.$refs.notification.makeNotification(regexWarnMessage)
-            }else if(!regexList.regExPatterns.length){
+            } else if (!regexList.regExPatterns.length) {
                 this.$refs.notification.makeNotification(regexWarnMessage)
             }
             this.initRegexOccurances(regexList.regExPatterns)
             return regexList.regExPatterns
         },
         // TODO something fishy here ...
-        initRegexOccurances(regexList){
-            if(regexList.length){
+        initRegexOccurances(regexList) {
+            if (regexList.length) {
                 regexList.forEach((element) => {
-                    this.regexOccurances[element.name] = {passed:false,  occurences: 0}
+                    this.regexOccurances[element.name] = { passed: false, occurences: 0 }
                 })
             }
         },
-        resetOccurancesCounter(){
+        resetOccurancesCounter() {
             Object.keys(this.regexOccurances).forEach(key => {
                 this.regexOccurances[key].passed = false;
             });
         },
-        addEventListeners(){
+        addEventListeners() {
             chromeHelper.listenOnLocalStorageChange(this.listenOnRegexChange)
             chromeHelper.listenOnTabUpdated(this.listenToUrlChanges)
             chromeHelper.listenOnTabClosed(this.handleTabclosed)
             chrome.devtools.network.onRequestFinished.addListener(this.devtoolsNetworkRequest)
             chromeHelper.listenToRuntimeMessages(this.captureDataLayer)
         },
-        removeListeners(){
+        removeListeners() {
             chromeHelper.removeLocalStorageChangeListener(this.listenOnRegexChange)
             chromeHelper.removeRuntimeMessagesListener(this.captureDataLayer)
             chromeHelper.removeTabUpdatedListener(this.listenToUrlChanges)
             chromeHelper.removeTabClosedListener(this.handleTabclosed)
             chrome.devtools.network.onRequestFinished.removeListener(this.devtoolsNetworkRequest)
         },
-        listenOnRegexChange(changes, areaName){
-            if(areaName==="local" && changes.regExPatterns){
+        listenOnRegexChange(changes, areaName) {
+            if (areaName === "local" && changes.regExPatterns) {
                 this.regexList = changes.regExPatterns.newValue
             }
         },
-        listenToUrlChanges(details){
+        listenToUrlChanges(details) {
             //console.log('tab details', chrome.devtools);
-            if(this.isValidHttpUrl(details)){
+            if (this.isValidHttpUrl(details)) {
                 this.pushUrl(details)
                 this.removeListeners()
                 this.addEventListeners()
                 this.injectMainContentScript()
             }
         },
-        injectMainContentScript(){
-            chromeHelper.injectScript({ target: {tabId: this.tabId}, files: ['content/content.js'] }, this.errorHandler)
+        injectMainContentScript() {
+            chromeHelper.injectScript({ target: { tabId: this.tabId }, files: ['content/content.js'] }, this.errorHandler)
         },
-        pushUrl(url){
-            if(!this.isInspecting) return
+        pushUrl(url) {
+            if (!this.isInspecting) return
             this.resetOccurancesCounter()
             const newUrlData = {
                 pageUrl: url,
-                events: [ { name: 'Load', timeStamp: Date.now()} ]
+                events: [{ name: 'Load', timeStamp: Date.now() }]
             }
             this.$set(this.data, this.data.length, newUrlData)
         },
@@ -286,18 +287,18 @@ export default {
             try {
                 url = new URL(string);
             } catch (_) {
-                return false;    
+                return false;
             }
             return url.protocol === "http:" || url.protocol === "https:";
         },
-        getUrlParams(url){
-            if(!url.includes("?")) return {}
+        getUrlParams(url) {
+            if (!url.includes("?")) return {}
             try {
                 const urlObject = new URL(url)
                 var pairs = urlObject.search.slice(1).split('&');
 
                 var result = {};
-                pairs.forEach(function(pair) {
+                pairs.forEach(function (pair) {
                     pair = pair.split('=');
                     result[pair[0]] = decodeURIComponent(pair[1] || '');
                 });
@@ -307,51 +308,51 @@ export default {
                 return {}
             }
         },
-        captureDataLayer(message, sender, sendResponse){
-            if(message.type === "content_click_event" && sender.tab.id === this.tabId && this.isInspecting){
+        captureDataLayer(message, sender, sendResponse) {
+            if (message.type === "content_click_event" && sender.tab.id === this.tabId && this.isInspecting) {
                 this.pushEvent()
             }
-            else if (this.allowedLayers.includes(message.type) && sender.tab.id === this.tabId  && this.isInspecting && this.allowedDataLayers[message.type]){
+            else if (this.allowedLayers.includes(message.type) && sender.tab.id === this.tabId && this.isInspecting && this.allowedDataLayers[message.type]) {
                 var data = message
-                try{
+                try {
                     data.data = JSON.parse(message.data)
-                }catch(e){
+                } catch (e) {
 
                 }
                 this.pushData(data, 'dataLayers', data.type === 'var' ? data.dLN : data.type)
             }
         },
-        pushEvent(){
-            const urlListLength = this.data.length-1
+        pushEvent() {
+            const urlListLength = this.data.length - 1
             const eventListLength = this.data[urlListLength]?.events.length
-            this.$set(this.data[urlListLength].events, eventListLength, {name: "Click " + eventListLength, timeStamp: Date.now()})
+            this.$set(this.data[urlListLength].events, eventListLength, { name: "Click " + eventListLength, timeStamp: Date.now() })
         },
-        pushData(data, name, identifier, icon){
+        pushData(data, name, identifier, icon) {
             try {
-                const urlListLength = this.data.length-1
-                if(!this.data[urlListLength].hasOwnProperty('events')) return
-                const eventListLength = this.data[urlListLength].events.length-1
+                const urlListLength = this.data.length - 1
+                if (!this.data[urlListLength].hasOwnProperty('events')) return
+                const eventListLength = this.data[urlListLength].events.length - 1
                 this.queueData(data, name, urlListLength, eventListLength, icon)
                 //this.pushExportData(data, name, urlListLength, eventListLength, identifier)
             } catch (error) {
-                
+
             }
-            
+
         },
-         queueData(data, name, urlListLength, eventListLength, icon){
-            if(this.data[urlListLength].events[eventListLength][name] === undefined){
+        queueData(data, name, urlListLength, eventListLength, icon) {
+            if (this.data[urlListLength].events[eventListLength][name] === undefined) {
                 this.$set(this.data[urlListLength].events[eventListLength], name, [])
             }
             const isDuplicate = _findIndex(this.data[urlListLength].events[eventListLength][name], (o) => {
                 return _isMatch(o, data)
-            } )
-            if(isDuplicate>-1) return
+            })
+            if (isDuplicate > -1) return
             var index = this.data[urlListLength].events[eventListLength][name].length
-            if(icon) data.icon = icon
-            console.log({name});
+            if (icon) data.icon = icon
+            console.log({ name });
             this.$set(
-                this.data[urlListLength].events[eventListLength][name], 
-                index, 
+                this.data[urlListLength].events[eventListLength][name],
+                index,
                 data
             )
         },
@@ -359,15 +360,15 @@ export default {
             const flattened = {};
             Object.keys(obj).forEach((key) => {
                 if (typeof obj[key] === "object" && obj[key] !== null) {
-                Object.assign(flattened, this.flattenJsonObject(obj[key]));
+                    Object.assign(flattened, this.flattenJsonObject(obj[key]));
                 } else {
-                flattened[key] = obj[key];
+                    flattened[key] = obj[key];
                 }
             });
             return flattened;
         },
-        async pushExportData(data, name, urlListLength, eventListLength, identifier){
-            if(name === 'tags'){
+        async pushExportData(data, name, urlListLength, eventListLength, identifier) {
+            if (name === 'tags') {
                 this.tagExport.push({
                     ...{
                         Url: this.data[urlListLength].pageUrl,
@@ -376,9 +377,9 @@ export default {
                     },
                     ...data.content
                 })
-            }else if(name === 'dataLayers' && data.data !== undefined){
+            } else if (name === 'dataLayers' && data.data !== undefined) {
                 console.log('inside dalayer export', data);
-                console.log({DLEXPORTMAIN: data.data[0]});
+                console.log({ DLEXPORTMAIN: data.data[0] });
                 Object.keys(data.data).forEach((key) => {
                     this.dlExport.push({
                         Url: this.data[urlListLength].pageUrl,
@@ -388,7 +389,7 @@ export default {
                         ...this.flattenJsonObject(data.data[key])
                     })
                 })
-                console.log({theDLEXPORT: this.dlExport})
+                console.log({ theDLEXPORT: this.dlExport })
                 /*data.data.map((element) => {
                     console.log('Inside element', element);
                     this.dlExport.push({
@@ -412,7 +413,7 @@ export default {
         pivot(arr) {
             console.log('this is pivot');
             var mp = new Map();
-            
+
             function setValue(a, path, val) {
                 if (Object(val) !== val) { // primitive value
                     var pathStr = path.join('.');
@@ -425,17 +426,17 @@ export default {
                 }
                 return a;
             }
-            
-            var result = arr.map( obj => setValue([], [], obj) );
+
+            var result = arr.map(obj => setValue([], [], obj));
             return [[...mp.keys()], ...result];
         },
         toCsv(arr) {
-            return arr.map( row => 
-                row.map ( val => isNaN(val) ? JSON.stringify(val) : +val ).join(',')
+            return arr.map(row =>
+                row.map(val => isNaN(val) ? JSON.stringify(val) : +val).join(',')
             ).join('\n');
         },
         generateTable(data) {
-            if(data === undefined) return
+            if (data === undefined) return
             const table = data
 
             let columnsShalow = []
@@ -443,43 +444,43 @@ export default {
             //console.log({table});
             table.instanceData.forEach((element, index) => {
                 // console.log({element});
-                if(Object.values(element).length === 0) {
-                table.instanceData.pop(index)
+                if (Object.values(element).length === 0) {
+                    table.instanceData.pop(index)
                 }
-                
+
                 const _columns = Object.keys(element)
                 Object.keys(element).forEach(element => {
-                if(!columnsShalow.includes(element)) {
-                    columnsShalow.push(element)
-                    columns.push(
-                    {
-                        title: element,
-                        dataIndex: element,
-                        field: element,
-                        key: element+Math.random(),
-                    })
-                }
+                    if (!columnsShalow.includes(element)) {
+                        columnsShalow.push(element)
+                        columns.push(
+                            {
+                                title: element,
+                                dataIndex: element,
+                                field: element,
+                                key: element + Math.random(),
+                            })
+                    }
                 });
-            });   
+            });
         },
-        resetData(){
-            this.tagExport= []
-            this.dlExport= []
+        resetData() {
+            this.tagExport = []
+            this.dlExport = []
             this.data = []
             this.initRegexOccurances(this.regexList)
-            if(this.isInspecting){
+            if (this.isInspecting) {
                 this.toggleInspection()
                 this.toggleInspection()
             }
         },
-        errorHandler(errorAt){
-            if(chrome.runtime.lastError){
+        errorHandler(errorAt) {
+            if (chrome.runtime.lastError) {
                 console.log("error: ", chrome.runtime.lastError);
-            }else{
+            } else {
                 //
             }
         },
-        exportDataConfirm(){
+        exportDataConfirm() {
             //this.getTechForExport()
             /*if(this.data.length<1 && this.dlExport.length<1) {
                 const exportWarnMessage = {
@@ -490,17 +491,17 @@ export default {
                 this.$refs.notification.makeNotification(exportWarnMessage)
                 return
             }*/
-            this.showModal= true
+            this.showModal = true
         },
-        exportData(){
+        exportData() {
             this.exportModalErrors = []
-            if(!this.fileName){
+            if (!this.fileName) {
                 this.exportModalErrors.push('File Name required.');
                 return
             }
             var wb = XLSX.utils.book_new();
-            const exportData =this.primeExport()
-            console.log({'BEFORE EXPORERTT': exportData});
+            const exportData = this.primeExport()
+            console.log({ 'BEFORE EXPORERTT': exportData });
             var wsTags = XLSX.utils.json_to_sheet(exportData.tags);
             XLSX.utils.book_append_sheet(wb, wsTags, "Tags");
 
@@ -510,8 +511,8 @@ export default {
             const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
             const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
             const data1 = new Blob([excelBuffer], { type: fileType });
-            FileSaver.saveAs(data1, this.fileName+".xlsx");    
-            this.showModal= false
+            FileSaver.saveAs(data1, this.fileName + ".xlsx");
+            this.showModal = false
 
 
             /*return
@@ -532,44 +533,44 @@ export default {
             FileSaver.saveAs(data1, this.fileName+".xlsx");    
             this.showModal= false*/
         },
-        getTechForExport(){
+        getTechForExport() {
             let tagExport = []
             let dlExport = []
-            console.log({data: this.data});
+            console.log({ data: this.data });
             const data = this.data
-            data.map((url) =>{
+            data.map((url) => {
                 const urlName = url.pageUrl
-                url.events.map((event) =>{
+                url.events.map((event) => {
                     const eventName = event.name
-                    console.log({eventData: event});
-                    if(event.tags !== undefined && event.tags.length > 0){
-                        event.tags.map((eventData)=> {
-                            
+                    console.log({ eventData: event });
+                    if (event.tags !== undefined && event.tags.length > 0) {
+                        event.tags.map((eventData) => {
+
                             tagExport.push({
                                 url: urlName,
                                 eventName: eventName,
                                 Technology: eventData.name,
-                                occurences : eventData.occurences,
+                                occurences: eventData.occurences,
                                 ...eventData.content
                             })
-                        } )
-                    }else{
+                        })
+                    } else {
                         tagExport.push({
                             url: urlName,
                             eventName: eventName,
                         })
                     }
-                    if(event.dataLayers !== undefined && event.dataLayers.length > 0){
-                        event.dataLayers.map((eventData)=> {
-                            console.log({dataEvent: eventData.data});
+                    if (event.dataLayers !== undefined && event.dataLayers.length > 0) {
+                        event.dataLayers.map((eventData) => {
+                            console.log({ dataEvent: eventData.data });
                             dlExport.push({
                                 url: urlName,
                                 eventName: eventName,
                                 name: eventData.dLN,
                                 data: eventData.data !== undefined ? this.pivot(eventData.data) : []
                             })
-                        } )
-                    }else{
+                        })
+                    } else {
                         tagExport.push({
                             url: urlName,
                             eventName: eventName,
@@ -581,49 +582,50 @@ export default {
                     })*/
                 })
             })
-            console.log({dlExport});
+            console.log({ dlExport });
         },
-        export2CSV(data, prefix){
-            console.log({data})
+        export2CSV(data, prefix) {
+            console.log({ data })
             return
             const dataCSV = this.toCsv(this.pivot(data))
             var vLink = document.createElement('a')
             //var dataBlob = new Blob([JSON.stringify(this.data)], {type: "octet/stream"})
             //var fileName = this.fileName+".json"
-            var dataBlob = new Blob([dataCSV], {type: "octet/stream"})
-            var fileName = prefix+this.fileName+".csv"
+            var dataBlob = new Blob([dataCSV], { type: "octet/stream" })
+            var fileName = prefix + this.fileName + ".csv"
             var fileUrl = window.URL.createObjectURL(dataBlob);
             vLink.setAttribute('href', fileUrl)
-            vLink.setAttribute('download', fileName )
+            vLink.setAttribute('download', fileName)
             vLink.click()
             vLink.remove
-            this.showModal= false
+            this.showModal = false
         },
-        handleTabclosed(tabId){
-            if(tabId === this.tabId){
+        handleTabclosed(tabId) {
+            if (tabId === this.tabId) {
                 chrome.runtime.reload()
             }
         },
-        async toggleInspection(){
-            if(this.lockToggling) return
-            
+        async toggleInspection() {
+            if (this.lockToggling) return
+
             this.isInspecting = !this.isInspecting
-            if(this.isInspecting){
+            if (this.isInspecting) {
                 chromeHelper.reloadTab(this.tabId)
                 this.dispatchListeners()
             }
         },
-        startInspection(){
+        startInspection() {
             this.lockToggling = true
             this.isInspecting = true
             this.dispatchListeners()
         },
-        stopInspection(){
+        stopInspection() {
             this.removeListeners()
             this.lockToggling = false
             this.isInspecting = false
         }
     },
+
     data(){
         return{
             openNewTab : false,
