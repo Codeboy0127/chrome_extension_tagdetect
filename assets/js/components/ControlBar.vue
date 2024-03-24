@@ -24,9 +24,9 @@
     <button class="action-btn" v-if="controlBar.expand" @click="expandAll">
       <img src="../../images/expand.svg" /> Expand All
     </button>
-    <button class="action-btn" v-if="controlBar.save" @click="exportData">
+    <!-- <button class="action-btn" v-if="controlBar.save" @click="exportData">
       <img src="../../images/import.svg" /> Export
-    </button>
+    </button> -->
     <button
       class="action-btn"
       v-if="controlBar.settings"

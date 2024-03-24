@@ -144,27 +144,32 @@ var pageSelectEvent = /*#__PURE__*/function () {
           _context.t4 = _context.sent;
           _context.t5 = DEFAULT_ENGAGEMENT_TIME_IN_MSEC;
           _context.t6 = page;
-          _context.t7 = {
+          _context.next = 13;
+          return getOrCreateClientId();
+        case 13:
+          _context.t7 = _context.sent;
+          _context.t8 = {
             session_id: _context.t4,
             engagement_time_msec: _context.t5,
-            page_title: _context.t6
+            page_title: _context.t6,
+            user_id: _context.t7
           };
-          _context.t8 = {
+          _context.t9 = {
             name: "page_view",
-            params: _context.t7
+            params: _context.t8
           };
-          _context.t9 = [_context.t8];
-          _context.t10 = {
+          _context.t10 = [_context.t9];
+          _context.t11 = {
             client_id: _context.t3,
-            events: _context.t9
+            events: _context.t10
           };
-          _context.t11 = _context.t2.stringify.call(_context.t2, _context.t10);
-          _context.t12 = {
+          _context.t12 = _context.t2.stringify.call(_context.t2, _context.t11);
+          _context.t13 = {
             method: "POST",
-            body: _context.t11
+            body: _context.t12
           };
-          (0, _context.t0)(_context.t1, _context.t12);
-        case 18:
+          (0, _context.t0)(_context.t1, _context.t13);
+        case 21:
         case "end":
           return _context.stop();
       }
@@ -193,28 +198,33 @@ var pageInteractionEvent = /*#__PURE__*/function () {
           _context2.t5 = DEFAULT_ENGAGEMENT_TIME_IN_MSEC;
           _context2.t6 = page;
           _context2.t7 = interaction;
-          _context2.t8 = {
+          _context2.next = 14;
+          return getOrCreateClientId();
+        case 14:
+          _context2.t8 = _context2.sent;
+          _context2.t9 = {
             session_id: _context2.t4,
             engagement_time_msec: _context2.t5,
             page_title: _context2.t6,
-            action_title: _context2.t7
+            action_title: _context2.t7,
+            user_id: _context2.t8
           };
-          _context2.t9 = {
+          _context2.t10 = {
             name: "interaction",
-            params: _context2.t8
+            params: _context2.t9
           };
-          _context2.t10 = [_context2.t9];
-          _context2.t11 = {
+          _context2.t11 = [_context2.t10];
+          _context2.t12 = {
             client_id: _context2.t3,
-            events: _context2.t10
+            events: _context2.t11
           };
-          _context2.t12 = _context2.t2.stringify.call(_context2.t2, _context2.t11);
-          _context2.t13 = {
+          _context2.t13 = _context2.t2.stringify.call(_context2.t2, _context2.t12);
+          _context2.t14 = {
             method: "POST",
-            body: _context2.t12
+            body: _context2.t13
           };
-          (0, _context2.t0)(_context2.t1, _context2.t13);
-        case 19:
+          (0, _context2.t0)(_context2.t1, _context2.t14);
+        case 22:
         case "end":
           return _context2.stop();
       }
@@ -2934,16 +2944,7 @@ var render = function render() {
     attrs: {
       src: __webpack_require__(/*! ../../images/expand.svg */ "./assets/images/expand.svg")
     }
-  }), _vm._v(" Expand All\n  ")]) : _vm._e(), _vm._v(" "), _vm.controlBar.save ? _c("button", {
-    staticClass: "action-btn",
-    on: {
-      click: _vm.exportData
-    }
-  }, [_c("img", {
-    attrs: {
-      src: __webpack_require__(/*! ../../images/import.svg */ "./assets/images/import.svg")
-    }
-  }), _vm._v(" Export\n  ")]) : _vm._e(), _vm._v(" "), _vm.controlBar.settings ? _c("button", {
+  }), _vm._v(" Expand All\n  ")]) : _vm._e(), _vm._v(" "), _vm.controlBar.settings ? _c("button", {
     staticClass: "action-btn",
     on: {
       click: _vm.toggleSettingsPanel
@@ -4953,16 +4954,6 @@ module.exports = "/images/expand.svg?015fd167a3a8cc143d38ba677957ba98";
 /***/ ((module) => {
 
 module.exports = "/images/icon-128x128.png?bea9955055aa4cddd13a0e229fbe0a93";
-
-/***/ }),
-
-/***/ "./assets/images/import.svg":
-/*!**********************************!*\
-  !*** ./assets/images/import.svg ***!
-  \**********************************/
-/***/ ((module) => {
-
-module.exports = "/images/import.svg?6bd2ada1db0a249f0d284e662a186022";
 
 /***/ }),
 

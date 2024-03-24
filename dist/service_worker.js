@@ -156,7 +156,7 @@ var default_regex = [
 }, {
   name: "Inspectlet",
   pattern: "cdn\\.inspectlet\\.com\\/inspectlet.js",
-  iconPath: "inspectlet-icon.png",
+  iconPath: "inspectlet.png",
   ignore: true,
   canBeDeleted: false
 }, {
@@ -228,7 +228,7 @@ var default_regex = [
 }, {
   name: "Tealium Tag Load",
   pattern: '"tags(?:-eu)?\\.tiqcdn\\.c(?:om|n) utag\\..+\\.js"',
-  iconPath: "Tealium.png",
+  iconPath: "Tealium_DShQxXC.png",
   ignore: true,
   canBeDeleted: false
 }, {
@@ -240,7 +240,7 @@ var default_regex = [
 }, {
   name: "Yahoo Analytics",
   pattern: "sp.analytics.yahoo.com",
-  iconPath: "yahoo.png",
+  iconPath: "yahoo_zlelQfh.png",
   ignore: true,
   canBeDeleted: false
 }, {
@@ -270,12 +270,12 @@ var default_regex = [
 }, {
   name: "Qubit Open Tag",
   pattern: "d3c3cq33003psk\\.cloudfront\\.net",
-  iconPath: "11.png",
+  iconPath: "qubitopentag.webp",
   ignore: true,
   canBeDeleted: false
 }, {
   name: "Mixpanel",
-  pattern: "api\\-js\\.mixpanel\\.com",
+  pattern: "mixpanel\\.com\\/track\\/",
   iconPath: "mixpanel.png",
   ignore: true,
   canBeDeleted: false
@@ -306,7 +306,7 @@ var default_regex = [
 }, {
   name: "Salesforce Marketing Cloud Analytics",
   pattern: "nova\\.collect\\.igodigital\\.com.*/c2/\\d+/track_",
-  iconPath: "salesforce.png",
+  iconPath: "salesforce_mjLo2MG.png",
   ignore: true,
   canBeDeleted: false
 }, {

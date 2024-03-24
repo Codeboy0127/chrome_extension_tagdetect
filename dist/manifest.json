@@ -1,8 +1,8 @@
 {
   "name": "TAGLAB - Analytics & Datalayer Console Viewer",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "Inspect & QA analytics tags, marketing tags, conversion pixels, and data layer variables for data auditing and tag monitoring.",
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting", "management"],
   "devtools_page": "devtools.html",
   "icons": {
     "16": "images/icon-16x16.png",
