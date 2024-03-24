@@ -1,20 +1,31 @@
 <template lang="html">
   <div class="tabs">
-    <div class="header-nav">
-      <a target="_blank" href="https://console.taglab.net" class="logo-wrapper">
-        <img src="../../images/icon-128x128.png" style="width: 56px" />
-        <img src="../../images/logo.png" style="height: 48px;" />
+    <div class="h-logo">
+      <a
+        target="_blank"
+        href="https://console.taglab.net"
+        style="margin: 0; padding: 0; display: contents;;"
+      >
+        <img src="../../images/logo.png" style="height: 36px;" />
       </a>
-      <ul class="tabs-header">
-        <li
-          v-for="(tab, index) in tabs"
-          :key="tab.title"
-          @click="selectTab(index, tab.title)"
-          :class="{ 'tabs-selected': index == selectedIndex }"
-        >
-          {{ tab.title }}
-        </li>
-      </ul>
+    </div>
+    <div class="header-nav">
+      <div class="c-tabs-header">
+        <ul class="tabs-header">
+          <li
+            v-for="(tab, index) in tabs"
+            :key="tab.title"
+            @click="selectTab(index, tab.title)"
+            :class="{ 'tabs-selected': index == selectedIndex }"
+          >
+            {{ tab.title }}
+          </li>
+        </ul>
+        <div>
+          Tag View is better with Taglab Web
+          <a class="sec-btn"> Why? </a>
+        </div>
+      </div>
     </div>
     <slot></slot>
   </div>
@@ -51,33 +62,59 @@ export default {
 </script>
 
 <style lang="css">
+.h-logo {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  padding: 8px 0;
+}
+
 .header-nav {
   display: flex;
-  padding-left: 18px;
-  margin-bottom: 8px;
-  justify-content: space-between;
-  -moz-column-gap: 8px;
-  column-gap: 8px;
-  padding-right: 14px;
-  flex-wrap: wrap;
-  row-gap: 24px;
+  justify-content: center;
+  padding: 8px 0px;
 }
+
+.c-tabs-header {
+  border-radius: 45px 45px 15px 15px;
+  background-color: #2ca14813;
+}
+.c-tabs-header > div {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  column-gap: 2px;
+  font-size: small;
+  font-weight: 300;
+}
+
+.c-tabs-header .sec-btn {
+  padding: 4px 10px;
+  font-size: x-small;
+}
+
 ul.tabs-header {
   display: flex;
   list-style: none;
-  padding: 0;
+  padding: 10px;
+  border: 2px solid rgb(208, 208, 208);
+  border-radius: 45px;
   flex-wrap: wrap;
   align-items: baseline;
+  column-gap: 8px;
   row-gap: 4px;
-  margin-left: auto;
+  background-color: #fff;
 }
 ul.tabs-header > li {
-  padding: 15px 30px;
-  border-radius: 10px;
+  padding: 8px 30px;
+  border-radius: 45px;
   margin: 0;
   display: inline-block;
   margin-right: 5px;
   cursor: pointer;
+  font-size: small;
 }
 .tab {
   box-sizing: border-box;
@@ -97,10 +134,10 @@ ul.tabs-header > li {
   background-color: #fff;
   color: #83ffb3;
 }
-.tabs li {
+/* .tabs li {
   background-color: #ddd;
   color: #aaa;
-}
+} */
 li.tabs-selected {
   background-color: #12b922;
   color: white;

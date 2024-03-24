@@ -3257,9 +3257,11 @@ var render = function render() {
     _c = _vm._self._c;
   return _c("div", {
     staticClass: "tabs"
-  }, [_c("div", {
+  }, [_vm._m(0), _vm._v(" "), _c("div", {
     staticClass: "header-nav"
-  }, [_vm._m(0), _vm._v(" "), _c("ul", {
+  }, [_c("div", {
+    staticClass: "c-tabs-header"
+  }, [_c("ul", {
     staticClass: "tabs-header"
   }, _vm._l(_vm.tabs, function (tab, index) {
     return _c("li", {
@@ -3272,33 +3274,38 @@ var render = function render() {
           return _vm.selectTab(index, tab.title);
         }
       }
-    }, [_vm._v("\n        " + _vm._s(tab.title) + "\n      ")]);
-  }), 0)]), _vm._v(" "), _vm._t("default")], 2);
+    }, [_vm._v("\n          " + _vm._s(tab.title) + "\n        ")]);
+  }), 0), _vm._v(" "), _vm._m(1)])]), _vm._v(" "), _vm._t("default")], 2);
 };
 var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("a", {
-    staticClass: "logo-wrapper",
+  return _c("div", {
+    staticClass: "h-logo"
+  }, [_c("a", {
+    staticStyle: {
+      margin: "0",
+      padding: "0",
+      display: "contents"
+    },
     attrs: {
       target: "_blank",
       href: "https://console.taglab.net"
     }
   }, [_c("img", {
     staticStyle: {
-      width: "56px"
-    },
-    attrs: {
-      src: __webpack_require__(/*! ../../images/icon-128x128.png */ "./assets/images/icon-128x128.png")
-    }
-  }), _vm._v(" "), _c("img", {
-    staticStyle: {
-      height: "48px"
+      height: "36px"
     },
     attrs: {
       src: __webpack_require__(/*! ../../images/logo.png */ "./assets/images/logo.png")
     }
-  })]);
+  })])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", [_vm._v("\n        Tag View is better with Taglab Web\n        "), _c("a", {
+    staticClass: "sec-btn"
+  }, [_vm._v(" Why? ")])]);
 }];
 render._withStripped = true;
 
@@ -4656,7 +4663,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n* {\n    margin: 0;\n    padding: 0;\n}\n.wrapper {\n    max-width: 100%;\n    background-color: white;\n    margin: 0;\n    padding: 24px 0px;\n    padding-bottom: 0;\n    position: relative;\n}\n.footer{\n    position: absolute;\n    bottom: 0;\n    right: 50%;\n    translate: 50%;\n    margin-bottom: 12px;\n}\n.footer-text{\n    font-size: 16px;\n    font-family: 'Poppins';\n    font-weight: 400;\n}\n.heart{\n    background-image: url(\"data:image/svg+xml,%3Csvg xmlns:svg='http://www.w3.org/2000/svg' xmlns='http://www.w3.org/2000/svg' version='1.0' width='645' height='585' id='svg2'%3E%3Cdefs id='defs4' /%3E%3Cg id='layer1'%3E%3Cpath d='M 297.29747,550.86823 C 283.52243,535.43191 249.1268,505.33855 220.86277,483.99412 C 137.11867,420.75228 125.72108,411.5999 91.719238,380.29088 C 29.03471,322.57071 2.413622,264.58086 2.5048478,185.95124 C 2.5493594,147.56739 5.1656152,132.77929 15.914734,110.15398 C 34.151433,71.768267 61.014996,43.244667 95.360052,25.799457 C 119.68545,13.443675 131.6827,7.9542046 172.30448,7.7296236 C 214.79777,7.4947896 223.74311,12.449347 248.73919,26.181459 C 279.1637,42.895777 310.47909,78.617167 316.95242,103.99205 L 320.95052,119.66445 L 330.81015,98.079942 C 386.52632,-23.892986 564.40851,-22.06811 626.31244,101.11153 C 645.95011,140.18758 648.10608,223.6247 630.69256,270.6244 C 607.97729,331.93377 565.31255,378.67493 466.68622,450.30098 C 402.0054,497.27462 328.80148,568.34684 323.70555,578.32901 C 317.79007,589.91654 323.42339,580.14491 297.29747,550.86823 z' id='path2417' style='fill:%23ff0000' /%3E%3Cg transform='translate(129.28571,-64.285714)' id='g2221' /%3E%3C/g%3E%3C/svg%3E%0A\");\n    height: 16px;\n    display: inline-block;\n    width: 16px;\n    background-repeat: no-repeat;\n    background-size: contain;\n}\n\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n* {\n    margin: 0;\n    padding: 0;\n}\n.wrapper {\n    max-width: 100%;\n    /* background-color: white; */\n    margin: 0;\n    /* padding: 0px 0px; */\n    padding-bottom: 0;\n    position: relative;\n}\n.footer{\n    position: absolute;\n    bottom: 0;\n    right: 50%;\n    translate: 50%;\n    margin-bottom: 12px;\n}\n.footer-text{\n    font-size: 16px;\n    font-family: 'Poppins';\n    font-weight: 400;\n}\n.heart{\n    background-image: url(\"data:image/svg+xml,%3Csvg xmlns:svg='http://www.w3.org/2000/svg' xmlns='http://www.w3.org/2000/svg' version='1.0' width='645' height='585' id='svg2'%3E%3Cdefs id='defs4' /%3E%3Cg id='layer1'%3E%3Cpath d='M 297.29747,550.86823 C 283.52243,535.43191 249.1268,505.33855 220.86277,483.99412 C 137.11867,420.75228 125.72108,411.5999 91.719238,380.29088 C 29.03471,322.57071 2.413622,264.58086 2.5048478,185.95124 C 2.5493594,147.56739 5.1656152,132.77929 15.914734,110.15398 C 34.151433,71.768267 61.014996,43.244667 95.360052,25.799457 C 119.68545,13.443675 131.6827,7.9542046 172.30448,7.7296236 C 214.79777,7.4947896 223.74311,12.449347 248.73919,26.181459 C 279.1637,42.895777 310.47909,78.617167 316.95242,103.99205 L 320.95052,119.66445 L 330.81015,98.079942 C 386.52632,-23.892986 564.40851,-22.06811 626.31244,101.11153 C 645.95011,140.18758 648.10608,223.6247 630.69256,270.6244 C 607.97729,331.93377 565.31255,378.67493 466.68622,450.30098 C 402.0054,497.27462 328.80148,568.34684 323.70555,578.32901 C 317.79007,589.91654 323.42339,580.14491 297.29747,550.86823 z' id='path2417' style='fill:%23ff0000' /%3E%3Cg transform='translate(129.28571,-64.285714)' id='g2221' /%3E%3C/g%3E%3C/svg%3E%0A\");\n    height: 16px;\n    display: inline-block;\n    width: 16px;\n    background-repeat: no-repeat;\n    background-size: contain;\n}\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4680,7 +4687,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.header-nav {\n  display: flex;\n  padding-left: 18px;\n  margin-bottom: 8px;\n  justify-content: space-between;\n  -moz-column-gap: 8px;\n  column-gap: 8px;\n  padding-right: 14px;\n  flex-wrap: wrap;\n  row-gap: 24px;\n}\nul.tabs-header {\n  display: flex;\n  list-style: none;\n  padding: 0;\n  flex-wrap: wrap;\n  align-items: baseline;\n  row-gap: 4px;\n  margin-left: auto;\n}\nul.tabs-header > li {\n  padding: 15px 30px;\n  border-radius: 10px;\n  margin: 0;\n  display: inline-block;\n  margin-right: 5px;\n  cursor: pointer;\n}\n.tab {\n  box-sizing: border-box;\n  color: black;\n  width: 100%;\n  border-radius: 10px;\n  min-height: 81vh;\n  background-color: #f4f6fa;\n  padding: 16px 40px;\n  /* padding-bottom: 50vh; */\n}\n.tabs-light li {\n  background-color: #ddd;\n  color: #aaa;\n}\n.tabs-light li.tabs-selected {\n  background-color: #fff;\n  color: #83ffb3;\n}\n.tabs li {\n  background-color: #ddd;\n  color: #aaa;\n}\nli.tabs-selected {\n  background-color: #12b922;\n  color: white;\n}\n@media only screen and (max-width: 550px) {\nul.tabs-header > li {\n    flex: 1 0 21%;\n}\n}\n@media only screen and (max-width: 440px) {\nul.tabs-header > li {\n    flex: 1 0 40%;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.h-logo {\n  display: flex;\n  width: 100%;\n  align-items: center;\n  justify-content: center;\n  background-color: #fff;\n  padding: 8px 0;\n}\n.header-nav {\n  display: flex;\n  justify-content: center;\n  padding: 8px 0px;\n}\n.c-tabs-header {\n  border-radius: 45px 45px 15px 15px;\n  background-color: #2ca14813;\n}\n.c-tabs-header > div {\n  padding: 10px;\n  display: flex;\n  align-items: center;\n  -moz-column-gap: 2px;\n       column-gap: 2px;\n  font-size: small;\n  font-weight: 300;\n}\n.c-tabs-header .sec-btn {\n  padding: 4px 10px;\n  font-size: x-small;\n}\nul.tabs-header {\n  display: flex;\n  list-style: none;\n  padding: 10px;\n  border: 2px solid rgb(208, 208, 208);\n  border-radius: 45px;\n  flex-wrap: wrap;\n  align-items: baseline;\n  -moz-column-gap: 8px;\n       column-gap: 8px;\n  row-gap: 4px;\n  background-color: #fff;\n}\nul.tabs-header > li {\n  padding: 8px 30px;\n  border-radius: 45px;\n  margin: 0;\n  display: inline-block;\n  margin-right: 5px;\n  cursor: pointer;\n  font-size: small;\n}\n.tab {\n  box-sizing: border-box;\n  color: black;\n  width: 100%;\n  border-radius: 10px;\n  min-height: 81vh;\n  background-color: #f4f6fa;\n  padding: 16px 40px;\n  /* padding-bottom: 50vh; */\n}\n.tabs-light li {\n  background-color: #ddd;\n  color: #aaa;\n}\n.tabs-light li.tabs-selected {\n  background-color: #fff;\n  color: #83ffb3;\n}\n/* .tabs li {\n  background-color: #ddd;\n  color: #aaa;\n} */\nli.tabs-selected {\n  background-color: #12b922;\n  color: white;\n}\n@media only screen and (max-width: 550px) {\nul.tabs-header > li {\n    flex: 1 0 21%;\n}\n}\n@media only screen and (max-width: 440px) {\nul.tabs-header > li {\n    flex: 1 0 40%;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4944,16 +4951,6 @@ module.exports = "/images/cross_icon.svg?ef4f161acb9eae653e1cd7a4dca6d587";
 /***/ ((module) => {
 
 module.exports = "/images/expand.svg?015fd167a3a8cc143d38ba677957ba98";
-
-/***/ }),
-
-/***/ "./assets/images/icon-128x128.png":
-/*!****************************************!*\
-  !*** ./assets/images/icon-128x128.png ***!
-  \****************************************/
-/***/ ((module) => {
-
-module.exports = "/images/icon-128x128.png?bea9955055aa4cddd13a0e229fbe0a93";
 
 /***/ }),
 

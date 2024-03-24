@@ -2,6 +2,16 @@
 body {
   font-family: "Poppins", sans-serif;
   overflow: overlay;
+  background-color: #f4f6fa;
+}
+
+.sec-btn {
+  border-radius: 45px;
+  background-color: #2ca14820;
+  color: #2ca148;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .asc {
@@ -20,7 +30,7 @@ body {
 }
 
 .simple-button {
-  background: #42A644;
+  background: #42a644;
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
@@ -50,7 +60,7 @@ body {
 }
 
 .settings-panel {
-  border: 1px #12B922 solid;
+  border: 1px #12b922 solid;
   border-radius: 6px;
   padding: 16px;
   max-height: 50vh;

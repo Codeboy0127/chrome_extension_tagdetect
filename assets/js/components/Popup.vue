@@ -674,9 +674,9 @@ export default {
 
 .wrapper {
     max-width: 100%;
-    background-color: white;
+    /* background-color: white; */
     margin: 0;
-    padding: 24px 0px;
+    /* padding: 0px 0px; */
     padding-bottom: 0;
     position: relative;
 }

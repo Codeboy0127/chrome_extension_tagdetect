@@ -1,86 +1,95 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
 
 body {
-    font-family: 'Poppins', sans-serif;
-    overflow: overlay;
+  font-family: "Poppins", sans-serif;
+  overflow: overlay;
+  background-color: #f4f6fa;
 }
 
-.asc{
-    display: flex;
-    flex-direction: column-reverse;
-}
-.desc{
-    display: flex;
-    flex-direction: column-reverse;
-}
-
-.panel-top{
-    display: flex;
-    margin-bottom: 16px;
+.sec-btn {
+  border-radius: 45px;
+  background-color: #2ca14820;
+  color: #2ca148;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.simple-button{
-    background: #42A644;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    color: white;
-    border-radius: 16px;
-    font-family: 'Poppins';
-    cursor: pointer;
-    transition: all .2s ease-in-out;
+.asc {
+  display: flex;
+  flex-direction: column-reverse;
 }
-.simple-button:hover{
-    opacity: .8;
+.desc {
+  display: flex;
+  flex-direction: column-reverse;
 }
 
-.simple-button.small{
-    font-size: 14px;
-    padding: 4px 12px;
-}
-.simple-button.red{
-    background: #eb4646;
-}
-.simple-button.blue{
-    background: #46a3eb;
+.panel-top {
+  display: flex;
+  margin-bottom: 16px;
 }
 
-.settings-panel{
-    border: 1px #12B922 solid;
-    border-radius: 6px;
-    padding: 16px;
-    max-height: 50vh;
-    overflow-y: auto;
+.simple-button {
+  background: #42a644;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  color: white;
+  border-radius: 16px;
+  font-family: "Poppins";
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.simple-button:hover {
+  opacity: 0.8;
 }
 
+.simple-button.small {
+  font-size: 14px;
+  padding: 4px 12px;
+}
+.simple-button.red {
+  background: #eb4646;
+}
+.simple-button.blue {
+  background: #46a3eb;
+}
+
+.settings-panel {
+  border: 1px #12b922 solid;
+  border-radius: 6px;
+  padding: 16px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
 
 .custom-scrollbar::-webkit-scrollbar {
-	width: 9px;
-	height: 9px;
+  width: 9px;
+  height: 9px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-	background: transparent;
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-	background: #ccc;
-    border-radius: 16px;
+  background: #ccc;
+  border-radius: 16px;
 }
 .custom-scrollbar.square::-webkit-scrollbar-thumb {
-	background: #ccc;
-    border-radius: 0px;
+  background: #ccc;
+  border-radius: 0px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:window-inactive {
-	background: #ddd;
+  background: #ddd;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-	background: #aaa;
+  background: #aaa;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:active {
-	background: #888;
+  background: #888;
 }
