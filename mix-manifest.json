@@ -2,6 +2,7 @@
     "/dist/service_worker.js": "/dist/service_worker.js",
     "/dist/js/popup.js": "/dist/js/popup.js",
     "/dist/css/popup.css": "/dist/css/popup.css",
+    "/dist/images/angle-down-solid.svg": "/dist/images/angle-down-solid.svg",
     "/dist/images/clear.svg": "/dist/images/clear.svg",
     "/dist/images/collapse.svg": "/dist/images/collapse.svg",
     "/dist/images/cross_icon.svg": "/dist/images/cross_icon.svg",
@@ -69,5 +70,6 @@
     "/dist/images/settings.png": "/dist/images/settings.png",
     "/dist/images/step-1.png": "/dist/images/step-1.png",
     "/dist/images/step-2.png": "/dist/images/step-2.png",
-    "/dist/images/step-3.png": "/dist/images/step-3.png"
+    "/dist/images/step-3.png": "/dist/images/step-3.png",
+    "/dist/images/why-taglab-web.png": "/dist/images/why-taglab-web.png"
 }

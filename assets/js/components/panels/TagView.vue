@@ -1,34 +1,39 @@
 <template>
   <div class="panel">
-    <div class="search-box">
-      <svg
-        fill="#12b922"
-        @click="search"
-        xmlns="http://www.w3.org/2000/svg"
-        height="1em"
-        viewBox="0 0 512 512"
-      >
-        <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-        <path
-          d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
-        />
-      </svg>
-      <input
-        type="text"
-        v-model="searchFilter"
-        @keyup="updateSearch"
-        @focus="searchFocus"
-      />
-      <span v-show="0 !== searchResultCount"
-        >({{ searchFilterIndex + 1 }}/{{ searchResultCount }})</span
-      >
-      <!-- <button @click="search">search</button> -->
-      <button @click="searchPrev" v-show="0 !== searchResultCount">
-        previous
-      </button>
-      <button @click="searchNext" v-show="0 !== searchResultCount">next</button>
-    </div>
     <div class="panel-top">
+      <div class="search-box">
+        <input
+          placeholder="Search"
+          type="text"
+          v-model="searchFilter"
+          @keyup="updateSearch"
+          @focus="searchFocus"
+        />
+        <svg
+          fill="rgb(120,120,120)"
+          @click="search"
+          xmlns="http://www.w3.org/2000/svg"
+          height="1em"
+          viewBox="0 0 512 512"
+        >
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+          />
+        </svg>
+
+        <span v-show="0 !== searchResultCount"
+          >({{ searchFilterIndex + 1 }}/{{ searchResultCount }})</span
+        >
+        <!-- <button @click="search">search</button> -->
+        <button @click="searchPrev" v-show="0 !== searchResultCount">
+          previous
+        </button>
+        <button @click="searchNext" v-show="0 !== searchResultCount">
+          next
+        </button>
+      </div>
+
       <control-bar
         :controlBar="controlBar"
         @toggleInspection="toggleInspection"
@@ -52,7 +57,7 @@
     >
       <accordion
         :id="`tech-${urlIndex}`"
-        styling="rounded gray-header"
+        styling="rounded gray-header accordion-shadow"
         :title="url.pageUrl"
         v-for="(url, urlIndex) in data"
         :key="'tag-url-' + urlIndex"
@@ -61,7 +66,7 @@
         <p v-if="!url.events">No recorded events</p>
         <accordion
           :id="`tech-${urlIndex}-${eventIndex}`"
-          styling="rounded green-header"
+          styling="rounded green-header accordion-shadow"
           :title="event.name"
           v-for="(event, eventIndex) in url.events.slice().reverse()"
           :key="'tag-event-' + eventIndex"
@@ -87,6 +92,7 @@
               @blur="disableEventTitleEdit"
             />
             <svg
+              fill="rgb(120,120,120)"
               xmlns="http://www.w3.org/2000/svg"
               @click="
                 (e) => EnableEventTitleEdit(event.name, urlIndex, eventIndex)
@@ -106,7 +112,7 @@
 
           <accordion
             :id="`tech-${urlIndex}-${eventIndex}-${index}`"
-            styling="flat"
+            styling="flat rounded accordion-border"
             :title="
               tag.name +
                 (tag.content.tid ? ' - ' + tag.content.tid : '') +
@@ -127,21 +133,29 @@
                 alt=""
               />
             </template>
-            <template v-if="occurences" v-slot:extra
-              ><h4>
-                Found on {{ occurences[tag.name].occurences }}/{{ data.length }}
-                pages
-              </h4></template
-            >
+            <template v-if="occurences" v-slot:extra>
+              <h4 style="color: #414141;">
+                <span style="font-size: xx-small; font-weight: 300;"
+                  >Found on</span
+                >
+                <br />
+                <span style="font-size: small; font-weight: 400;"
+                  >{{ occurences[tag.name].occurences }}/{{
+                    data.length
+                  }}
+                  pages</span
+                >
+              </h4>
+            </template>
             <ul class="tag-params" v-show="searchFilter.length === 0">
               <li v-for="(value, key, contentIndex) in tag.content">
                 <span
                   :id="
                     `tech-${urlIndex}-${eventIndex}-${index}-${contentIndex}-key`
                   "
-                  style="font-weight: bold; word-break: keep-all;"
+                  style="word-break: keep-all;"
                 >
-                  {{ key }}:
+                  {{ key }}
                 </span>
                 <span
                   :id="
@@ -154,7 +168,7 @@
             </ul>
             <ul class="tag-params" v-if="searchFilter.length > 0">
               <li v-for="(value, key, contentIndex) in tag.content">
-                <span style="font-weight: bold; ">
+                <span>
                   <!-- <span v-for="(val, index) in splitString(key, searchFilter)" :class="val === searchFilter ? 'search-hit' : ''"> -->
                   <span
                     v-for="(val, keyIndex) in key
@@ -181,35 +195,35 @@
             </ul>
             <div v-show="searchFilter.length === 0">
               <ul class="tag-params" v-for="(payload, index) in tag.payload">
-                <H4 class="payload-title"
-                  >Payload analytic events {{ index }}</H4
-                >
+                <h4 class="payload-title">
+                  Payload analytic events {{ index }}
+                </h4>
                 <li v-for="(value, key, contentIndex) in payload">
                   <span
                     :id="
                       `tech-${urlIndex}-${eventIndex}-${index}-${contentIndex}-key`
                     "
-                    style="font-weight: bold; "
                   >
                     {{ key }}:
                   </span>
                   <span
+                    style="white-space: pre; text-wrap: wrap;"
                     :id="
                       `tech-${urlIndex}-${eventIndex}-${index}-${contentIndex}-value`
                     "
                   >
-                    {{ value }}
+                    {{ jsonSyntax(value) }}
                   </span>
                 </li>
               </ul>
             </div>
             <div v-if="searchFilter.length > 0 && tag.payload.length > 0">
               <ul class="tag-params" v-for="(payload, index) in tag.payload">
-                <H4 class="payload-title"
-                  >Payload analytic events {{ index }}</H4
-                >
+                <h4 class="payload-title">
+                  Payload analytic events {{ index }}
+                </h4>
                 <li v-for="(value, key, contentIndex) in payload">
-                  <span style="font-weight: bold; ">
+                  <span>
                     <!-- <span v-for="(val, index) in splitString(key, searchFilter)" :class="val === searchFilter ? 'search-hit' : ''"> -->
                     <span
                       v-for="(val, keyIndex) in key
@@ -218,8 +232,9 @@
                       :class="val === searchFilter ? `search-hit` : ''"
                       style=" white-space: nowrap;"
                     >
-                      {{ val }} </span
-                    >:
+                      {{ val }}
+                    </span>
+                    :
                   </span>
                   <span>
                     <span
@@ -229,7 +244,7 @@
                       :class="val === searchFilter ? `search-hit` : ''"
                       style=""
                     >
-                      {{ val }}
+                      {{ jsonSyntax(value) }}
                     </span>
                   </span>
                 </li>
@@ -246,6 +261,7 @@ import Accordion from "../Accordion.vue";
 import ControlBar from "../ControlBar.vue";
 import TagSettings from "../settings/TagSettings.vue";
 import { pageInteractionEvent } from "../../google-analytics";
+import { JSONView } from "vue-json-component";
 
 export default {
   props: {
@@ -268,6 +284,7 @@ export default {
     },
   },
   components: {
+    "json-view": JSONView,
     Accordion,
     ControlBar,
     TagSettings,
@@ -447,6 +464,14 @@ export default {
         );
       }
     },
+    jsonSyntax(str) {
+      try {
+        const data = JSON.parse(str);
+        return `${JSON.stringify(data, undefined, 4)}`;
+      } catch (e) {
+        return str;
+      }
+    },
   },
   data() {
     return {
@@ -472,22 +497,50 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.tag-panel {
+  gap: 1rem;
+}
 ul.tag-params {
-  background: #f5f5f5;
   list-style: none;
-  padding-left: 32px;
+  background: #fff;
 }
 
 ul.tag-params li {
-  background: none;
+  background: #fff;
   color: black;
   font-size: 14px;
-  margin-bottom: 4px;
   display: flex;
+  justify-content: space-between;
   column-gap: 8px;
+  row-gap: 4px;
+  margin: 4px 0;
+  font-weight: 300;
 }
+
+ul.tag-params li span {
+  padding: 5px;
+}
+
+ul.tag-params li span:first-child {
+  width: 80px;
+  background-color: #e9f9ed;
+  font-weight: 200;
+  text-transform: capitalize;
+  font-size: small;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+ul.tag-params li span:last-child {
+  width: 100%;
+  font-weight: 200;
+  font-size: x-small;
+  background: #f5f5f5;
+}
+
 img.tag-icon {
-  max-height: 20px;
+  max-height: 40px;
   margin-right: 12px;
   margin-bottom: 2px;
 }
@@ -498,53 +551,10 @@ span.search-hit.currentHit {
   background: #12b922;
   color: white;
 }
-.search-box {
-  position: sticky;
-  box-sizing: border-box;
-  padding: 12px;
-  background: white;
-  border-radius: 10px;
-  width: fit-content;
-  margin-bottom: -41px;
-}
 
-.search-box.active {
-  top: 0;
-  /*position: fixed;*/
-}
-
-.search-box input {
-  border: #12b922 solid 2px;
-  border-radius: 3px;
-  padding: 5px;
-  padding-left: 30px;
-}
-
-.search-box span {
-  right: 148px;
-  margin-top: 7px;
-  position: absolute;
-}
-
-.search-box button {
-  font-size: 16px;
-  padding: 6px;
-  border: none;
-  color: white;
-  text-transform: capitalize;
-  background: #12b922;
-  font-weight: bold;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.search-box svg {
-  cursor: pointer;
-  height: 18px;
-  transform: translate(4px, 4px);
-  margin-right: -25px;
-}
 .payload-title {
-  font-size: 14px;
+  font-size: small;
+  font-weight: 400;
   text-decoration: underline;
   margin-top: 16px;
 }

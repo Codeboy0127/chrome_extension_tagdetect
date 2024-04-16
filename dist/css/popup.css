@@ -5,6 +5,44 @@ body {
   background-color: #f4f6fa;
 }
 
+button {
+  all: unset;
+  font-size: x-small;
+  border: 1px solid #e6e6e6;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.btn {
+  border-radius: 45px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #2ca148;
+  border: 1px solid #2ca148;
+}
+
+.btn:hover {
+  background-color: #e6e6e6;
+}
+
+.primary-btn {
+  border-radius: 45px;
+  background-color: #2ca148;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.primary-btn:hover {
+  background-color: #2ca14850;
+  color: #2ca148;
+}
+
 .sec-btn {
   border-radius: 45px;
   background-color: #2ca14820;
@@ -12,6 +50,10 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.sec-btn:hover {
+  background-color: #2ca14860;
 }
 
 .asc {
@@ -26,7 +68,59 @@ body {
 
 .panel-top {
   display: flex;
-  margin-bottom: 16px;
+  align-items: center;
+}
+
+.search-box {
+  position: sticky;
+  box-sizing: border-box;
+  padding: 12px;
+  /* background: white; */
+  border-radius: 10px;
+  width: -moz-fit-content;
+  width: fit-content;
+  /* margin-bottom: -41px; */
+}
+
+.search-box.active {
+  top: 0;
+  /*position: fixed;*/
+}
+
+.search-box input {
+  border: #80868b solid 1px;
+  border-radius: 25px;
+  padding: 10px;
+  padding-right: 2.5rem;
+  font-size: small;
+  font-weight: 300;
+  color: #787878;
+}
+
+.search-box span {
+  right: 148px;
+  margin-top: 7px;
+  position: absolute;
+}
+
+.search-box button {
+  font-size: 16px;
+  padding: 6px;
+  border: none;
+  color: white;
+  text-transform: capitalize;
+  background: #12b922;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-box svg {
+  cursor: pointer;
+  height: 18px;
+  transform: translate(4px, 4px);
+  margin-left: -2rem;
+  font-weight: 300;
 }
 
 .simple-button {
@@ -60,10 +154,12 @@ body {
 }
 
 .settings-panel {
-  border: 1px #12b922 solid;
+  background-color: #ececec;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   border-radius: 6px;
-  padding: 16px;
-  max-height: 50vh;
+  padding: 1rem;
+  max-height: -moz-fit-content;
+  max-height: fit-content;
   overflow-y: auto;
 }
 

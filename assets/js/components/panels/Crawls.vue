@@ -7,90 +7,96 @@
         :panel="'Crawls'"
       />
     </div>
-    <div class="crawl-fields">
-      <div class="crawl-field">
-        <label for="url-field">Url to Crawl*</label>
-        <input
-          type="text"
-          id="url-field"
-          name="url-field"
-          v-model="url"
-          placeholder="Enter Url"
-          required
-        />
+    <div class="crawl-form">
+      <div class="crawl-fields">
+        <div class="crawl-field">
+          <input
+            type="text"
+            id="url-field"
+            name="url-field"
+            v-model="url"
+            placeholder="Enter Url"
+            required
+          />
+        </div>
+        <div class="crawl-field">
+          <input
+            type="text"
+            id="uriRegex"
+            name="uriRegex"
+            v-model="uriRegex"
+            placeholder="Enter an optional regex to limit page urls within rules"
+          />
+        </div>
+        <div class="crawl-options">
+          <label for="includeParams"
+            ><input
+              type="checkbox"
+              id="includeParams"
+              v-model="includeAnchors"
+            /><span>Include anchors</span></label
+          >
+          <label for="includeParams"
+            ><input
+              type="checkbox"
+              id="includeParams"
+              v-model="includeParams"
+            /><span>Include params</span></label
+          >
+          <label for="includeSubdomain"
+            ><input
+              type="checkbox"
+              id="includeSubdomain"
+              v-model="includeSubdomain"
+            /><span>Include Subdomain</span></label
+          >
+        </div>
+        <div style="display: flex; justify-content: space-between; gap: 2rem">
+          <div class="crawl-timeout crawl-timeout-min">
+            <label for="minWaitTime">Minimum time spent on each url (s):</label>
+            <input
+              type="number"
+              id="minWaitTime"
+              v-model="minimumTimeout"
+              name="minWaitTime"
+              min="1"
+              :max="maximumTimeout"
+            />
+          </div>
+          <div class="crawl-timeout crawl-timeout-max">
+            <label for="maxWaitTime">Maximum wait time for url (s):</label>
+            <input
+              type="number"
+              id="maxWaitTime"
+              v-model="maximumTimeout"
+              name="maxWaitTime"
+              :min="minimumTimeout"
+              max="15"
+            />
+          </div>
+        </div>
       </div>
-      <div class="crawl-field">
-        <label for="uriRegex">Uri Regex</label>
-        <input
-          type="text"
-          id="uriRegex"
-          name="uriRegex"
-          v-model="uriRegex"
-          placeholder="Enter an optional regex to limit page urls within rules"
-        />
-      </div>
-      <div class="crawl-options">
-        <label for="includeParams"
-          ><input
-            type="checkbox"
-            id="includeParams"
-            v-model="includeAnchors"
-          /><span>Include anchors...</span></label
+      <div style="display: flex; justify-content: center; padding: 2rem 0;">
+        <button
+          class="primary-btn"
+          style="padding: 0.75rem 2rem; font-size: smaller; width: 66%;"
+          v-if="
+            (isCrawlingPaused && isCrawling) ||
+              (!isCrawling && !isCrawlingPaused)
+          "
+          @click="initiateCrawl()"
         >
-        <label for="includeParams"
-          ><input
-            type="checkbox"
-            id="includeParams"
-            v-model="includeParams"
-          /><span>Include params...</span></label
+          Start Crawl
+        </button>
+        <button
+          class="simple-button red"
+          v-if="isCrawling && !isCrawlingPaused"
+          @click="pauseCrawling()"
         >
-        <label for="includeSubdomain"
-          ><input
-            type="checkbox"
-            id="includeSubdomain"
-            v-model="includeSubdomain"
-          /><span>Include Subdomain...</span></label
-        >
-      </div>
-      <div class="crawl-timeout crawl-timeout-min">
-        <label for="minWaitTime">Minimum time spent on each url (s):</label>
-        <input
-          type="number"
-          id="minWaitTime"
-          v-model="minimumTimeout"
-          name="minWaitTime"
-          min="1"
-          :max="maximumTimeout"
-        />
-      </div>
-      <div class="crawl-timeout crawl-timeout-max">
-        <label for="maxWaitTime">Maximum wait time for url (s):</label>
-        <input
-          type="number"
-          id="maxWaitTime"
-          v-model="maximumTimeout"
-          name="maxWaitTime"
-          :min="minimumTimeout"
-          max="15"
-        />
+          Pause Crawl
+        </button>
       </div>
     </div>
-    <button
-      class="simple-button"
-      v-if="
-        (isCrawlingPaused && isCrawling) || (!isCrawling && !isCrawlingPaused)
-      "
-      @click="initiateCrawl()"
-    >
-      Start Crawl
-    </button>
-    <button
-      class="simple-button red"
-      v-if="isCrawling && !isCrawlingPaused"
-      @click="pauseCrawling()"
-    >
-      Pause Crawl
-    </button>
     <p style="font-size: 14px; padding: 16px 8px;">
       URL Count: {{ urlQueue.length }}
     </p>
@@ -376,6 +382,14 @@ export default {
 </script>
 
 <style lang="css">
+.crawl-form {
+  padding: 1rem;
+  margin: 1rem 0;
+  background-color: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+}
+
 .url-queue {
   background: #d9d9d9;
   padding: 18px 24px;
@@ -383,47 +397,67 @@ export default {
   font-size: 14px;
 }
 .crawl-fields {
-  margin-bottom: 24px;
-  max-width: 475px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
-.crawl-field input {
+.crawl-fields div {
+  width: 100%;
+}
+.crawl-field input[type="text"] {
+  font-size: small;
+  width: -webkit-fill-available;
+  padding: 1rem;
+  border-radius: 45px;
   display: block;
   font-size: 16px;
-  padding: 8px 12px;
-  border-radius: 16px;
-  width: 100%;
-  border: 1px solid #bbbbbb;
-  margin-bottom: 24px;
+  border: 1px solid #12b922;
 }
+.crawl-field input[type="text"]::placeholder {
+  font-size: small;
+  font-weight: 200;
+}
+
 .crawl-field label {
   margin-bottom: 4px;
   margin-top: 12px;
   padding-left: 8px;
 }
 .crawl-options {
-  padding-left: 8px;
+  width: 100%;
   display: flex;
   column-gap: 16px;
   flex-wrap: wrap;
   row-gap: 16px;
-  margin: 30px 0px;
 }
 .crawl-options label {
   display: flex;
   flex-direction: row;
   column-gap: 8px;
+  font-size: small;
+  font-weight: 300;
 }
-.crawl-options label {
-  font-size: 14px;
+
+.crawl-options input[type="checkbox"] {
+  padding: 0.1rem;
 }
+
 .crawl-timeout {
   margin-bottom: 16px;
-  max-width: 400px;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+.crawl-timeout label {
+  font-size: small;
+  font-weight: 200;
 }
 .crawl-timeout input {
   width: 40px;
+  border-radius: 30px;
+  padding: 0.5rem;
+  border: 1px solid #12b922;
+  text-align: center;
 }
 .url {
   display: flex;

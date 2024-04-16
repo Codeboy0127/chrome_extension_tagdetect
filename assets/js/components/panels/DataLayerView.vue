@@ -1,25 +1,27 @@
 <template>
   <div class="panel">
-    <div class="search-box">
-      <svg
-        fill="#12b922"
-        xmlns="http://www.w3.org/2000/svg"
-        height="1em"
-        viewBox="0 0 512 512"
-      >
-        <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-        <path
-          d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
-        />
-      </svg>
-      <input
-        type="text"
-        v-model="searchFilter"
-        @keyup="updateSearch"
-        @focus="searchFocus"
-      />
-    </div>
     <div class="panel-top">
+      <div class="search-box">
+        <input
+          placeholder="Search"
+          type="text"
+          v-model="searchFilter"
+          @keyup="updateSearch"
+          @focus="searchFocus"
+        />
+        <svg
+          fill="rgb(120,120,120)"
+          xmlns="http://www.w3.org/2000/svg"
+          height="1em"
+          viewBox="0 0 512 512"
+        >
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+          />
+        </svg>
+      </div>
+
       <control-bar
         :controlBar="controlBar"
         @toggleInspection="toggleInspection"
@@ -42,7 +44,7 @@
       }"
     >
       <accordion
-        styling="rounded gray-header"
+        styling="rounded gray-header accordion-shadow "
         :title="datalayer.pageUrl"
         v-for="(datalayer, urlIndex) in data"
         :key="'dl-url-' + urlIndex"
@@ -50,7 +52,7 @@
       >
         <p v-if="!datalayer.events">No recorded events</p>
         <accordion
-          styling="rounded green-header"
+          styling="rounded green-header accordion-shadow "
           :title="event.name"
           v-for="(event, eventIndex) in datalayer.events"
           :key="'dl-event-' + eventIndex + '-' + urlIndex"
@@ -76,6 +78,7 @@
               @blur="disableEventTitleEdit"
             />
             <svg
+              fill="rgb(120,120,120)"
               xmlns="http://www.w3.org/2000/svg"
               @click="
                 (e) => EnableEventTitleEdit(event.name, urlIndex, eventIndex)
@@ -96,17 +99,17 @@
               <img
                 src="../../../images/collapse.svg"
                 @click="collapseTree($event)"
-                style="filter: brightness(10)"
+                style="height: 15px;"
               />
               <img
                 src="../../../images/expand.svg"
                 @click="expandTree($event)"
-                style="filter: brightness(10)"
+                style="height: 15px;"
               />
             </div>
           </template>
           <div class="data-layers" v-if="event.dataLayers">
-            <div v-for="(dl, index) in event.dataLayers">
+            <div v-for="(dl, index) in event.dataLayers" style="width: 90%;">
               <!-- <json-view v-if="dl.data" :data="dl.data" :maxDepth="0" :rootKey="dl.type === 'var' ? dl.dLN : getDLName(dl.type)" :key="'dl-data-'+eventIndex+'-'+urlIndex+'-'+index"/> -->
               <json-view
                 v-if="dl.data"
@@ -345,6 +348,9 @@ export default {
 .dl-buttons {
   display: flex;
   column-gap: 10px;
+  row-gap: 10px;
+  align-items: center;
+  padding: 0 10px;
 }
 .value-key span {
   white-space: normal;
@@ -353,37 +359,10 @@ export default {
 .data-layers {
   display: flex;
   flex-direction: column-reverse;
+  align-items: flex-start;
 }
-.value-key {
-  margin-left: 0px !important;
-  padding: 5px 5px 5px 0px !important;
-}
-
-.search-box {
-  position: sticky;
-  box-sizing: border-box;
-  padding: 12px;
-  background: white;
-  border-radius: 10px;
-  width: fit-content;
-  margin-bottom: -41px;
-}
-
-.search-box.active {
-  top: 0;
-  /*position: fixed;*/
-}
-
-.search-box input {
-  border: #12b922 solid 2px;
-  border-radius: 3px;
-  padding: 5px;
-  padding-left: 30px;
-}
-
-.search-box svg {
-  height: 18px;
-  transform: translate(4px, 4px);
-  margin-right: -25px;
+.data-key {
+  justify-content: start;
+  margin: 5px 0;
 }
 </style>

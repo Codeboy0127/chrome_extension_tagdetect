@@ -275,7 +275,7 @@ var default_regex = [
   canBeDeleted: false
 }, {
   name: "Mixpanel",
-  pattern: "mixpanel\\.com\\/track\\/",
+  pattern: ".mixpanel.com\\/\\.\\/track.*",
   iconPath: "mixpanel.png",
   ignore: true,
   canBeDeleted: false

@@ -5,7 +5,7 @@
       v-if="!isInspecting && controlBar.record"
       @click="toggleInspection"
     >
-      <img src="../../images/record.svg" />
+      <!-- <img src="../../images/record.svg" /> -->
       Record
     </button>
     <button
@@ -13,16 +13,20 @@
       v-if="isInspecting && controlBar.record"
       @click="toggleInspection"
     >
-      <img src="../../images/pause.svg" /> Pause
+      <!-- <img src="../../images/pause.svg" />  -->
+      Pause
     </button>
     <button class="action-btn" v-if="controlBar.clear" @click="resetData">
-      <img src="../../images/clear.svg" /> Clear
+      <!-- <img src="../../images/clear.svg" />  -->
+      Clear
     </button>
     <button class="action-btn" v-if="controlBar.collapse" @click="collapseAll">
-      <img src="../../images/collapse.svg" /> Collapse All
+      <!-- <img src="../../images/collapse.svg" />  -->
+      Collapse All
     </button>
     <button class="action-btn" v-if="controlBar.expand" @click="expandAll">
-      <img src="../../images/expand.svg" /> Expand All
+      <!-- <img src="../../images/expand.svg" />  -->
+      Expand All
     </button>
     <!-- <button class="action-btn" v-if="controlBar.save" @click="exportData">
       <img src="../../images/import.svg" /> Export
@@ -32,7 +36,8 @@
       v-if="controlBar.settings"
       @click="toggleSettingsPanel"
     >
-      <img src="../../images/settings.png" /> Settings
+      <!-- <img src="../../images/settings.png" />  -->
+      Settings
     </button>
   </div>
 </template>
@@ -93,12 +98,16 @@ export default {
 </script>
 
 <style lang="css">
-.action-btn {
-  display: flex;
+button.action-btn {
   gap: 5px;
-  padding: 4px 3px;
-  align-items: center;
-  justify-content: center;
+  padding: 12px 10px;
+  background-color: #fff;
+  color: #5c5c5c;
+}
+
+button.action-btn:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease-in-out;
 }
 
 .action-btn > img {

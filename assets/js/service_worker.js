@@ -297,7 +297,7 @@ const default_regex = [
   },
   {
     name: "Mixpanel",
-    pattern: "mixpanel\\.com\\/track\\/",
+    pattern: ".mixpanel.com\\/\\.\\/track.*",
     iconPath: "mixpanel.png",
     ignore: true,
     canBeDeleted: false,
