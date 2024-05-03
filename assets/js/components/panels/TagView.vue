@@ -2,37 +2,49 @@
   <div class="panel">
     <div class="panel-top">
       <div class="search-box">
-        <input
-          placeholder="Search"
-          type="text"
-          v-model="searchFilter"
-          @keyup="updateSearch"
-          @focus="searchFocus"
-        />
-        <svg
-          fill="rgb(120,120,120)"
-          @click="search"
-          xmlns="http://www.w3.org/2000/svg"
-          height="1em"
-          viewBox="0 0 512 512"
-        >
-          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-          <path
-            d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+        <div>
+          <input
+            placeholder="Search"
+            type="text"
+            v-model="searchFilter"
+            @keyup="updateSearch"
+            @focus="searchFocus"
           />
-        </svg>
+          <svg
+            fill="rgb(120,120,120)"
+            @click="search"
+            xmlns="http://www.w3.org/2000/svg"
+            height="1em"
+            viewBox="0 0 512 512"
+          >
+            <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+            <path
+              d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+            />
+          </svg>
+        </div>
 
-        <span v-show="0 !== searchResultCount"
-          >({{ searchFilterIndex + 1 }}/{{ searchResultCount }})</span
-        >
         <!-- <button @click="search">search</button> -->
-        <button @click="searchPrev" v-show="0 !== searchResultCount">
+        <button
+          class="sec-btn"
+          style="padding: 0 1rem ;"
+          @click="searchPrev"
+          v-show="0 !== searchResultCount"
+        >
           previous
         </button>
-        <button @click="searchNext" v-show="0 !== searchResultCount">
+        <button
+          class="sec-btn"
+          style="padding: 0 1rem;"
+          @click="searchNext"
+          v-show="0 !== searchResultCount"
+        >
           next
         </button>
       </div>
+      <span v-show="0 !== searchResultCount"
+        >({{ searchFilterIndex + 1 }}/{{ searchResultCount }})</span
+      >
 
       <control-bar
         :controlBar="controlBar"
@@ -196,7 +208,7 @@
             <div v-show="searchFilter.length === 0">
               <ul class="tag-params" v-for="(payload, index) in tag.payload">
                 <h4 class="payload-title">
-                  Payload analytic events {{ index }}
+                  Payload analytics events {{ index + 1 }}
                 </h4>
                 <li v-for="(value, key, contentIndex) in payload">
                   <span
@@ -220,7 +232,7 @@
             <div v-if="searchFilter.length > 0 && tag.payload.length > 0">
               <ul class="tag-params" v-for="(payload, index) in tag.payload">
                 <h4 class="payload-title">
-                  Payload analytic events {{ index }}
+                  Payload analytics events {{ index + 1 }}
                 </h4>
                 <li v-for="(value, key, contentIndex) in payload">
                   <span>
@@ -522,7 +534,8 @@ ul.tag-params li span {
 }
 
 ul.tag-params li span:first-child {
-  width: 80px;
+  min-width: 80px;
+  width: auto;
   background-color: #e9f9ed;
   font-weight: 200;
   text-transform: capitalize;

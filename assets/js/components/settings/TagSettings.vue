@@ -10,7 +10,7 @@
                     <div class="regex-acc" v-for="(regEx, index) in regExPatterns" :key="'regex-pattern-'+index" v-on:click="toggleAccordion">
                         <div class="regex-acc-header" >
                             <div>
-                                <input type="checkbox" />
+                                <input type="checkbox" :checked="!regEx.ignore ? 'checked' : null" @click="toggleRegex($event, index)"/>
                                 <img class="regex-icon" v-if="regEx.iconPath" :src="getIconPath(index)"/>
                                 <p>{{ regEx.name }}</p>
                             </div>
@@ -74,6 +74,8 @@
 <script>
 import Modal from './../Modal.vue'
 import chromeHelper from '../../lib/chromeHelpers.js'
+import { pageInteractionEvent } from "../../google-analytics";
+// import { store } from '../../store.js'
 
 export default {
     components: {
@@ -116,6 +118,8 @@ export default {
         fetchRegExPatterns(){
             chrome.storage.local.get(["regExPatterns"]).then((result) => {
                 this.regExPatterns = result.regExPatterns ?? []
+                // store.activeRegExPatterns = this.regExPatterns;
+                console.log(this.regExPatterns);
             });
         },
         isRegExValid(){
@@ -126,7 +130,8 @@ export default {
                 return false
             }
         },
-        async addRegexPattern(){
+        async addRegexPattern() {
+            pageInteractionEvent("Tags View", "settings_add_new_regex_pattern")
             this.errors = [];
             if(this.regexName && this.regexPattern && this.isRegExValid()){
                 const id = this.RegExIdToEdit >= 0 ? this.RegExIdToEdit : this.regExPatterns.length
@@ -164,10 +169,17 @@ export default {
         getIconPath(index){
             if(this.regExPatterns[index].hasOwnProperty('iconPath'))
                 return '../../images/regex_icons/'+this.regExPatterns[index].iconPath
+        },
+        toggleRegex($event, index) {
+            const ignore = $event.target.checked
+            const regex = this.regExPatterns[index]
+            regex.ignore = !ignore
+            this.regExPatterns[index] = regex;
+            console.log(this.regExPatterns);
         }
     },
     computed:{
-        getRegExPatterns(){
+        getRegExPatterns() {            
             return this.regExPatterns
         },
     },
@@ -252,8 +264,6 @@ export default {
 .regex-action:hover{
     background-color: #e8e8e8;
 }
-
-
 
 .regex-table-container {
   max-width: 1000px;

@@ -87,6 +87,7 @@ import Modal from '../Modal.vue'
 import Accordion from '../Accordion.vue'
 import {chromeHelper, isDevTools} from '../../lib/chromeHelpers.js'
 import ControlBar from '../ControlBar.vue';
+import { pageInteractionEvent } from "../../google-analytics";
 
   export default {
     components: {
@@ -159,6 +160,7 @@ import ControlBar from '../ControlBar.vue';
             return url.protocol === "http:" || url.protocol === "https:";
         },
         exportScenario(index) {
+            pageInteractionEvent("Scenarios", "export_to_file")
             const scenario = this.recordedEvents[index];
             const data = []
 

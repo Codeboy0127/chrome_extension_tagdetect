@@ -107,6 +107,7 @@
 //import Modal from './../Modal.vue'
 import { nextTick } from "vue";
 import chromeHelper from "../../lib/chromeHelpers.js";
+import { pageInteractionEvent } from "../../google-analytics";
 
 export default {
   mounted() {
@@ -126,6 +127,7 @@ export default {
       this.allowedDataLayers = await this.getStorageAllowedDataLayers();
     },
     addNewDLObject() {
+      pageInteractionEvent("Data Layer View", "settings_add_new_js_object");
       if (
         this.customObjectDataLayers.findIndex(
           (DLobject) => DLobject === this.newDLObject

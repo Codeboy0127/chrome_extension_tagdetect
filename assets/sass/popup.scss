@@ -70,7 +70,8 @@ button {
 }
 
 .search-box {
-  position: sticky;
+  display: flex;
+  gap: 1rem;
   box-sizing: border-box;
   padding: 12px;
   /* background: white; */
@@ -100,17 +101,6 @@ button {
   position: absolute;
 }
 
-.search-box button {
-  font-size: 16px;
-  padding: 6px;
-  border: none;
-  color: white;
-  text-transform: capitalize;
-  background: #12b922;
-  font-weight: bold;
-  border-radius: 5px;
-  cursor: pointer;
-}
 .search-box svg {
   cursor: pointer;
   height: 18px;

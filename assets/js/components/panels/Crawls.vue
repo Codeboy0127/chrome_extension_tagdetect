@@ -3,7 +3,7 @@
     <div class="panel-top">
       <control-bar
         :controlBar="controlBar"
-        @resetData="resetData"
+        @resetData="resetCrawlData"
         :panel="'Crawls'"
       />
     </div>
@@ -29,10 +29,10 @@
           />
         </div>
         <div class="crawl-options">
-          <label for="includeParams"
+          <label for="includeAnchors"
             ><input
               type="checkbox"
-              id="includeParams"
+              id="includeAnchors"
               v-model="includeAnchors"
             /><span>Include anchors</span></label
           >
@@ -97,33 +97,47 @@
         </button>
       </div>
     </div>
-    <p style="font-size: 14px; padding: 16px 8px;">
-      URL Count: {{ urlQueue.length }}
-    </p>
-    <div class="url-queue" v-if="urlQueue.length > 0">
-      <p
-        class="url"
-        v-for="(url, index) in urlQueue"
-        :key="'url-queue-single-' + index"
-      >
-        <span
-          :class="{
-            'check url-state': url.state === 'completed',
-            'url-state lds-ripple': url.state === 'processing',
-            'url-state cross': url.state === 'failed',
-          }"
-          ><div></div>
-          <div></div
-        ></span>
 
-        <span>{{ url.url }}</span>
-      </p>
+    <div class="crawl-urls" v-if="urlQueue.length > 0">
+      <div
+        style="display: flex; justify-content: space-between; font-weight: 300; font-size: small; padding: 2rem 1rem; "
+      >
+        <p>Crawled URLs</p>
+        <p>
+          URL Count: <span style="color: #2CA148;">{{ urlQueue.length }}</span>
+        </p>
+      </div>
+      <div
+        style="background-color: #fff; border: 1px solid #afafaf; max-height: 300px; overflow-y: auto; border-radius: 1rem;"
+      >
+        <div
+          style="padding: 1rem; display: flex; gap: 2rem; width: -webkit-fit-available; border-bottom: 1px solid #afafaf;"
+          v-for="(url, index) in urlQueue"
+          :key="'url-queue-single-' + index"
+        >
+          <div
+            style="display: flex; align-items: center; justify-content: center;"
+          >
+            <span
+              :class="{
+                'check url-state': url.state === 'completed',
+                'url-state lds-ripple': url.state === 'processing',
+                'url-state cross': url.state === 'failed',
+              }"
+              ><div></div>
+              <div></div
+            ></span>
+          </div>
+          <p>{{ url.url }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import chromeHelper from "../../lib/chromeHelpers.js";
 import ControlBar from "../ControlBar.vue";
+import { pageInteractionEvent } from "../../google-analytics";
 
 export default {
   components: {
@@ -209,6 +223,7 @@ export default {
       }
     },
     async startPageCrawler() {
+      pageInteractionEvent("Crawls", "launch_crawl");
       if (this.urlQueueNumber < this.urlQueue.length) {
         const response = await chromeHelper.sendMessageToTab(this.tabId, {
           type: "crawler_start",
@@ -231,6 +246,7 @@ export default {
         this.$emit("stopInspection");
         this.isCrawling = false;
         this.isCrawlingPaused = false;
+        this.$emit("resetData");
         const CrawlSuccessMessage = {
           type: "success",
           title: "Crawl Complete",
@@ -319,7 +335,7 @@ export default {
         }
       });
     },
-    resetData() {
+    resetCrawlData() {
       if (
         (this.isCrawlingPaused && this.isCrawling) ||
         (!this.isCrawling && !this.isCrawlingPaused)
@@ -382,6 +398,13 @@ export default {
 </script>
 
 <style lang="css">
+.crawl-urls {
+  border-radius: 1rem;
+  background-color: #f9f9f9;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+}
+
 .crawl-form {
   padding: 1rem;
   margin: 1rem 0;
@@ -475,9 +498,8 @@ export default {
 .cross {
   width: 16px;
   height: 16px;
-  position: relative;
   position: absolute;
-  transform: translate(-25px, 2px);
+  transform: translate(0px, 2px);
 }
 .cross:after {
   content: "";
@@ -508,8 +530,8 @@ export default {
   border-bottom: var(--borderWidth) solid var(--borderColor);
   border-right: var(--borderWidth) solid var(--borderColor);
   margin-left: 10px;
-  position: absolute;
-  transform: translateX(-24px) rotate(45deg);
+  /* position: absolute; */
+  transform: rotate(45deg);
 }
 
 .lds-ripple {
@@ -517,9 +539,9 @@ export default {
   position: relative;
   width: 0px;
   height: 20px;
-  margin-top: -12px;
+  margin-top: -20px;
   scale: 0.3;
-  transform: translateX(-84px);
+  /* transform: translateX(-84px); */
 }
 .lds-ripple div {
   position: absolute;

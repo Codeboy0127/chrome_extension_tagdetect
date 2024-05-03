@@ -27,7 +27,7 @@
                     <tab title="Tags View"><tag-view :occurences="regexOccurances" :isInspecting="isInspecting" :data="data" @editEventTitle="editEventTitle" @toggleInspection="toggleInspection" @exportData="exportDataConfirm" @resetData="resetData"/></tab>
                     <tab title="Data Layer View"><data-layer-view :isInspecting="isInspecting" :data="data" @editEventTitle="editEventTitle" @toggleInspection="toggleInspection" @exportData="exportDataConfirm" @resetData="resetData"/></tab>
                     <tab title="Scenarios"><scenarios @startInspection="startInspection" @stopInspection="stopInspection"/></tab>
-                    <tab title="Crawls"><crawls ref="crawls" @startInspection="startInspection" @stopInspection="stopInspection"/></tab>
+                    <!-- <tab title="Crawls"><crawls ref="crawls" @startInspection="startInspection" @stopInspection="stopInspection"/></tab> -->
                 </tabs>
                 <div class="footer">
                     <p class="footer-text">Made with <span class="heart"></span> by TAGLAB</p>
@@ -140,19 +140,26 @@ export default {
         },
         parsePostData(postData) {
             if (postData !== undefined) {
-                console.log({ postData })
+                console.log( typeof postData, postData )
                 const KeywordRegex = /[a-z]+=/;
-                var keyword = postData.match(KeywordRegex)[0];
-                console.log('keyword: ', keyword);
-
-                //const regex = new RegExp( `${keyword}.*?(?=${keyword} | &${keyword}|$)` , 'gm');
-                //const substrings = url.match(regex);
-                const substrings = postData.replaceAll(/\n|\r/g, '').replaceAll(keyword, ';' + keyword).replace(';', '').split(';')
+                let keyword = ''
                 let parsedData = []
-                substrings.map((ele) => {
-                    parsedData.push(this.getUrlParams('https://www.bienspasser.com?' + ele))
-                })
-                console.log('splits: ', parsedData);
+                try {
+                    keyword = postData.match(KeywordRegex)[0];
+                    const substrings = postData.replaceAll(/\n|\r/g, '').replaceAll(keyword, ';' + keyword).replace(';', '').split(';')
+                    substrings.map((ele) => {
+                        parsedData.push(this.getUrlParams('https://www.bienspasser.com?' + ele))
+                    })
+                    console.log('splits: ', parsedData);
+                } catch (err) {
+                    try { 
+                        const _data = JSON.parse(postData)
+                        parsedData.push(_data)
+                    } catch (_err) {
+                        parsedData.push({'postData': postData})
+                    }
+                    console.log(err);
+                }    
                 return parsedData || [];
             } else {
                 return []
@@ -184,8 +191,10 @@ export default {
 
 
             const details = request.request
+            console.log(details);
+            
             this.regexList.forEach((element, index) => {
-                if (RegExp(element.pattern).test(details.url) && element.ignore && details.hasOwnProperty('url') && this.isInspecting) {
+                if (RegExp(element.pattern).test(details.url) && !element.ignore && details.hasOwnProperty('url') && this.isInspecting) {
                     var initiatorChain = [];
                     var initiator = request.initiator;
                     while (initiator) {
@@ -411,7 +420,6 @@ export default {
         },
 
         pivot(arr) {
-            console.log('this is pivot');
             var mp = new Map();
 
             function setValue(a, path, val) {
@@ -469,7 +477,6 @@ export default {
             this.data = []
             this.initRegexOccurances(this.regexList)
             if (this.isInspecting) {
-                this.toggleInspection()
                 this.toggleInspection()
             }
         },
