@@ -37,7 +37,7 @@
       @click="toggleSettingsPanel"
     >
       <!-- <img src="../../images/settings.png" />  -->
-      Settings
+      {{controlBar.tabIndex === 0 ? 'Tags' : 'Data Layers'}}
     </button>
   </div>
 </template>
@@ -97,7 +97,7 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style lang="scss">
 button.action-btn {
   gap: 5px;
   padding: 12px 10px;
@@ -116,9 +116,12 @@ button.action-btn:hover {
 }
 
 .control-bar {
-  margin-left: auto;
   display: flex;
   column-gap: 8px;
+
+  @media screen and (min-width: 620px) {
+    margin-left: auto;
+  }
 }
 .control-bar img {
   height: 24px;

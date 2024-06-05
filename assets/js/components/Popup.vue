@@ -12,7 +12,7 @@
                                 <p v-if="exportModalErrors.length">
                                     <b>Please correct the following error(s):</b>
                                     <ul>
-                                    <li v-for="error in exportModalErrors">{{ error }}</li>
+                                    <li v-for="(error, index) in exportModalErrors" :key="index">{{ error }}</li>
                                     </ul>
                                 </p>
                             </div>
@@ -26,11 +26,11 @@
                 <tabs>
                     <tab title="Tags View"><tag-view :occurences="regexOccurances" :isInspecting="isInspecting" :data="data" @editEventTitle="editEventTitle" @toggleInspection="toggleInspection" @exportData="exportDataConfirm" @resetData="resetData"/></tab>
                     <tab title="Data Layer View"><data-layer-view :isInspecting="isInspecting" :data="data" @editEventTitle="editEventTitle" @toggleInspection="toggleInspection" @exportData="exportDataConfirm" @resetData="resetData"/></tab>
-                    <tab title="Scenarios"><scenarios @startInspection="startInspection" @stopInspection="stopInspection"/></tab>
+                    <!-- <tab title="Scenarios"><scenarios @startInspection="startInspection" @stopInspection="stopInspection"/></tab> -->
                     <!-- <tab title="Crawls"><crawls ref="crawls" @startInspection="startInspection" @stopInspection="stopInspection"/></tab> -->
                 </tabs>
                 <div class="footer">
-                    <p class="footer-text">Made with <span class="heart"></span> by TAGLAB</p>
+                    <!-- <p class="footer-text">Made with <span class="heart"></span> by TAGLAB</p> -->
                 </div>
                 <notification ref="notification" :notificationData="notificationData"/>
         </div>
@@ -40,9 +40,9 @@
 import Tab from './Tab.vue'
 import Tabs from './Tabs.vue'
 import TagView from './panels/TagView.vue'
-import Crawls from './panels/Crawls.vue'
+// import Crawls from './panels/Crawls.vue'
 import DataLayerView from './panels/DataLayerView.vue'
-import Scenarios from './panels/Scenarios.vue'
+// import Scenarios from './panels/Scenarios.vue'
 import {chromeHelper, isDevTools} from '../lib/chromeHelpers.js'
 import Modal from './Modal.vue'
 import Notification from './Notification.vue'
@@ -56,9 +56,9 @@ export default {
         Tab,
         Tabs,
         TagView,
-        Crawls,
+        // Crawls,
         DataLayerView,
-        Scenarios,
+        // Scenarios,
         Modal,
         Notification
     },

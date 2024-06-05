@@ -67,13 +67,18 @@ button {
 .panel-top {
   display: flex;
   align-items: center;
+  flex-direction: column;
+
+  @media screen and (min-width: 620px) {
+    flex-direction: row;
+  }
 }
 
 .search-box {
   display: flex;
   gap: 1rem;
   box-sizing: border-box;
-  padding: 12px;
+  padding: 12px 0;
   /* background: white; */
   border-radius: 10px;
   width: fit-content;

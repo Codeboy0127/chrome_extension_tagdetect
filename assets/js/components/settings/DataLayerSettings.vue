@@ -90,6 +90,7 @@
             class="sec-btn"
             style="padding: 0.5rem 1rem; font-size: small;"
             v-for="(dlObject, index) in customObjectDataLayers"
+            :key="index"
           >
             {{ dlObject }}
             <img

@@ -1,23 +1,16 @@
 <template lang="html">
   <div class="tabs">
     <div class="h-logo">
-      <a
-        target="_blank"
-        href="https://taglab.net/?utm_source=extension&utm_medium=owned-media&utm_campaign=logo"
-        style="margin: 0; padding: 0; display: contents;;"
-      >
+      <a target="_blank" href="https://taglab.net/?utm_source=extension&utm_medium=owned-media&utm_campaign=logo"
+        style="margin: 0; padding: 0; display: contents;">
         <img src="../../images/logo.png" style="height: 36px;" />
       </a>
     </div>
     <div class="header-nav">
       <div class="c-tabs-header">
         <ul class="tabs-header">
-          <li
-            v-for="(tab, index) in tabs"
-            :key="tab.title"
-            @click="selectTab(index, tab.title)"
-            :class="{ 'tabs-selected': index == selectedIndex }"
-          >
+          <li v-for="(tab, index) in tabs" :key="tab.title" @click="selectTab(index, tab.title)"
+            :class="{ 'tabs-selected': index == selectedIndex }">
             {{ tab.title }}
           </li>
         </ul>
@@ -36,10 +29,7 @@
         <template v-slot:body>
           <div>
             <div class="img-container">
-              <img
-                src="../../images/why-taglab-web.png"
-                style="height: 100px;"
-              />
+              <img src="../../images/why-taglab-web.png" style="height: 100px;" />
             </div>
             <div>
               <ul class="benefits">
@@ -112,6 +102,7 @@ export default {
 .benefits {
   font-weight: 300;
 }
+
 .benefits li {
   margin: 0.5rem 0;
 }
@@ -122,6 +113,7 @@ export default {
   align-items: center;
   justify-content: center;
 }
+
 ._footer {
   width: 100%;
   display: flex;
@@ -156,7 +148,8 @@ export default {
   border-radius: 45px 45px 15px 15px;
   background-color: #2ca14813;
 }
-.c-tabs-header > div {
+
+.c-tabs-header>div {
   padding: 10px;
   display: flex;
   align-items: center;
@@ -182,7 +175,8 @@ ul.tabs-header {
   row-gap: 4px;
   background-color: #fff;
 }
-ul.tabs-header > li {
+
+ul.tabs-header>li {
   padding: 8px 30px;
   border-radius: 45px;
   margin: 0;
@@ -191,6 +185,7 @@ ul.tabs-header > li {
   cursor: pointer;
   font-size: small;
 }
+
 .tab {
   box-sizing: border-box;
   color: black;
@@ -201,14 +196,17 @@ ul.tabs-header > li {
   padding: 16px 20px;
   /* padding-bottom: 50vh; */
 }
+
 .tabs-light li {
   background-color: #ddd;
   color: #aaa;
 }
+
 .tabs-light li.tabs-selected {
   background-color: #fff;
   color: #83ffb3;
 }
+
 /* .tabs li {
   background-color: #ddd;
   color: #aaa;
@@ -217,13 +215,15 @@ li.tabs-selected {
   background-color: #12b922;
   color: white;
 }
+
 @media only screen and (max-width: 550px) {
-  ul.tabs-header > li {
+  ul.tabs-header>li {
     flex: 1 0 21%;
   }
 }
+
 @media only screen and (max-width: 440px) {
-  ul.tabs-header > li {
+  ul.tabs-header>li {
     flex: 1 0 40%;
   }
 }

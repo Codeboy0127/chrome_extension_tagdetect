@@ -1,13 +1,11 @@
 <template>
   <div :class="styling + ' accordion'">
-    <h3
-      :id="id"
-      @click="toggleAccordion($event)"
-      :class="!isOpen ? '' : 'selected'"
-    >
+    <h3 :id="id" @click="toggleAccordion($event)" :class="!isOpen ? '' : 'selected'">
       <slot name="icon"></slot>
       <span class="title">
+        <abbr :title="title">
         {{ title }}
+        </abbr>
         <span @click.stop>
           <slot name="editTitle"> </slot>
         </span>
@@ -17,10 +15,7 @@
         <slot name="extra"> </slot>
       </div>
     </h3>
-    <div
-      class="content custom-scrollbar square"
-      :style="!isOpen ? 'display: none;' : ''"
-    >
+    <div class="content custom-scrollbar square" :style="!isOpen ? 'display: none;' : ''">
       <slot></slot>
     </div>
   </div>
@@ -35,7 +30,7 @@ export default {
     styling: String,
     isOpen: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   methods: {
@@ -81,6 +76,7 @@ export default {
   padding: 1em 1.5em;
   gap: 0.5rem;
 }
+
 .accordion .rounded {
   border-radius: 10px;
 }
@@ -102,13 +98,22 @@ export default {
   position: relative;
   right: 0;
 }
+
 .accordion h3.selected:after {
   content: "-";
 }
-.accordion.green-header > h3 {
+
+.accordion h3 .title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.accordion.green-header>h3 {
   background: #e6e9e6;
 }
-.accordion.gray-header > h3 {
+
+.accordion.gray-header>h3 {
   background: #d4d4d4;
 }
 
@@ -117,22 +122,26 @@ export default {
   color: #414141;
   padding: 8px 0px;
 }
+
 .flat.accordion {
   background: #ffffff;
   color: #414141;
   padding: 8px 12px;
   border-radius: 10px;
 }
+
 .flat.accordion h3 {
   background: #ffffff;
   color: #414141;
   padding: 8px;
   display: flex;
 }
+
 .flat.accordion.content {
   border: none;
   border-top: none;
 }
+
 .content span {
   /*word-break: break-all;
   white-space: break-spaces;*/
@@ -149,6 +158,7 @@ export default {
   gap: 0.5rem;
   align-items: center;
 }
+
 .content .title svg {
   color: #414141;
 }

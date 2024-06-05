@@ -55,9 +55,8 @@
         <accordion
           styling="rounded green-header accordion-shadow "
           :title="event.name"
-          v-for="(event, eventIndex) in datalayer.events"
+          v-for="(event, eventIndex) in datalayer.events.slice().reverse()"
           :key="'dl-event-' + eventIndex + '-' + urlIndex"
-          :isOpen="datalayer.events.length - eventIndex - 1 === 0"
         >
           <template v-slot:editTitle>
             <input
@@ -110,7 +109,7 @@
             </div>
           </template>
           <div class="data-layers" v-if="event.dataLayers">
-            <div v-for="(dl, index) in event.dataLayers" style="width: 90%;">
+            <div v-for="(dl, index) in event.dataLayers" style="width: 90%;" :key="index">
               <!-- <json-view v-if="dl.data" :data="dl.data" :maxDepth="0" :rootKey="dl.type === 'var' ? dl.dLN : getDLName(dl.type)" :key="'dl-data-'+eventIndex+'-'+urlIndex+'-'+index"/> -->
               <json-view
                 v-if="dl.data"
@@ -139,7 +138,7 @@ export default {
     data: Array,
     listOrder: {
       type: String,
-      default: "ASC",
+      default: "DESC",
     },
     isInspecting: {
       type: Boolean,
@@ -337,6 +336,7 @@ export default {
         expand: true,
         save: true,
         settings: true,
+        tabIndex: 1
       },
       searchFilter: "",
       isEventEditEnabled: { toggle: false, urlIndex: 0, eventIndex: 0 },
