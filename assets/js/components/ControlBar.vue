@@ -1,18 +1,10 @@
 <template>
   <div class="control-bar">
-    <button
-      class="action-btn"
-      v-if="!isInspecting && controlBar.record"
-      @click="toggleInspection"
-    >
+    <button class="action-btn" v-if="!isInspecting && controlBar.record" @click="toggleInspection">
       <!-- <img src="../../images/record.svg" /> -->
       Record
     </button>
-    <button
-      class="action-btn"
-      v-if="isInspecting && controlBar.record"
-      @click="toggleInspection"
-    >
+    <button class="action-btn" v-if="isInspecting && controlBar.record" @click="toggleInspection">
       <!-- <img src="../../images/pause.svg" />  -->
       Pause
     </button>
@@ -31,13 +23,9 @@
     <!-- <button class="action-btn" v-if="controlBar.save" @click="exportData">
       <img src="../../images/import.svg" /> Export
     </button> -->
-    <button
-      class="action-btn"
-      v-if="controlBar.settings"
-      @click="toggleSettingsPanel"
-    >
+    <button class="action-btn" v-if="controlBar.settings" @click="toggleSettingsPanel">
       <!-- <img src="../../images/settings.png" />  -->
-      {{controlBar.tabIndex === 0 ? 'Tags' : 'Data Layers'}}
+      {{ controlBar.tabIndex === 0 ? 'Tags' : 'Data Layers' }}
     </button>
   </div>
 </template>
@@ -103,14 +91,16 @@ button.action-btn {
   padding: 12px 10px;
   background-color: #fff;
   color: #5c5c5c;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
 button.action-btn:hover {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 8px 1px #00000066;
   transition: box-shadow 0.3s ease-in-out;
 }
 
-.action-btn > img {
+.action-btn>img {
   width: 14px;
   object-fit: contain;
 }
@@ -121,8 +111,10 @@ button.action-btn:hover {
 
   @media screen and (min-width: 620px) {
     margin-left: auto;
+    margin-right: auto;
   }
 }
+
 .control-bar img {
   height: 24px;
   cursor: pointer;

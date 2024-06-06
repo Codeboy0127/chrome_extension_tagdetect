@@ -1,103 +1,46 @@
 <template>
-  <div
-    class="dl-settings-panel settings-panel custom-scrollbar"
-    style="display: none"
-  >
+  <div class="dl-settings-panel settings-panel custom-scrollbar" style="display: none">
     <div v-if="false">
       <h3>Predefined tags:</h3>
       <div class="default-object-layers-container">
         <div class="default-object-layers-column">
-          <label for="google_tag_manager_push"
-            ><input
-              type="checkbox"
-              id="google_tag_manager_push"
-              v-model="allowedDataLayers.google_tag_manager_push"
-            /><span>Google Tag Manager Push</span></label
-          >
-          <label for="google_tag_manager"
-            ><input
-              type="checkbox"
-              id="google_tag_manager"
-              v-model="allowedDataLayers.google_tag_manager"
-            /><span>Google Tag Manager</span></label
-          >
-          <label for="tealium"
-            ><input
-              type="checkbox"
-              id="tealium"
-              v-model="allowedDataLayers.tealium"
-            /><span>Tealium</span></label
-          >
-          <label for="tag_commander"
-            ><input
-              type="checkbox"
-              id="tag_commander"
-              v-model="allowedDataLayers.tag_commander"
-            /><span>TagCommander</span></label
-          >
+          <label for="google_tag_manager_push"><input type="checkbox" id="google_tag_manager_push"
+              v-model="allowedDataLayers.google_tag_manager_push" /><span>Google Tag Manager Push</span></label>
+          <label for="google_tag_manager"><input type="checkbox" id="google_tag_manager"
+              v-model="allowedDataLayers.google_tag_manager" /><span>Google Tag Manager</span></label>
+          <label for="tealium"><input type="checkbox" id="tealium"
+              v-model="allowedDataLayers.tealium" /><span>Tealium</span></label>
+          <label for="tag_commander"><input type="checkbox" id="tag_commander"
+              v-model="allowedDataLayers.tag_commander" /><span>TagCommander</span></label>
         </div>
         <div class="default-object-layers-column">
-          <label for="adobe_dtm"
-            ><input
-              type="checkbox"
-              id="adobe_dtm"
-              v-model="allowedDataLayers.adobe_dtm"
-            /><span>Adobe DTM</span></label
-          >
-          <label for="launchdataelements"
-            ><input
-              type="checkbox"
-              id="launchdataelements"
-              v-model="allowedDataLayers.launchdataelements"
-            /><span>Launch Elements</span></label
-          >
-          <label for="adobetags"
-            ><input
-              type="checkbox"
-              id="adobetags"
-              v-model="allowedDataLayers.adobetags"
-            /><span>Adobe Tags</span></label
-          >
+          <label for="adobe_dtm"><input type="checkbox" id="adobe_dtm"
+              v-model="allowedDataLayers.adobe_dtm" /><span>Adobe DTM</span></label>
+          <label for="launchdataelements"><input type="checkbox" id="launchdataelements"
+              v-model="allowedDataLayers.launchdataelements" /><span>Launch Elements</span></label>
+          <label for="adobetags"><input type="checkbox" id="adobetags"
+              v-model="allowedDataLayers.adobetags" /><span>Adobe Tags</span></label>
         </div>
       </div>
     </div>
     <div>
       <p style="padding-bottom: 0.5rem;">Custom JS objects:</p>
       <div class="custom-object-layers-container">
-        <div class="new-custom-object-field">
-          <label for="newDLObject" style="font-size: x-small;"
-            >New JS Object Layer</label
-          >
+        <!-- <div class="new-custom-object-field">
+          <label for="newDLObject" style="font-size: x-small;">New JS Object Layer</label>
           <div>
-            <input
-              type="text"
-              id="newDLObject"
-              name="newDLObject"
-              v-model="newDLObject"
-              placeholder="e.g. digitalLayer"
-            />
-            <button
-              style="padding: 0.5rem 1rem;"
-              class="primary-btn"
-              @click="addNewDLObject"
-            >
+            <input type="text" id="newDLObject" name="newDLObject" v-model="newDLObject"
+              placeholder="e.g. digitalLayer" />
+            <button style="padding: 0.5rem 1rem;" class="primary-btn" @click="addNewDLObject">
               Add
             </button>
           </div>
-        </div>
+        </div> -->
         <div class="custom-object-layers">
-          <div
-            class="sec-btn"
-            style="padding: 0.5rem 1rem; font-size: small;"
-            v-for="(dlObject, index) in customObjectDataLayers"
-            :key="index"
-          >
+          <div class="sec-btn" style="padding: 0.5rem 1rem; font-size: small;"
+            v-for="(dlObject, index) in filteredDataLayers" :key="index">
             {{ dlObject }}
-            <img
-              height="15px"
-              src="../../../images/cross_icon.svg"
-              @click="deleteCustomDLObject(index)"
-            />
+            <!-- <img height="15px" src="../../../images/cross_icon.svg" @click="deleteCustomDLObject(index)" /> -->
           </div>
         </div>
       </div>
@@ -121,6 +64,16 @@ export default {
       },
       deep: true,
     },
+  },
+  props: {
+    tags: {
+      type: Array,
+      defaultValue: []
+    },
+    query: {
+      type: String,
+      defaultValue: ''
+    }
   },
   methods: {
     async init() {
@@ -168,7 +121,13 @@ export default {
       chromeHelper.localStorageSet({ allowedLayers: this.allowedDataLayers });
     },
   },
-  computed: {},
+  computed: {
+    filteredDataLayers() {
+      if (!this.query.length) return this.customObjectDataLayers;
+      // return _.filter(this.customObjectDataLayers, item => _.includes(this.tags, item))
+      return this.tags;
+    }
+  },
   data() {
     return {
       allowedDataLayers: {
@@ -199,12 +158,14 @@ export default {
   column-gap: 16px;
   flex-wrap: wrap;
 }
+
 .default-object-layers-column {
   display: flex;
   flex-direction: column;
   row-gap: 12px;
   column-gap: 12px;
 }
+
 .default-object-layers-container label {
   display: flex;
   flex-direction: row;
@@ -213,6 +174,7 @@ export default {
   cursor: pointer;
   user-select: none;
 }
+
 .custom-object-layers {
   display: flex;
   flex-wrap: wrap;
@@ -239,6 +201,7 @@ export default {
   right: 6px;
   cursor: pointer;
 }
+
 .dl-settings h3 {
   margin-top: 24px;
   margin-bottom: 16px;

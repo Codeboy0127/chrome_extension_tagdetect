@@ -2,15 +2,14 @@
   <div class="panel">
     <div class="panel-top">
       <div class="search-box">
-        <div>
+        <!-- <div>
           <input placeholder="Search" type="text" v-model="searchFilter" @keyup="updateSearch" @focus="searchFocus" />
           <svg fill="rgb(120,120,120)" @click="search" xmlns="http://www.w3.org/2000/svg" height="1em"
             viewBox="0 0 512 512">
-            <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
             <path
               d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
           </svg>
-        </div>
+        </div> -->
 
         <!-- <button @click="search">search</button> -->
         <button class="sec-btn" style="padding: 0 1rem ;" @click="searchPrev" v-show="0 !== searchResultCount">
@@ -27,7 +26,7 @@
         @toggleSettingsPanel="toggleSettingsPanel" :panel="'Tags View'" />
     </div>
     <div class="tag-settings">
-      <tag-settings />
+      <tag-settings :query="searchFilter" :tags="tags" />
     </div>
     <div :class="{
       'asc tag-panel': listOrder === 'ASC',
@@ -60,13 +59,11 @@
 
           <p v-if="!event.tags">No recorded tags</p>
 
-          <accordion :id="`tech-${urlIndex}-${eventIndex}-${index}`" styling="flat rounded accordion-border" :title="tag.name +
-            (tag.content.tid ? ' - ' + tag.content.tid : '') +
-            (tag.content.en ? ' - ' + tag.content.en : '') +
-            ' (' +
-            (tag.timeStamp - event.timeStamp) +
-            'ms)'
-            " v-for="(tag, index) in event.tags" :key="'tag-tag-' + index">
+          <accordion :id="`tech-${urlIndex}-${eventIndex}-${index}`" styling="flat rounded accordion-border"
+            :title="tag.name + (tag.content.tid ? ' - ' + tag.content.tid : '') + (tag.content.en ? ' - ' + tag.content.en : '')"
+            :time="`(${tag.timeStamp - event.timeStamp})ms`" v-for="(tag, index) in event.tags"
+            :hasHorizontalLine="true"
+            :key="'tag-tag-' + index">
             <template v-slot:icon>
               <img v-if="tag.icon" class="tag-icon" :src="'../../../images/regex_icons/' + tag.icon" alt="" />
             </template>
@@ -82,14 +79,11 @@
             </template>
             <ul class="tag-params" v-show="searchFilter.length === 0">
               <li v-for="(value, key, contentIndex) in tag.content" :key="contentIndex">
-                <span :id="`tech-${urlIndex}-${eventIndex}-${index}-${contentIndex}-key`
-                  " style="word-break: keep-all;">
+                <span :id="`tech-${urlIndex}-${eventIndex}-${index}-${contentIndex}-key`">
                   {{ key }}
                 </span>
-                <span :id="`tech-${urlIndex}-${eventIndex}-${index}-${contentIndex}-value`
-                  ">
-                  {{ value }}
-                </span>
+                <read-more :id="`tech-${urlIndex}-${eventIndex}-${index}-${contentIndex}-value`"
+                  :text="value"></read-more>
               </li>
             </ul>
             <ul class="tag-params" v-if="searchFilter.length > 0">
@@ -164,6 +158,7 @@
 import Accordion from "../Accordion.vue";
 import ControlBar from "../ControlBar.vue";
 import TagSettings from "../settings/TagSettings.vue";
+import ReadMore from "../ReadMore.vue"
 import { pageInteractionEvent } from "../../google-analytics";
 import { JSONView } from "vue-json-component";
 
@@ -192,6 +187,7 @@ export default {
     Accordion,
     ControlBar,
     TagSettings,
+    ReadMore
   },
   methods: {
     //Filter methods: Look up and get array of indices, open accordions of every hit change style of every find finding and scroll to first hit.
@@ -224,6 +220,20 @@ export default {
           .first()
           .removeClass("active");
       }
+
+      const result = _.chain(this.data)
+        .map('events') // Extract the 'event' arrays
+        .flatten() // Flatten the array of arrays into a single array
+        .map('tags') // Extract the 'tags' arrays from each event
+        .flatten() // Flatten the array of arrays into a single array
+        .filter(tag =>
+          _.some(tag.content, value =>
+            _.includes(value.toString().toLowerCase(), this.searchFilter.toLowerCase())
+          )
+        )
+        .map('name') // Extract the names of the matching tags
+        .value();
+      this.tags = result;
     },
     setSearch() {
       this.count = 0;
@@ -231,7 +241,7 @@ export default {
 
     searchNext() {
       pageInteractionEvent("Tags View", "search_next");
-      if ($(".search-hit").length > 0 || true) {
+      if ($(".search-hit").length > 0) {
         this.expandAll();
         this.searchFilterIndex =
           (this.searchFilterIndex + 1) % this.searchResultCount;
@@ -325,7 +335,7 @@ export default {
         .find("h3")
         .each(function (index, element) {
           $(this)
-            .next(".content")
+            .siblings('div.content.custom-scrollbar.square')
             .slideUp(500);
           $(this).removeClass("selected");
         });
@@ -335,7 +345,7 @@ export default {
         .find("h3")
         .each(function (index, element) {
           $(this)
-            .next(".content")
+            .siblings('div.content.custom-scrollbar.square')
             .slideDown(300);
           $(this).addClass("selected");
         });
@@ -379,6 +389,7 @@ export default {
   },
   data() {
     return {
+      tags: [],
       newTitle: "",
       isEventEditEnabled: { toggle: false, urlIndex: 0, eventIndex: 0 },
       searchFilter: "",
@@ -428,11 +439,14 @@ ul.tag-params li span {
 }
 
 ul.tag-params li span:first-child {
-  min-width: 80px;
-  width: auto;
+  /* min-width: 80px;
+  width: auto; */
+  flex: 1 1 100%;
+  min-width: 100px;
+  max-width: 200px;
   background-color: #e9f9ed;
   font-weight: 200;
-  text-transform: capitalize;
+  /* text-transform: capitalize; */
   font-size: small;
   display: flex;
   align-items: center;

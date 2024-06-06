@@ -4,8 +4,9 @@
       <slot name="icon"></slot>
       <span class="title">
         <abbr :title="title">
-        {{ title }}
+          {{ title }}
         </abbr>
+        <span v-show="time" class="time">{{ time }}</span>
         <span @click.stop>
           <slot name="editTitle"> </slot>
         </span>
@@ -15,6 +16,7 @@
         <slot name="extra"> </slot>
       </div>
     </h3>
+    <hr v-show="hasHorizontalLine" class="horizontal" />
     <div class="content custom-scrollbar square" :style="!isOpen ? 'display: none;' : ''">
       <slot></slot>
     </div>
@@ -28,6 +30,11 @@ export default {
     id: String,
     title: String,
     styling: String,
+    time: String,
+    hasHorizontalLine: {
+      type: Boolean,
+      default: false,
+    },
     isOpen: {
       type: Boolean,
       default: true,
@@ -36,7 +43,7 @@ export default {
   methods: {
     toggleAccordion(event) {
       $(event.currentTarget)
-        .next(".content")
+        .siblings('div.content.custom-scrollbar.square')
         .slideToggle(500);
       $(event.currentTarget).toggleClass("selected");
     },
@@ -57,7 +64,7 @@ export default {
 }
 
 .accordion-border {
-  border: 1px solid #b2b2b2;
+  border: 1px solid #ccd7e8;
 }
 
 .accordion-buttons {
@@ -114,7 +121,7 @@ export default {
 }
 
 .accordion.gray-header>h3 {
-  background: #d4d4d4;
+  background: #ccd7e8;
 }
 
 .flat.accordion .selected {
@@ -161,5 +168,17 @@ export default {
 
 .content .title svg {
   color: #414141;
+}
+
+.time {
+  background-color: #cce8d2;
+  border-radius: 19px;
+  padding: 2px 10px;
+}
+
+.horizontal {
+  margin: 0 -12px;
+  border: 1px solid #d9d9d9;
+  border-bottom: none;
 }
 </style>
