@@ -1,6 +1,6 @@
 // control-bar.js - Vanilla JS implementation of ControlBar component
 
-import { pageInteractionEvent } from '../lib/analytics.js';
+import { pageInteractionEvent } from '../google-analytics';
 
 export function createControlBar(options = {}) {
   // Create container

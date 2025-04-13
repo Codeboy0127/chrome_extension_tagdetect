@@ -1,5 +1,7 @@
 // tag-settings.js - Vanilla JS implementation of TagSettings component
 import { createModal } from "../Modal";
+import { pageInteractionEvent } from "../../google-analytics.js";
+import { pageSelectEvent } from "../../google-analytics.js";
 
 export function createTagSettings(options = {}) {
     // Create main container

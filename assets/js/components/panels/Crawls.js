@@ -1,5 +1,7 @@
 // crawls.js - Vanilla JS implementation of Crawls panel
 import { createControlBar } from '../ControlBar'
+import { pageInteractionEvent } from '../../google-analytics.js';
+import { chromeHelper } from '../../lib/chromeHelpers.js';
 
 export function createCrawlsPanel(options = {}) {
     // Create main container

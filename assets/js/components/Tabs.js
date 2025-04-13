@@ -1,7 +1,7 @@
 // tabs.js - Vanilla JS implementation of Tabs component
 
 import { createModal } from './Modal.js';
-import { pageSelectEvent } from '../lib/analytics.js';
+import { pageSelectEvent } from '../google-analytics.js';
 
 export function createTabs() {
   // Create main container

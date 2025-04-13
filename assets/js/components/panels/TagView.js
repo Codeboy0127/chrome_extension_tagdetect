@@ -3,6 +3,7 @@ import { createControlBar } from '../ControlBar';
 import { createAccordion } from '../Accordion';
 import { createReadMore } from '../ReadMore';
 import { createTagSettings } from '../settings/TagSettings';
+import { pageInteractionEvent } from '../../google-analytics.js';
 
 export function createTagView(options = {}) {
   // Create main container

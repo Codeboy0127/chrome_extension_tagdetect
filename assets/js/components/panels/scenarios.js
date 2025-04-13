@@ -2,6 +2,8 @@
 import { createAccordion } from './Accordion.js';
 import { createControlBar } from './ControlBar.js';
 import { createModal } from '../Modal.js';
+import { pageInteractionEvent } from '../../google-analytics.js';
+import { chromeHelper } from '../../lib/chromeHelpers.js';
 
 export function createScenariosPanel(options = {}) {
     // Create main container

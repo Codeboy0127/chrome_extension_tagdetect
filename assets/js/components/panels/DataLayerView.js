@@ -2,6 +2,7 @@
 import { createDataLayerSettings } from '../settings/DataLayerSettings';
 import { createAccordion } from '..Accordion.js';
 import { createControlBar } from '../ControlBar.js';
+import { pageInteractionEvent } from '../../google-analytics.js';
 
 export function createDataLayerView(options = {}) {
   // Create main container

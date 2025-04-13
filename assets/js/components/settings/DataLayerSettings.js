@@ -1,4 +1,6 @@
 // data-layer-settings.js - Vanilla JS implementation of DataLayerSettings component
+import { pageInteractionEvent } from '../google-analytics.js';
+
 
 export function createDataLayerSettings(options = {}) {
     // Create main container
