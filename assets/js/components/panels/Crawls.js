@@ -1,4 +1,5 @@
 // crawls.js - Vanilla JS implementation of Crawls panel
+import { createControlBar } from '../ControlBar'
 
 export function createCrawlsPanel(options = {}) {
     // Create main container

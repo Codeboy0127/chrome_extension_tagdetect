@@ -1,6 +1,7 @@
 // data-layer-view.js - Vanilla JS implementation of DataLayerView component
 import { createDataLayerSettings } from '../settings/DataLayerSettings';
 import { createAccordion } from '..Accordion.js';
+import { createControlBar } from '../ControlBar.js';
 
 export function createDataLayerView(options = {}) {
   // Create main container

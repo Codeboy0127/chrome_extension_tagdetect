@@ -1,4 +1,7 @@
 // scenarios.js - Vanilla JS implementation of Scenarios component
+import { createAccordion } from './Accordion.js';
+import { createControlBar } from './ControlBar.js';
+import { createModal } from '../Modal.js';
 
 export function createScenariosPanel(options = {}) {
     // Create main container
