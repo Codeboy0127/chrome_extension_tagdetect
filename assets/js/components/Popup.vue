@@ -132,7 +132,7 @@ export default {
             this.regexList = await this.getRegexList()
             this.dispatchListeners()
         },
-        parsePostData(postData) {
+        v  (postData) {
             if (postData !== undefined) {
                 const KeywordRegex = /[a-z]+=/;
                 let keyword = ''
