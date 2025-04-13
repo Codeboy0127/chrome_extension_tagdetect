@@ -1,473 +1,589 @@
-// popup.js
-class TagLabPopup {
-    constructor() {
-      this.state = {
-        isInspecting: false,
-        data: [],
-        regexList: [],
-        regexOccurances: {},
-        notificationData: [],
-        showModal: false,
-        fileName: '',
-        exportModalErrors: [],
-        tabId: null,
-        allowedLayers: [
-          'google_tag_manager_push',
-          'google_tag_manager',
-          'tealium',
-          'tag_commander',
-          'adobe_dtm',
-          'var',
-          'launchdataelements',
-          'adobetags'
-        ],
-        allowedDataLayers: {
-          'google_tag_manager_push': false,
-          'google_tag_manager': false,
-          'tealium': false,
-          'tag_commander': false,
-          'adobe_dtm': false,
-          'var': true,
-          'launchdataelements': true,
-          'adobetags': false
-        }
-      };
+// popup.js - Vanilla JS implementation of Popup component
+
+import { createTab } from './Tab.js';
+import { createTabs } from './Tabs.js';
+import { createTagView } from './panels/TagView.js';
+import { createDataLayerView } from './panels/DataLayerView.js';
+import { createModal } from './Modal.js';
+import { createNotificationManager } from './Notification.js';
+import { chromeHelper, isDevTools } from '../lib/chromeHelpers.js';
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
+
+export function createPopup() {
+  // Create wrapper
+  const wrapper = document.createElement('div');
+  wrapper.className = 'wrapper';
+
+  // State
+  let state = {
+    openNewTab: false,
+    lockToggling: false,
+    fileName: '',
+    exportModalErrors: [],
+    showModal: false,
+    isInspecting: false,
+    readyForInjection: true,
+    regexList: [],
+    regexOccurances: [],
+    data: [],
+    notificationData: [],
+    tagExport: [],
+    dlExport: [],
+    allowedLayers: [
+      'google_tag_manager_push',
+      'google_tag_manager',
+      'tealium',
+      'tag_commander',
+      'adobe_dtm',
+      'var',
+      'launchdataelements',
+      'adobetags'
+    ],
+    allowedDataLayers: {
+      'google_tag_manager_push': false,
+      'google_tag_manager': false,
+      'tealium': false,
+      'tag_commander': false,
+      'adobe_dtm': false,
+      'var': true,
+      'launchdataelements': true,
+      'adobetags': false
+    },
+    tabId: null
+  };
+
+  // Initialize components
+  const notificationManager = createNotificationManager();
+  const modal = createModal();
+  modal.element.style.display = 'none';
   
-      this.init();
+  // Create tabs system
+  const tabs = createTabs();
+  
+  // Create TagView tab
+  const tagView = createTagView({
+    isInspecting: state.isInspecting,
+    data: state.data,
+    occurrences: state.regexOccurances,
+    onEditEventTitle: editEventTitle,
+    onToggleInspection: toggleInspection,
+    onExportData: exportDataConfirm,
+    onResetData: resetData,
+    onNotification: (notification) => {
+      notificationManager.addNotification(notification);
     }
-  
-    async init() {
-      this.setupDOM();
-      this.setupEventListeners();
-      
-      if (this.isDevTools()) {
-        this.state.tabId = chrome.devtools.inspectedWindow.tabId;
-        this.setupChromeListeners();
-      }
-      
-      this.state.regexList = await this.getRegexList();
-      this.initRegexOccurances(this.state.regexList);
-      this.toggleInspection(); // Start inspecting by default
-    }
-  
-    // DOM Setup
-    setupDOM() {
-      document.body.innerHTML = `
-        <div class="wrapper">
-          <div id="modal-container" style="display:none;"></div>
-          <div class="tabs">
-            <div class="h-logo">
-              <a target="_blank" href="https://taglab.net/?utm_source=extension&utm_medium=owned-media&utm_campaign=logo">
-                <img src="images/logo.png" style="height:36px;">
-              </a>
-            </div>
-            <div class="header-nav">
-              <div class="c-tabs-header">
-                <ul class="tabs-header">
-                  <li class="tabs-selected">Tags View</li>
-                  <li>Data Layer View</li>
-                </ul>
-                <div>Tag View is better with Taglab Web <button class="sec-btn">Why?</button></div>
-              </div>
-            </div>
-            <div id="tab-content">
-              <div class="tab-pane active" id="tags-view">
-                <div class="control-bar">
-                  <button class="action-btn" id="toggle-inspect">Pause</button>
-                  <button class="action-btn" id="reset-data">Clear</button>
-                  <button class="action-btn" id="export-data">Export</button>
-                </div>
-                <div id="tags-container"></div>
-              </div>
-              <div class="tab-pane" id="datalayer-view" style="display:none;">
-                <div id="datalayer-container"></div>
-              </div>
-            </div>
-          </div>
-          <div id="notification-area"></div>
-        </div>
-      `;
-  
-      // Apply styles
-      this.injectStyles();
-    }
-  
-    injectStyles() {
-      const style = document.createElement('style');
-      style.textContent = `
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        .wrapper { max-width: 100%; padding-bottom: 0; position: relative; }
-        .tabs-header { display: flex; list-style: none; padding: 10px; border: 2px solid #d0d0d0; 
-          border-radius: 45px; flex-wrap: wrap; gap: 8px; background: #fff; }
-        .tabs-header li { padding: 8px 30px; border-radius: 45px; cursor: pointer; }
-        .tabs-selected { background: #12b922; color: white; }
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; }
-        .control-bar { display: flex; gap: 8px; padding: 10px; }
-        .action-btn { padding: 12px 10px; background: #fff; border-radius: 12px; 
-          box-shadow: 0 4px 8px rgba(0,0,0,0.2); cursor: pointer; }
-        #tags-container, #datalayer-container { padding: 10px; }
-        /* Add more styles from original component as needed */
-      `;
-      document.head.appendChild(style);
-    }
-  
-    // Event Listeners
-    setupEventListeners() {
-      // Tab switching
-      document.querySelectorAll('.tabs-header li').forEach((tab, index) => {
-        tab.addEventListener('click', () => this.switchTab(index));
-      });
-  
-      // Control buttons
-      document.getElementById('toggle-inspect').addEventListener('click', () => this.toggleInspection());
-      document.getElementById('reset-data').addEventListener('click', () => this.resetData());
-      document.getElementById('export-data').addEventListener('click', () => this.exportDataConfirm());
-    }
-  
-    // Chrome API Integration
-    setupChromeListeners() {
-      if (!this.isDevTools()) return;
-  
-      this.chromeListeners = {
-        onRequestFinished: this.devtoolsNetworkRequest.bind(this),
-        onMessage: this.captureDataLayer.bind(this),
-        onTabUpdated: this.listenToUrlChanges.bind(this)
-      };
-  
-      chrome.devtools.network.onRequestFinished.addListener(this.chromeListeners.onRequestFinished);
-      chrome.runtime.onMessage.addListener(this.chromeListeners.onMessage);
-      chrome.tabs.onUpdated.addListener(this.chromeListeners.onTabUpdated);
-    }
-  
-    removeChromeListeners() {
-      if (!this.isDevTools() || !this.chromeListeners) return;
-  
-      chrome.devtools.network.onRequestFinished.removeListener(this.chromeListeners.onRequestFinished);
-      chrome.runtime.onMessage.removeListener(this.chromeListeners.onMessage);
-      chrome.tabs.onUpdated.removeListener(this.chromeListeners.onTabUpdated);
-    }
-  
-    // Core Functionality
-    async getRegexList() {
-      const result = await chrome.storage.local.get(['regExPatterns']);
-      if (!result.regExPatterns || !result.regExPatterns.length) {
-        this.showNotification({
-          type: "warning",
-          title: "Empty Regex Patterns List",
-          message: "Regex patterns must be provided for recording tags"
-        });
-        return result.regExPatterns || [];
-      }
-      return result.regExPatterns;
-    }
-  
-    initRegexOccurances(regexList) {
-      this.state.regexOccurances = {};
-      regexList.forEach(element => {
-        this.state.regexOccurances[element.name] = { passed: false, occurences: 0 };
-      });
-    }
-  
-    devtoolsNetworkRequest(request) {
-      if (!this.state.isInspecting) return;
-  
-      const details = request.request;
-      this.state.regexList.forEach(element => {
-        if (RegExp(element.pattern).test(details.url) && !element.ignore && details.url) {
-          const content = { 
-            request: details.url,
-            ...this.getUrlParams(details.url),
-            ...this.parseInitiator(request._initiator)
-          };
-  
-          if (!this.state.regexOccurances[element.name].passed) {
-            this.state.regexOccurances[element.name] = { 
-              passed: true, 
-              occurences: this.state.regexOccurances[element.name].occurences + 1 
-            };
-          }
-  
-          const data = { 
-            name: element.name, 
-            occurences: 0, 
-            content: content, 
-            timeStamp: Date.now(),
-            payload: this.parsePostData(details.postData?.text)
-          };
-  
-          this.pushData(data, 'tags', element.name, element.iconPath);
-          this.updateTagDisplay();
-        }
-      });
-    }
-  
-    captureDataLayer(message, sender, sendResponse) {
-      if (sender.tab.id !== this.state.tabId || !this.state.isInspecting) return;
-      
-      if (message.type === "content_click_event") {
-        this.pushEvent();
-      } 
-      else if (this.state.allowedLayers.includes(message.type) && this.state.allowedDataLayers[message.type]) {
-        try {
-          message.data = JSON.parse(message.data);
-        } catch (e) {
-          message.data = message.data;
-        }
-        this.pushData(message, 'dataLayers', message.type === 'var' ? message.dLN : message.type);
-        this.updateDataLayerDisplay();
-      }
-    }
-  
-    // Data Management
-    pushData(data, type, identifier, icon) {
-      try {
-        const urlIndex = this.state.data.length - 1;
-        if (!this.state.data[urlIndex]?.events) return;
-        
-        const eventIndex = this.state.data[urlIndex].events.length - 1;
-        this.queueData(data, type, urlIndex, eventIndex, icon);
-      } catch (error) {
-        console.error('Error pushing data:', error);
-      }
-    }
-  
-    queueData(data, type, urlIndex, eventIndex, icon) {
-      if (!this.state.data[urlIndex].events[eventIndex][type]) {
-        this.state.data[urlIndex].events[eventIndex][type] = [];
-      }
-  
-      const isDuplicate = this.state.data[urlIndex].events[eventIndex][type].some(item => 
-        JSON.stringify(item) === JSON.stringify(data)
-      );
-  
-      if (!isDuplicate) {
-        if (icon) data.icon = icon;
-        this.state.data[urlIndex].events[eventIndex][type].push(data);
-      }
-    }
-  
-    // UI Updates
-    updateTagDisplay() {
-      const container = document.getElementById('tags-container');
-      container.innerHTML = '';
-      
-      this.state.data.forEach(urlData => {
-        urlData.events.forEach(event => {
-          if (event.tags?.length) {
-            const eventDiv = document.createElement('div');
-            eventDiv.className = 'event-group';
-            
-            const eventHeader = document.createElement('h3');
-            eventHeader.textContent = event.name;
-            eventDiv.appendChild(eventHeader);
-            
-            event.tags.forEach(tag => {
-              const tagDiv = document.createElement('div');
-              tagDiv.className = 'tag-item';
-              tagDiv.innerHTML = `
-                <strong>${tag.name}</strong>
-                <div>${JSON.stringify(tag.content, null, 2)}</div>
-              `;
-              eventDiv.appendChild(tagDiv);
-            });
-            
-            container.appendChild(eventDiv);
-          }
-        });
-      });
-    }
-  
-    updateDataLayerDisplay() {
-            const container = document.getElementById('datalayer-container');
-            container.innerHTML = '';
-            
-            this.state.data.forEach(urlData => {
-              const urlDiv = document.createElement('div');
-              urlDiv.className = 'url-group';
-              
-              const urlHeader = document.createElement('h2');
-              urlHeader.textContent = urlData.pageUrl || 'Unknown URL';
-              urlDiv.appendChild(urlHeader);
-              
-              urlData.events.forEach(event => {
-                if (event.dataLayers?.length) {
-                  const eventDiv = document.createElement('div');
-                  eventDiv.className = 'event-group';
-                  
-                  const eventHeader = document.createElement('h3');
-                  eventHeader.textContent = event.name || 'Untitled Event';
-                  eventDiv.appendChild(eventHeader);
-                  
-                  event.dataLayers.forEach(layer => {
-                    const layerDiv = document.createElement('div');
-                    layerDiv.className = 'datalayer-item';
-                    
-                    const layerHeader = document.createElement('div');
-                    layerHeader.className = 'datalayer-header';
-                    layerHeader.innerHTML = `
-                      <strong>${layer.dLN || layer.type}</strong>
-                      <span class="time">${new Date(layer.timeStamp).toLocaleTimeString()}</span>
-                    `;
-                    layerDiv.appendChild(layerHeader);
-                    
-                    // Display the data layer content
-                    const dataContent = document.createElement('pre');
-                    try {
-                      dataContent.textContent = JSON.stringify(layer.data, null, 2);
-                    } catch (e) {
-                      dataContent.textContent = layer.data || 'No data available';
-                    }
-                    layerDiv.appendChild(dataContent);
-                    
-                    // Add expand/collapse functionality for large data
-                    if (JSON.stringify(layer.data).length > 200) {
-                      const toggleBtn = document.createElement('button');
-                      toggleBtn.className = 'toggle-data';
-                      toggleBtn.textContent = 'Show More';
-                      let isExpanded = false;
-                      
-                      dataContent.style.maxHeight = '100px';
-                      dataContent.style.overflow = 'hidden';
-                      
-                      toggleBtn.addEventListener('click', () => {
-                        isExpanded = !isExpanded;
-                        dataContent.style.maxHeight = isExpanded ? 'none' : '100px';
-                        toggleBtn.textContent = isExpanded ? 'Show Less' : 'Show More';
-                      });
-                      
-                      layerDiv.appendChild(toggleBtn);
-                    }
-                    
-                    eventDiv.appendChild(layerDiv);
-                  });
-                  
-                  urlDiv.appendChild(eventDiv);
-                }
-              });
-              
-              container.appendChild(urlDiv);
-            });
-    }
-  
-    // Export Functionality
-    exportDataConfirm() {
-      this.state.showModal = true;
-      this.renderExportModal();
-    }
-  
-    renderExportModal() {
-      const modal = document.getElementById('modal-container');
-      modal.style.display = 'block';
-      modal.innerHTML = `
-        <div class="modal-mask">
-          <div class="modal-wrapper">
-            <div class="modal-container">
-              <div class="modal-header">
-                <h3>Export Tags and Datalayers to Excel</h3>
-              </div>
-              <div class="modal-body">
-                <div class="add-regex-fields">
-                  <label for="fileName">Choose the filename (without the extension)</label>
-                  <input type="text" id="fileName-input" placeholder="file_name" value="${this.state.fileName}">
-                  ${this.state.exportModalErrors.length ? `
-                    <p><b>Please correct the following error(s):</b></p>
-                    <ul>
-                      ${this.state.exportModalErrors.map(err => `<li>${err}</li>`).join('')}
-                    </ul>
-                  ` : ''}
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button id="confirm-export" class="simple-button">Export</button>
-                <button id="cancel-export" class="simple-button red">Cancel</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-  
-      document.getElementById('fileName-input').addEventListener('input', (e) => {
-        this.state.fileName = e.target.value;
-      });
-  
-      document.getElementById('confirm-export').addEventListener('click', () => this.exportData());
-      document.getElementById('cancel-export').addEventListener('click', () => {
-        this.state.showModal = false;
-        modal.style.display = 'none';
-      });
-    }
-  
-    async exportData() {
-      this.state.exportModalErrors = [];
-      if (!this.state.fileName) {
-        this.state.exportModalErrors.push('File Name required.');
-        this.renderExportModal();
-        return;
-      }
-  
-      const exportData = this.primeExport();
-      const wb = XLSX.utils.book_new();
-      const wsTags = XLSX.utils.json_to_sheet(exportData.tags);
-      const wsDLs = XLSX.utils.json_to_sheet(exportData.dLs);
-      
-      XLSX.utils.book_append_sheet(wb, wsTags, "Tags");
-      XLSX.utils.book_append_sheet(wb, wsDLs, "Data-Layer");
-      
-      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-      const blob = new Blob([excelBuffer], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
-      });
-      
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${this.state.fileName}.xlsx`;
-      a.click();
-      
-      this.state.showModal = false;
-      document.getElementById('modal-container').style.display = 'none';
-    }
-  
-    // Helper Methods
-    isDevTools() {
-      return chrome.devtools && chrome.devtools.inspectedWindow;
-    }
-  
-    getUrlParams(url) {
-      if (!url.includes("?")) return {};
-      try {
-        const urlObj = new URL(url);
-        const result = {};
-        urlObj.searchParams.forEach((value, key) => {
-          result[key] = value;
-        });
-        return result;
-      } catch (error) {
-        return {};
-      }
-    }
-  
-    showNotification(notification) {
-      const notifications = document.getElementById('notification-area');
-      const note = document.createElement('div');
-      note.className = `notification ${notification.type}`;
-      note.innerHTML = `
-        <i class="close">×</i>
-        <h2>${notification.title}</h2>
-        <p>${notification.message}</p>
-      `;
-      notifications.appendChild(note);
-      
-      note.querySelector('.close').addEventListener('click', () => {
-        note.remove();
-      });
-    }
-  
-    // ... Additional helper methods from original component
-  }
-  
-  // Initialize when DOM is ready
-  document.addEventListener('DOMContentLoaded', () => {
-    new TagLabPopup();
   });
+  
+  const tagViewTab = createTab('Tags View');
+  tagViewTab.appendContent(tagView.element);
+  tabs.addTab(tagViewTab, 'Tags View');
+
+  // Create DataLayerView tab
+  const dataLayerView = createDataLayerView({
+    isInspecting: state.isInspecting,
+    data: state.data,
+    onEditEventTitle: editEventTitle,
+    onToggleInspection: toggleInspection,
+    onExportData: exportDataConfirm,
+    onResetData: resetData,
+    onNotification: (notification) => {
+      notificationManager.addNotification(notification);
+    }
+  });
+  
+  const dataLayerViewTab = createTab('Data Layer View');
+  dataLayerViewTab.appendContent(dataLayerView.element);
+  tabs.addTab(dataLayerViewTab, 'Data Layer View');
+
+  // Create footer
+  const footer = document.createElement('div');
+  footer.className = 'footer';
+
+  // Assemble the popup
+  wrapper.append(modal.element, tabs.element, footer, notificationManager.element);
+
+  // Initialize
+  if (isDevTools()) {
+    state.tabId = chrome.devtools.inspectedWindow.tabId;
+    init();
+  }
+  toggleInspection();
+
+  // Methods
+  function primeExport() {
+    let exportData = { tags: [], dLs: [] };
+    state.data.map((url, index) => {
+      url.events.map((event, index) => {
+        let exportTags = {
+          Url: url.pageUrl,
+          Event: event.name,
+        };
+        let exportDls = {
+          Url: url.pageUrl,
+          Event: event.name,
+        };
+        
+        // Tags
+        if (event.tags !== undefined && event.tags.length > 0) {
+          event.tags.map((tag, index) => {
+            if (tag.content !== undefined) {
+              exportTags = {
+                ...exportTags,
+                Technology: tag.name,
+                ...tag.content
+              };
+            }
+            exportData.tags.push(exportTags);
+          });
+        } else {
+          exportData.tags.push(exportTags);
+        }
+        
+        // Data Layers
+        if (event.dataLayers !== undefined && event.dataLayers.length > 0) {
+          event.dataLayers.map((dL, index) => {
+            if (dL.data !== undefined) {
+              Object.keys(dL.data).forEach((key) => {
+                exportData.dLs.push({
+                  ...exportDls,
+                  name: dL.dLN,
+                  "Push Event": key,
+                  ...flattenJsonObject(dL.data[key])
+                });
+              });
+            }
+          });
+        } else {
+          exportData.dLs.push(exportDls);
+        }
+      });
+    });
+    
+    return exportData;
+  }
+
+  function editEventTitle(title, urlIndex, eventIndex) {
+    state.data[urlIndex].events[eventIndex].name = title;
+  }
+
+  async function init() {
+    state.regexList = await getRegexList();
+    dispatchListeners();
+  }
+
+  function parsePostData(postData) {
+    if (postData !== undefined) {
+      const KeywordRegex = /[a-z]+=/;
+      let keyword = '';
+      let parsedData = [];
+      try {
+        keyword = postData.match(KeywordRegex)[0];
+        const substrings = postData.replaceAll(/\n|\r/g, '').replaceAll(keyword, ';' + keyword).replace(';', '').split(';');
+        substrings.map((ele) => {
+          parsedData.push(getUrlParams('https://www.bienspasser.com?' + ele));
+        });
+      } catch (err) {
+        try {
+          const _data = JSON.parse(postData);
+          parsedData.push(_data);
+        } catch (_err) {
+          parsedData.push({ 'postData': postData });
+        }
+      }
+      return parsedData || [];
+    } else {
+      return [];
+    }
+  }
+
+  function parseInitiator(initiator) {
+    let initiatiorData = {};
+    if (initiator.type === 'script') {
+      initiatiorData = {
+        type: 'script',
+        origin: initiator.stack.callFrames[0]?.url || initiator.stack.parent.callFrames[0]?.url
+      };
+    } else if (initiator.type === 'parser') {
+      initiatiorData = {
+        type: 'parser',
+        origin: initiator.url
+      };
+    } else {
+      console.log({ Else: 'Else', initiator });
+    }
+    
+    return initiatiorData;
+  }
+
+  function devtoolsNetworkRequest(request) {
+    const details = request.request;
+
+    state.regexList.forEach((element, index) => {
+      if (RegExp(element.pattern).test(details.url) && !element.ignore && details.hasOwnProperty('url') && state.isInspecting) {
+        var initiatorChain = [];
+        var initiator = request.initiator;
+        while (initiator) {
+          initiatorChain.push(initiator);
+          initiator = initiator.stack.callFrames[0].url;
+        }
+
+        const urlParams = details.url;
+        const postData = parsePostData(details.postData?.text);
+        const initiatior = parseInitiator(request._initiator);
+        const content = { ...{ request: details.url }, ...initiatior, ...getUrlParams(urlParams) };
+        if (!state.regexOccurances[element.name].passed) {
+          state.regexOccurances[element.name].passed = true;
+          const occurences = state.regexOccurances[element.name].occurences + 1;
+          state.regexOccurances[element.name].occurences = occurences;
+        }
+        const data = { 
+          name: element.name, 
+          occurences: 0, 
+          content: content, 
+          timeStamp: Date.now(), 
+          payload: postData, 
+          initiatior: initiatior 
+        };
+        pushData(data, 'tags', element.name, element.iconPath);
+      }
+    });
+  }
+
+  function dispatchListeners() {
+    removeListeners();
+    addEventListeners();
+  }
+
+  async function getRegexList() {
+    var regexList = await chromeHelper.localStorageGet(["regExPatterns"]);
+    const regexWarnMessage = {
+      type: "warning",
+      title: "Empty Regex Patterns List",
+      message: "Regex patterns must be provided for recording tags"
+    };
+    
+    if (!regexList.regExPatterns) {
+      regexList.regExPatterns = [];
+      notificationManager.addNotification(regexWarnMessage);
+    } else if (!regexList.regExPatterns.length) {
+      notificationManager.addNotification(regexWarnMessage);
+    }
+    
+    initRegexOccurances(regexList.regExPatterns);
+    return regexList.regExPatterns;
+  }
+
+  function initRegexOccurances(regexList) {
+    if (regexList.length) {
+      regexList.forEach((element) => {
+        state.regexOccurances[element.name] = { passed: false, occurences: 0 };
+      });
+    }
+  }
+
+  function resetOccurancesCounter() {
+    Object.keys(state.regexOccurances).forEach(key => {
+      state.regexOccurances[key].passed = false;
+    });
+  }
+
+  function addEventListeners() {
+    chromeHelper.listenOnLocalStorageChange(listenOnRegexChange);
+    chromeHelper.listenOnTabUpdated(listenToUrlChanges);
+    chromeHelper.listenOnTabClosed(handleTabclosed);
+    chrome.devtools.network.onRequestFinished.addListener(devtoolsNetworkRequest);
+    chromeHelper.listenToRuntimeMessages(captureDataLayer);
+  }
+
+  function removeListeners() {
+    chromeHelper.removeLocalStorageChangeListener(listenOnRegexChange);
+    chromeHelper.removeRuntimeMessagesListener(captureDataLayer);
+    chromeHelper.removeTabUpdatedListener(listenToUrlChanges);
+    chromeHelper.removeTabClosedListener(handleTabclosed);
+    chrome.devtools.network.onRequestFinished.removeListener(devtoolsNetworkRequest);
+  }
+
+  function listenOnRegexChange(changes, areaName) {
+    if (areaName === "local" && changes.regExPatterns) {
+      state.regexList = changes.regExPatterns.newValue;
+    }
+  }
+
+  function listenToUrlChanges(details) {
+    if (isValidHttpUrl(details)) {
+      pushUrl(details);
+      removeListeners();
+      addEventListeners();
+      injectMainContentScript();
+    }
+  }
+
+  function injectMainContentScript() {
+    chromeHelper.injectScript({ 
+      target: { tabId: state.tabId }, 
+      files: ['content/content.js'] 
+    }, errorHandler);
+  }
+
+  function pushUrl(url) {
+    if (!state.isInspecting) return;
+    resetOccurancesCounter();
+    const newUrlData = {
+      pageUrl: url,
+      events: [{ name: 'Load', timeStamp: Date.now() }]
+    };
+    state.data.push(newUrlData);
+    tagView.updateData(state.data);
+    dataLayerView.updateData(state.data);
+  }
+
+  function isValidHttpUrl(string) {
+    let url;
+    try {
+      url = new URL(string);
+    } catch (_) {
+      return false;
+    }
+    return url.protocol === "http:" || url.protocol === "https:";
+  }
+
+  function getUrlParams(url) {
+    if (!url.includes("?")) return {};
+    try {
+      const urlObject = new URL(url);
+      var pairs = urlObject.search.slice(1).split('&');
+
+      var result = {};
+      pairs.forEach(function (pair) {
+        pair = pair.split('=');
+        result[pair[0]] = decodeURIComponent(pair[1] || '');
+      });
+      return result;
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function captureDataLayer(message, sender, sendResponse) {
+    if (message.type === "content_click_event" && sender.tab.id === state.tabId && state.isInspecting) {
+      pushEvent();
+    }
+    else if (state.allowedLayers.includes(message.type) && sender.tab.id === state.tabId && state.isInspecting && state.allowedDataLayers[message.type]) {
+      var data = message;
+      try {
+        data.data = JSON.parse(message.data);
+      } catch (e) {
+        // Ignore parse error
+      }
+      pushData(data, 'dataLayers', data.type === 'var' ? data.dLN : data.type);
+    }
+  }
+
+  function pushEvent() {
+    const urlListLength = state.data.length - 1;
+    const eventListLength = state.data[urlListLength]?.events.length;
+    state.data[urlListLength].events.push({ name: "Click " + eventListLength, timeStamp: Date.now() });
+    tagView.updateData(state.data);
+    dataLayerView.updateData(state.data);
+  }
+
+  function pushData(data, name, identifier, icon) {
+    try {
+      const urlListLength = state.data.length - 1;
+      if (!state.data[urlListLength].hasOwnProperty('events')) return;
+      const eventListLength = state.data[urlListLength].events.length - 1;
+      queueData(data, name, urlListLength, eventListLength, icon);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  function queueData(data, name, urlListLength, eventListLength, icon) {
+    if (state.data[urlListLength].events[eventListLength][name] === undefined) {
+      state.data[urlListLength].events[eventListLength][name] = [];
+    }
+    
+    const isDuplicate = state.data[urlListLength].events[eventListLength][name].some(o => 
+      JSON.stringify(o) === JSON.stringify(data)
+    );
+    
+    if (isDuplicate) return;
+    
+    var index = state.data[urlListLength].events[eventListLength][name].length;
+    if (icon) data.icon = icon;
+    
+    state.data[urlListLength].events[eventListLength][name].push(data);
+    tagView.updateData(state.data);
+    dataLayerView.updateData(state.data);
+  }
+
+  function flattenJsonObject(obj) {
+    const flattened = {};
+    Object.keys(obj).forEach((key) => {
+      if (typeof obj[key] === "object" && obj[key] !== null) {
+        Object.assign(flattened, flattenJsonObject(obj[key]));
+      } else {
+        flattened[key] = obj[key];
+      }
+    });
+    return flattened;
+  }
+
+  function resetData() {
+    state.tagExport = [];
+    state.dlExport = [];
+    state.data = [];
+    initRegexOccurances(state.regexList);
+    if (state.isInspecting) {
+      toggleInspection();
+    }
+    tagView.updateData(state.data);
+    dataLayerView.updateData(state.data);
+  }
+
+  function errorHandler(errorAt) {
+    if (chrome.runtime.lastError) {
+      console.log("error: ", chrome.runtime.lastError);
+    }
+  }
+
+  function exportDataConfirm() {
+    state.showModal = true;
+    modal.open();
+  }
+
+  function exportData() {
+    state.exportModalErrors = [];
+    if (!state.fileName) {
+      state.exportModalErrors.push('File Name required.');
+      return;
+    }
+    
+    var wb = XLSX.utils.book_new();
+    const exportData = primeExport();
+    
+    var wsTags = XLSX.utils.json_to_sheet(exportData.tags);
+    XLSX.utils.book_append_sheet(wb, wsTags, "Tags");
+
+    var wsDLs = XLSX.utils.json_to_sheet(exportData.dLs);
+    XLSX.utils.book_append_sheet(wb, wsDLs, "Data-Layer");
+
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data1 = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data1, state.fileName + ".xlsx");
+    state.showModal = false;
+    modal.close();
+  }
+
+  function handleTabclosed(tabId) {
+    if (tabId === state.tabId) {
+      chrome.runtime.reload();
+    }
+  }
+
+  async function toggleInspection() {
+    if (state.lockToggling) return;
+
+    state.isInspecting = !state.isInspecting;
+    tagView.setIsInspecting(state.isInspecting);
+    dataLayerView.setIsInspecting(state.isInspecting);
+    
+    if (state.isInspecting) {
+      chromeHelper.reloadTab(state.tabId);
+      dispatchListeners();
+    }
+  }
+
+  function startInspection() {
+    state.lockToggling = true;
+    state.isInspecting = true;
+    dispatchListeners();
+  }
+
+  function stopInspection() {
+    removeListeners();
+    state.lockToggling = false;
+    state.isInspecting = false;
+  }
+
+  // Initialize modal
+  const exportModal = createModal({
+    header: '<h3>Export Tags and Datalayers to Excel</h3>',
+    body: `
+      <div class="add-regex-fields">
+        <label for="fileName">Choose the filename (without the extension)</label>
+        <input type="text" id="fileName" name="fileName" placeholder="file_name">
+        <p id="exportErrors" style="display:none">
+          <b>Please correct the following error(s):</b>
+          <ul id="errorsList"></ul>
+        </p>
+      </div>
+    `,
+    footer: `
+      <button class="simple-button" id="exportBtn">Export</button>
+      <button class="simple-button red" id="cancelBtn">Cancel</button>
+    `
+  });
+
+  // Modal event listeners
+  exportModal.element.querySelector('#exportBtn').addEventListener('click', exportData);
+  exportModal.element.querySelector('#cancelBtn').addEventListener('click', () => {
+    state.showModal = false;
+    exportModal.close();
+  });
+  
+  const fileNameInput = exportModal.element.querySelector('#fileName');
+  fileNameInput.addEventListener('input', (e) => {
+    state.fileName = e.target.value;
+  });
+
+  // Public API
+  return {
+    element: wrapper,
+    updateData(newData) {
+      state.data = newData;
+      tagView.updateData(state.data);
+      dataLayerView.updateData(state.data);
+    }
+  };
+}
+
+// CSS (same as original, include in your stylesheet)
+/*
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.wrapper {
+  max-width: 100%;
+  margin: 0;
+  padding-bottom: 0;
+  position: relative;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  right: 50%;
+  translate: 50%;
+  margin-bottom: 10px;
+}
+
+.footer-text {
+  font-size: xx-small;
+  font-family: 'Poppins';
+  font-weight: 400;
+}
+
+.heart {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns:svg='http://www.w3.org/2000/svg' xmlns='http://www.w3.org/2000/svg' version='1.0' width='645' height='585' id='svg2'%3E%3Cdefs id='defs4' /%3E%3Cg id='layer1'%3E%3Cpath d='M 297.29747,550.86823 C 283.52243,535.43191 249.1268,505.33855 220.86277,483.99412 C 137.11867,420.75228 125.72108,411.5999 91.719238,380.29088 C 29.03471,322.57071 2.413622,264.58086 2.5048478,185.95124 C 2.5493594,147.56739 5.1656152,132.77929 15.914734,110.15398 C 34.151433,71.768267 61.014996,43.244667 95.360052,25.799457 C 119.68545,13.443675 131.6827,7.9542046 172.30448,7.7296236 C 214.79777,7.4947896 223.74311,12.449347 248.73919,26.181459 C 279.1637,42.895777 310.47909,78.617167 316.95242,103.99205 L 320.95052,119.66445 L 330.81015,98.079942 C 386.52632,-23.892986 564.40851,-22.06811 626.31244,101.11153 C 645.95011,140.18758 648.10608,223.6247 630.69256,270.6244 C 607.97729,331.93377 565.31255,378.67493 466.68622,450.30098 C 402.0054,497.27462 328.80148,568.34684 323.70555,578.32901 C 317.79007,589.91654 323.42339,580.14491 297.29747,550.86823 z' id='path2417' style='fill:%23ff0000' /%3E%3Cg transform='translate(129.28571,-64.285714)' id='g2221' /%3E%3C/g%3E%3C/svg%3E%0A");
+  height: 12px;
+  display: inline-block;
+  width: 12px;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+*/
