@@ -1,103 +1,143 @@
-// accordion.js
-export class Accordion {
-    constructor(options) {
-      this.id = options.id || '';
-      this.title = options.title || '';
-      this.styling = options.styling || '';
-      this.time = options.time || '';
-      this.hasHorizontalLine = options.hasHorizontalLine || false;
-      this.isOpen = options.isOpen !== false; // default true
-      
-      this.element = this.createAccordion();
-      this.setupEvents();
-    }
+// accordion.js - Vanilla JS implementation of Accordion component
+
+export function createAccordion(config) {
+  // Create container
+  const accordion = document.createElement('div');
+  accordion.className = `${config.styling || ''} accordion`;
+
+  // Create header
+  const header = document.createElement('h3');
+  if (config.id) header.id = config.id;
   
-    createAccordion() {
-      const accordion = document.createElement('div');
-      accordion.className = `${this.styling} accordion`;
-      
-      const header = document.createElement('h3');
-      header.id = this.id;
-      if (this.isOpen) header.classList.add('selected');
-      
-      // Title with abbreviation
-      const titleSpan = document.createElement('span');
-      titleSpan.className = 'title';
-      
-      const abbr = document.createElement('abbr');
-      abbr.title = this.title;
-      abbr.textContent = this.title;
-      titleSpan.appendChild(abbr);
-      
-      if (this.time) {
-        const timeSpan = document.createElement('span');
-        timeSpan.className = 'time';
-        timeSpan.textContent = this.time;
-        titleSpan.appendChild(timeSpan);
-      }
-      
-      header.appendChild(titleSpan);
-      
-      // Buttons container
-      const buttonsDiv = document.createElement('div');
-      buttonsDiv.className = 'accordion-buttons';
-      header.appendChild(buttonsDiv);
-      
-      accordion.appendChild(header);
-      
-      // Horizontal line
-      if (this.hasHorizontalLine) {
-        const hr = document.createElement('hr');
-        hr.className = 'horizontal';
-        accordion.appendChild(hr);
-      }
-      
-      // Content area
-      const content = document.createElement('div');
-      content.className = 'content custom-scrollbar square';
-      if (!this.isOpen) content.style.display = 'none';
-      accordion.appendChild(content);
-      
-      return accordion;
-    }
+  // Create title span
+  const titleSpan = document.createElement('span');
+  titleSpan.className = 'title';
   
-    setupEvents() {
-      const header = this.element.querySelector('h3');
-      const content = this.element.querySelector('.content');
-      
-      header.addEventListener('click', (e) => {
-        if (e.target.closest('.accordion-buttons')) return;
-        
-        this.toggle();
-      });
-    }
+  const abbr = document.createElement('abbr');
+  abbr.title = config.title || '';
+  abbr.textContent = config.title || '';
   
-    toggle() {
-      const header = this.element.querySelector('h3');
-      const content = this.element.querySelector('.content');
-      
-      this.isOpen = !this.isOpen;
-      
-      if (this.isOpen) {
-        content.style.display = '';
-        header.classList.add('selected');
-      } else {
-        content.style.display = 'none';
-        header.classList.remove('selected');
-      }
-      
-      // Optional: Add smooth animation here
-    }
+  titleSpan.appendChild(abbr);
   
-    // Public methods to manage content
-    setContent(contentElement) {
-      const contentArea = this.element.querySelector('.content');
-      contentArea.innerHTML = '';
-      contentArea.appendChild(contentElement);
-    }
+  // Add time if provided
+  if (config.time) {
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'time';
+    timeSpan.textContent = config.time;
+    titleSpan.appendChild(timeSpan);
+  }
+
+  // Add edit title slot if provided
+  if (config.editTitleSlot) {
+    const editContainer = document.createElement('span');
+    editContainer.addEventListener('click', (e) => e.stopPropagation());
+    editContainer.appendChild(config.editTitleSlot);
+    titleSpan.appendChild(editContainer);
+  }
+
+  header.appendChild(titleSpan);
+
+  // Add icon slot if provided
+  if (config.iconSlot) {
+    header.insertBefore(config.iconSlot, header.firstChild);
+  }
+
+  // Create buttons container
+  const buttonsContainer = document.createElement('div');
+  buttonsContainer.className = 'accordion-buttons';
+  buttonsContainer.addEventListener('click', (e) => e.stopPropagation());
   
-    addButton(buttonElement) {
-      const buttonsArea = this.element.querySelector('.accordion-buttons');
-      buttonsArea.appendChild(buttonElement);
+  // Add buttons slot if provided
+  if (config.buttonsSlot) {
+    buttonsContainer.appendChild(config.buttonsSlot);
+  }
+  
+  // Add extra slot if provided
+  if (config.extraSlot) {
+    buttonsContainer.appendChild(config.extraSlot);
+  }
+
+  header.appendChild(buttonsContainer);
+
+  // Create horizontal line if needed
+  let horizontalLine = null;
+  if (config.hasHorizontalLine) {
+    horizontalLine = document.createElement('hr');
+    horizontalLine.className = 'horizontal';
+  }
+
+  // Create content container
+  const content = document.createElement('div');
+  content.className = 'content custom-scrollbar square';
+  
+  // Add content slot if provided
+  if (config.content) {
+    if (typeof config.content === 'string') {
+      content.textContent = config.content;
+    } else {
+      content.appendChild(config.content);
     }
   }
+
+  // Set initial state
+  let isOpen = config.isOpen !== false;
+  if (!isOpen) {
+    content.style.display = 'none';
+  } else {
+    header.classList.add('selected');
+  }
+
+  // Toggle function
+  function toggleAccordion() {
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      header.classList.add('selected');
+      isOpen = true;
+    } else {
+      content.style.display = 'none';
+      header.classList.remove('selected');
+      isOpen = false;
+    }
+  }
+
+  // Add click handler
+  header.addEventListener('click', toggleAccordion);
+
+  // Assemble accordion
+  accordion.appendChild(header);
+  if (horizontalLine) accordion.appendChild(horizontalLine);
+  accordion.appendChild(content);
+
+  // Public API
+  return {
+    element: accordion,
+    toggle: toggleAccordion,
+    isOpen: () => isOpen,
+    open: () => {
+      content.style.display = 'block';
+      header.classList.add('selected');
+      isOpen = true;
+    },
+    close: () => {
+      content.style.display = 'none';
+      header.classList.remove('selected');
+      isOpen = false;
+    }
+  };
+}
+
+// CSS (same as original, include in your stylesheet)
+/*
+.accordion {
+  margin-top: 0.5em;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.accordion-shadow {
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+... (rest of the CSS from the original component)
+*/
