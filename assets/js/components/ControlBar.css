@@ -1,0 +1,35 @@
+button.action-btn {
+    gap: 5px;
+    padding: 12px 10px;
+    background-color: #fff;
+    color: #5c5c5c;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+  
+  button.action-btn:hover {
+    box-shadow: 0px 0px 8px 1px #00000066;
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  .action-btn > img {
+    width: 14px;
+    object-fit: contain;
+  }
+  
+  .control-bar {
+    display: flex;
+    column-gap: 8px;
+  }
+  
+  @media screen and (min-width: 620px) {
+    .control-bar {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+  
+  .control-bar img {
+    height: 24px;
+    cursor: pointer;
+  }

@@ -279,7 +279,75 @@ class TagLabPopup {
     }
   
     updateDataLayerDisplay() {
-      // Similar to updateTagDisplay but for dataLayer data
+            const container = document.getElementById('datalayer-container');
+            container.innerHTML = '';
+            
+            this.state.data.forEach(urlData => {
+              const urlDiv = document.createElement('div');
+              urlDiv.className = 'url-group';
+              
+              const urlHeader = document.createElement('h2');
+              urlHeader.textContent = urlData.pageUrl || 'Unknown URL';
+              urlDiv.appendChild(urlHeader);
+              
+              urlData.events.forEach(event => {
+                if (event.dataLayers?.length) {
+                  const eventDiv = document.createElement('div');
+                  eventDiv.className = 'event-group';
+                  
+                  const eventHeader = document.createElement('h3');
+                  eventHeader.textContent = event.name || 'Untitled Event';
+                  eventDiv.appendChild(eventHeader);
+                  
+                  event.dataLayers.forEach(layer => {
+                    const layerDiv = document.createElement('div');
+                    layerDiv.className = 'datalayer-item';
+                    
+                    const layerHeader = document.createElement('div');
+                    layerHeader.className = 'datalayer-header';
+                    layerHeader.innerHTML = `
+                      <strong>${layer.dLN || layer.type}</strong>
+                      <span class="time">${new Date(layer.timeStamp).toLocaleTimeString()}</span>
+                    `;
+                    layerDiv.appendChild(layerHeader);
+                    
+                    // Display the data layer content
+                    const dataContent = document.createElement('pre');
+                    try {
+                      dataContent.textContent = JSON.stringify(layer.data, null, 2);
+                    } catch (e) {
+                      dataContent.textContent = layer.data || 'No data available';
+                    }
+                    layerDiv.appendChild(dataContent);
+                    
+                    // Add expand/collapse functionality for large data
+                    if (JSON.stringify(layer.data).length > 200) {
+                      const toggleBtn = document.createElement('button');
+                      toggleBtn.className = 'toggle-data';
+                      toggleBtn.textContent = 'Show More';
+                      let isExpanded = false;
+                      
+                      dataContent.style.maxHeight = '100px';
+                      dataContent.style.overflow = 'hidden';
+                      
+                      toggleBtn.addEventListener('click', () => {
+                        isExpanded = !isExpanded;
+                        dataContent.style.maxHeight = isExpanded ? 'none' : '100px';
+                        toggleBtn.textContent = isExpanded ? 'Show Less' : 'Show More';
+                      });
+                      
+                      layerDiv.appendChild(toggleBtn);
+                    }
+                    
+                    eventDiv.appendChild(layerDiv);
+                  });
+                  
+                  urlDiv.appendChild(eventDiv);
+                }
+              });
+              
+              container.appendChild(urlDiv);
+            });
     }
   
     // Export Functionality
