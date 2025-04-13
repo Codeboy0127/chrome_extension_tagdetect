@@ -1,4 +1,5 @@
 // tag-settings.js - Vanilla JS implementation of TagSettings component
+import { createModal } from "../Modal";
 
 export function createTagSettings(options = {}) {
     // Create main container

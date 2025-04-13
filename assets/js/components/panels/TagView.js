@@ -1,6 +1,8 @@
 // tag-view.js - Vanilla JS implementation of TagView component
 import { createControlBar } from '../ControlBar';
 import { createAccordion } from '../Accordion';
+import { createReadMore } from '../ReadMore';
+import { createTagSettings } from '../settings/TagSettings';
 
 export function createTagView(options = {}) {
   // Create main container
