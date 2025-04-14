@@ -1,0 +1,153 @@
+.panel {
+    font-family: Arial, sans-serif;
+    padding: 15px;
+  }
+  
+  .panel-top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .search-box {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .search-box.active {
+    border: 1px solid #ffed00;
+  }
+  
+  .search-nav-btn {
+    padding: 5px 10px;
+  }
+  
+  .control-bar {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+  }
+  
+  .control-btn {
+    padding: 5px 10px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .tag-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .tag-panel.asc {
+    flex-direction: column;
+  }
+  
+  .tag-panel.desc {
+    flex-direction: column-reverse;
+  }
+  
+  .accordion {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .accordion-header {
+    background: #f5f5f5;
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .accordion-content {
+    padding: 15px;
+    display: none;
+  }
+  
+  .accordion.open .accordion-content {
+    display: block;
+  }
+  
+  .event-edit-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .event-title-input {
+    padding: 5px;
+    border: 1px solid #ddd;
+  }
+  
+  .edit-icon {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    fill: rgb(120,120,120);
+  }
+  
+  .tag-params {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .tag-param {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .param-key {
+    flex: 1;
+    min-width: 100px;
+    max-width: 200px;
+    background-color: #e9f9ed;
+    padding: 5px;
+    font-size: 14px;
+  }
+  
+  .param-value {
+    flex: 2;
+    padding: 5px;
+    font-size: 13px;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  
+  .tag-icon {
+    height: 20px;
+    margin-left: 10px;
+  }
+  
+  .time-diff {
+    font-size: 12px;
+    color: #666;
+    margin-left: 10px;
+  }
+  
+  .payload-title {
+    font-size: 14px;
+    margin-top: 15px;
+    color: #333;
+    text-decoration: underline;
+  }
+  
+  .search-hit {
+    background: #ffed00;
+    padding: 0 2px;
+    border-radius: 3px;
+  }
+  
+  .search-hit.current-hit {
+    background: #12b922;
+    color: white;
+  }

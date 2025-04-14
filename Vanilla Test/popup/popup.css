@@ -1,0 +1,50 @@
+body {
+  width: 420px;
+  padding: 0;
+  margin: 0;
+}
+
+.logo-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 0 0.5rem 0;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 9;
+}
+
+.content {
+  padding: 0.5rem;
+  background-color: #f6f6f6;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+._detail {
+  display: flex;
+  justify-content: center;
+  font-size: medium;
+  font-weight: 400;
+}
+.instruction {
+  background-color: rgba(44, 161, 72, 0.13);
+  border-radius: 0.5rem;
+  padding: 0 1rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.step {
+  background-color: #2ca148;
+  color: #fff;
+  font-weight: 800;
+  font-size: large;
+  padding: 0.5rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+}

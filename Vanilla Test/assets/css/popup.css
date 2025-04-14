@@ -1,0 +1,190 @@
+@import url(https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap);
+body {
+  font-family: "Poppins", sans-serif;
+  overflow: overlay;
+  background-color: #f4f6fa;
+}
+
+button {
+  all: unset;
+  font-size: x-small;
+  border: 1px solid rgb(230, 230, 230);
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.btn {
+  border-radius: 45px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #2ca148;
+  border: 1px solid #2ca148;
+}
+
+.btn:hover {
+  background-color: rgb(230, 230, 230);
+}
+
+.primary-btn {
+  border-radius: 45px;
+  background-color: #2ca148;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.primary-btn:hover {
+  background-color: rgba(44, 161, 72, 0.3137254902);
+  color: #2ca148;
+}
+
+.sec-btn {
+  border-radius: 45px;
+  background-color: rgba(44, 161, 72, 0.1254901961);
+  color: #2ca148;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sec-btn:hover {
+  background-color: rgba(44, 161, 72, 0.3764705882);
+}
+
+.asc {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.desc {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.panel-top {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+@media screen and (min-width: 620px) {
+  .panel-top {
+    flex-direction: row;
+  }
+}
+
+.search-box {
+  display: flex;
+  gap: 1rem;
+  box-sizing: border-box;
+  padding: 12px 0;
+  /* background: white; */
+  border-radius: 10px;
+  width: -moz-fit-content;
+  width: fit-content;
+  /* margin-bottom: -41px; */
+}
+
+.search-box.active {
+  top: 0;
+  /*position: fixed;*/
+}
+
+.search-box input {
+  border: rgb(41, 183, 90) solid 1px;
+  border-radius: 25px;
+  padding: 10px;
+  padding-right: 2.5rem;
+  font-size: small;
+  font-weight: 300;
+  color: rgb(120, 120, 120);
+}
+
+.search-box span {
+  right: 148px;
+  margin-top: 7px;
+  position: absolute;
+}
+
+.search-box svg {
+  cursor: pointer;
+  height: 18px;
+  transform: translate(4px, 4px);
+  margin-left: -2rem;
+  font-weight: 300;
+}
+
+.simple-button {
+  background: #42a644;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  color: white;
+  border-radius: 16px;
+  font-family: "Poppins";
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.simple-button:hover {
+  opacity: 0.8;
+}
+
+.simple-button.small {
+  font-size: 14px;
+  padding: 4px 12px;
+}
+
+.simple-button.red {
+  background: #eb4646;
+}
+
+.simple-button.blue {
+  background: #46a3eb;
+}
+
+.settings-panel {
+  background-color: #ececec;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 1rem;
+  max-height: -moz-fit-content;
+  max-height: fit-content;
+  overflow-y: auto;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 16px;
+}
+
+.custom-scrollbar.square::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 0px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:window-inactive {
+  background: #ddd;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:active {
+  background: #888;
+}

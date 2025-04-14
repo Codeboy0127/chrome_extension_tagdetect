@@ -1,0 +1,64 @@
+.notification-wrapper {
+    position: fixed;
+    min-width: 97%;
+    bottom: 0;
+    height: 75px;
+    overflow-y: scroll;
+    border-radius: 10px 0 0 10px;
+    border: 1px solid #dbd4d4;
+    color: black;
+    margin: 5px;
+    z-index: 10;
+    background: white;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  
+  .notification {
+    position: relative;
+    margin: 0.5em;
+    padding: 0.5em 2em 0.5em 0.5em;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.25);
+    border-left: 4px solid #fff;
+    background: #fff;
+    animation: openUp 0.1s;
+  }
+  
+  .notification h2, 
+  .notification p {
+    margin: 0;
+  }
+  
+  .notification h2 {
+    margin-bottom: 0.25em;
+  }
+  
+  .notification .close {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    cursor: pointer;
+  }
+  
+  .notification.error {
+    border-left: 4px solid #ea0000;
+  }
+  
+  .notification.success {
+    border-left: 4px solid #7ad03a;
+  }
+  
+  .notification.warning {
+    border-left: 4px solid #ffba00;
+  }
+  
+  @keyframes openUp {
+    0% {
+      transform: translateY(-50%) scale(0);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0%) scale(1);
+      opacity: 1;
+    }
+  }
