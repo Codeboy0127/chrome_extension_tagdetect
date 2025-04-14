@@ -5,7 +5,20 @@ import { createModal } from '../Modal.js';
 import { pageInteractionEvent } from '../../google-analytics.js';
 import { chromeHelper } from '../../lib/chromeHelpers.js';
 
+// Function to dynamically load the CSS file
+function loadscenariosStyles() {
+  if (!document.getElementById('scenarios-styles')) {
+    const link = document.createElement('link');
+    link.id = 'scenarios-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/panels/scenarios.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
+
 export function createScenariosPanel(options = {}) {
+    // Ensure the CSS is loaded
+    loadscenariosStyles();
     // Create main container
     const panel = document.createElement('div');
     panel.className = 'scenario-panel';

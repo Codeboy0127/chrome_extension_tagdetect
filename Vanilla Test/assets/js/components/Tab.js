@@ -1,4 +1,5 @@
 // tab.js - Vanilla JS implementation of Tab component
+// Function to dynamically load the CSS file
 
 export function createTab(title = 'Tab', initialActive = true) {
     // Create tab element

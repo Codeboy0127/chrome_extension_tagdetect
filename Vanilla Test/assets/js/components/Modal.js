@@ -1,7 +1,18 @@
 // modal.js - Vanilla JS implementation of Modal component
+function loadModalStyles() {
+  if (!document.getElementById('Modal-styles')) {
+    const link = document.createElement('link');
+    link.id = 'Modal-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/Modal.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
 
 export function createModal({ header = 'default header', body = 'default body', footer = 'default footer' } = {}) {
-    // Create modal elements
+     // Ensure the CSS is loaded
+    loadModalStyles();
+  // Create modal elements
     const modalMask = document.createElement('div');
     modalMask.className = 'modal-mask';
     modalMask.style.display = 'none';

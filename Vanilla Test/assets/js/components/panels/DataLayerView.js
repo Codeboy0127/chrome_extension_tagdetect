@@ -1,14 +1,28 @@
 // data-layer-view.js - Vanilla JS implementation of DataLayerView component
-import { createDataLayerSettings } from '../settings/DataLayerSettings';
-import { createAccordion } from '..Accordion.js';
+import { createDataLayerSettings } from '../settings/DataLayerSettings.js';
+import { createAccordion } from '../Accordion.js';
 import { createControlBar } from '../ControlBar.js';
 import { pageInteractionEvent } from '../../google-analytics.js';
 
+// Function to dynamically load the CSS file
+function loadDataLayerViewStyles() {
+  if (!document.getElementById('DataLayerView-styles')) {
+    const link = document.createElement('link');
+    link.id = 'DataLayerView-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/panels/DataLayerView.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
+
 export function createDataLayerView(options = {}) {
+  // Ensure the CSS is loaded
+  loadDataLayerViewStyles();
+
   // Create main container
   const panel = document.createElement('div');
   panel.className = 'panel';
-
+  
   // State
   let state = {
     data: options.data || [],
@@ -38,7 +52,9 @@ export function createDataLayerView(options = {}) {
     isEventEditEnabled: { toggle: false, urlIndex: 0, eventIndex: 0 },
     newTitle: ""
   };
-
+  
+  const dlPanel = document.createElement('div');
+  dlPanel.className = `dl-panel ${state.listOrder.toLowerCase()}`;
   // Create DOM elements
   const panelTop = document.createElement('div');
   panelTop.className = 'panel-top';
@@ -54,8 +70,6 @@ export function createDataLayerView(options = {}) {
   dlSettings.appendChild(dataLayerSettings.element);
   panel.append(panelTop, dlSettings, dlPanel);
 
-  const dlPanel = document.createElement('div');
-  dlPanel.className = `dl-panel ${state.listOrder.toLowerCase()}`;
 
   // Initialize Control Bar
   const controlBar = createControlBar({
@@ -172,13 +186,13 @@ export function createDataLayerView(options = {}) {
     
     const collapseImg = document.createElement('img');
     collapseImg.id = 'expand-all';
-    collapseImg.src = chrome.runtime.getURL('images/collapse.svg');
+    collapseImg.src = chrome.runtime.getURL('/assets/images/collapse.svg');
     collapseImg.style.height = '15px';
     collapseImg.addEventListener('click', collapseTree);
     
     const expandImg = document.createElement('img');
     expandImg.id = 'collapse-all';
-    expandImg.src = chrome.runtime.getURL('images/expand.svg');
+    expandImg.src = chrome.runtime.getURL('/assets/images/expand.svg');
     expandImg.style.height = '15px';
     expandImg.addEventListener('click', expandTree);
     
@@ -464,47 +478,62 @@ function createJSONView(config) {
     element: container
   };
 }
+function extractTagsFromData(data) {
+  const tags = [];
+  data.forEach((datalayer) => {
+    datalayer.events.forEach((event) => {
+      if (event.tags && event.tags.length > 0) {
+        event.tags.forEach((tag) => {
+          if (!tags.includes(tag)) {
+            tags.push(tag); // Add unique tags
+          }
+        });
+      }
+    });
+  });
+  return tags;
+}
 
 // Helper function to create Accordion component (would need actual implementation)
-function createAccordion(config) {
-  // This would be replaced with actual Accordion implementation
-  const container = document.createElement('div');
-  container.className = 'accordion ' + (config.styling || '');
+// function createAccordion(config) {
+//   // This would be replaced with actual Accordion implementation
+//   const container = document.createElement('div');
+//   container.className = 'accordion ' + (config.styling || '');
   
-  const header = document.createElement('h3');
-  header.textContent = config.title;
+//   const header = document.createElement('h3');
+//   header.textContent = config.title;
   
-  if (config.editTitleSlot) {
-    header.appendChild(config.editTitleSlot);
-  }
+//   if (config.editTitleSlot) {
+//     header.appendChild(config.editTitleSlot);
+//   }
   
-  const content = document.createElement('div');
-  content.className = 'content';
-  if (typeof config.content === 'string') {
-    content.textContent = config.content;
-  } else {
-    content.appendChild(config.content);
-  }
+//   const content = document.createElement('div');
+//   content.className = 'content';
+//   if (typeof config.content === 'string') {
+//     content.textContent = config.content;
+//   } else {
+//     content.appendChild(config.content);
+//   }
   
-  if (config.isOpen) {
-    content.style.display = 'block';
-    header.classList.add('selected');
-  } else {
-    content.style.display = 'none';
-  }
+//   if (config.isOpen) {
+//     content.style.display = 'block';
+//     header.classList.add('selected');
+//   } else {
+//     content.style.display = 'none';
+//   }
   
-  header.addEventListener('click', () => {
-    if (content.style.display === 'none') {
-      content.style.display = 'block';
-      header.classList.add('selected');
-    } else {
-      content.style.display = 'none';
-      header.classList.remove('selected');
-    }
-  });
+//   header.addEventListener('click', () => {
+//     if (content.style.display === 'none') {
+//       content.style.display = 'block';
+//       header.classList.add('selected');
+//     } else {
+//       content.style.display = 'none';
+//       header.classList.remove('selected');
+//     }
+//   });
   
-  container.append(header, content);
-  return {
-    element: container
-  };
-}
+//   container.append(header, content);
+//   return {
+//     element: container
+//   };
+// }

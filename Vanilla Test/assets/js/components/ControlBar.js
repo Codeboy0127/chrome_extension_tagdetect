@@ -1,8 +1,20 @@
 // control-bar.js - Vanilla JS implementation of ControlBar component
 
-import { pageInteractionEvent } from '../google-analytics';
+import { pageInteractionEvent } from '../google-analytics.js';
+
+function loadControlBarStyles() {
+  if (!document.getElementById('ControlBar-styles')) {
+    const link = document.createElement('link');
+    link.id = 'ControlBar-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/ControlBar.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
 
 export function createControlBar(options = {}) {
+  // Ensure the CSS is loaded
+  loadControlBarStyles();
   // Create container
   const controlBar = document.createElement('div');
   controlBar.className = 'control-bar';

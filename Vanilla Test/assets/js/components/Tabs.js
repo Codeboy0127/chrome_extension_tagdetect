@@ -3,7 +3,20 @@
 import { createModal } from './Modal.js';
 import { pageSelectEvent } from '../google-analytics.js';
 
+// Function to dynamically load the CSS file
+function loadTabsStyles() {
+  if (!document.getElementById('Tabs-styles')) {
+    const link = document.createElement('link');
+    link.id = 'Tabs-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/Tabs.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
+
 export function createTabs() {
+    // Ensure the CSS is loaded
+    loadTabsStyles();
   // Create main container
   const tabsContainer = document.createElement('div');
   tabsContainer.className = 'tabs';
@@ -16,7 +29,7 @@ export function createTabs() {
   logoLink.target = '_blank';
   logoLink.style.cssText = 'margin: 0; padding: 0; display: contents;';
   const logoImg = document.createElement('img');
-  logoImg.src = chrome.runtime.getURL('images/logo.png');
+  logoImg.src = chrome.runtime.getURL('/assets/images/logo.png');
   logoImg.style.height = '36px';
   logoLink.appendChild(logoImg);
   logoContainer.appendChild(logoLink);
@@ -55,7 +68,7 @@ export function createTabs() {
     header: '<h3>Benefits of Taglab Web</h3>',
     body: `
       <div class="img-container">
-        <img src="${chrome.runtime.getURL('images/why-taglab-web.png')}" style="height: 100px;" />
+        <img src="${chrome.runtime.getURL('/assets/images/why-taglab-web.png')}" style="height: 100px;" />
       </div>
       <div>
         <ul class="benefits">

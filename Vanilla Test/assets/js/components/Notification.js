@@ -1,6 +1,17 @@
 // notification.js - Vanilla JS implementation of Notification component
+function loadNotificationStyles() {
+  if (!document.getElementById('Notification-styles')) {
+    const link = document.createElement('link');
+    link.id = 'Notification-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/Notification.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
 
 export function createNotificationManager() {
+    // Ensure the CSS is loaded
+    loadNotificationStyles();
     // Create container
     const container = document.createElement('div');
     const notificationWrapper = document.createElement('div');

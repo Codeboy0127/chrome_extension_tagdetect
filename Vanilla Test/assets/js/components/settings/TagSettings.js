@@ -1,9 +1,22 @@
 // tag-settings.js - Vanilla JS implementation of TagSettings component
-import { createModal } from "../Modal";
+import { createModal } from "../Modal.js";
 import { pageInteractionEvent } from "../../google-analytics.js";
-import { pageSelectEvent } from "../../google-analytics.js";
+
+// Function to dynamically load the CSS file
+function loadTagSettingsStyles() {
+  if (!document.getElementById('TagSettings-styles')) {
+    const link = document.createElement('link');
+    link.id = 'TagSettings-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/settings/TagSettings.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
 
 export function createTagSettings(options = {}) {
+    // Ensure the CSS is loaded
+    loadTagSettingsStyles();
+
     // Create main container
     const panel = document.createElement('div');
     panel.className = 'tag-settings-panel settings-panel custom-scrollbar';

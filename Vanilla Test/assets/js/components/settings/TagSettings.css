@@ -1,0 +1,181 @@
+.regex-add-footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.regex-add-footer button {
+    width: 100%;
+    font-size: small;
+    padding: 1rem 2rem;
+}
+
+.regex-acc {
+    background-color: #fff;
+    width: auto;
+    min-width: 200px;
+    border-radius: 0.5rem;
+    border: 1px solid #e8e8e8;
+}
+
+.regex-acc-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    font-weight: 200;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.regex-acc-header div {
+    display: flex;
+    align-items: center;
+    font-size: small;
+    gap: 0.5rem
+}
+
+.regex-acc-header div:first-child {
+    justify-content: flex-start;
+    font-weight: 200;
+}
+
+.regex-acc-header div:last-child {
+    gap: 1.5rem;
+    justify-content: flex-end;
+}
+
+.regex-acc-header .acc-btn:after {
+    content: '\02795';
+    font-size: small;
+    color: #5a5a5a;
+    font-weight: 200;
+}
+
+.regex-acc-content {
+    padding: 0 1rem;
+    font-size: small;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+}
+
+.regex-acc.active .acc-btn:after {
+    content: "\2796";
+}
+
+.regex-action {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.regex-action:hover {
+    background-color: #e8e8e8;
+}
+
+.regex-table-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.regex-manager {
+    /* margin-top: 18px; */
+}
+
+/* TABLE STYLES
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+.regex-wrapper {
+    /* width: 200px; */
+    min-width: 200px;
+    border-radius: 9px;
+    border: 1px solid #e8e8e8;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    direction: ltr;
+
+}
+
+.regex-table-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 20px 0px;
+}
+
+.regex-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #cdcdcd;
+}
+
+.regex-pattern {
+    padding: 12px;
+    word-break: break-all;
+    position: relative;
+}
+
+.regex-actions.actions {
+    padding: 6px;
+    padding-top: 0;
+}
+
+.regex-table-wrapper .actions {
+    display: flex;
+    column-gap: 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    justify-content: flex-end;
+}
+
+.regex-table-wrapper .actions span {
+    cursor: pointer;
+}
+
+.add-regex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 400;
+    font-size: small;
+}
+
+.add-regex-fields {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+}
+
+.add-regex-fields input {
+    width: -webkit-fill-available;
+    padding: 1rem;
+    border-radius: 45px;
+}
+
+img.regex-icon {
+    max-width: 30px;
+}
+
+.regex-info p {
+    display: flex;
+    column-gap: 4px;
+}
+
+.regex-info {
+    column-gap: 16px;
+}
+
+.regex-pattern {
+    margin-bottom: auto;
+}
+
+.regex-info {
+    column-gap: 16px;
+}
+
+@media screen and (max-width: 600px) {}

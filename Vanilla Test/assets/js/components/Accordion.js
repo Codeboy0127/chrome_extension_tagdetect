@@ -1,6 +1,18 @@
 // accordion.js - Vanilla JS implementation of Accordion component
+function loadAccordionStyles() {
+  if (!document.getElementById('accordion-styles')) {
+    const link = document.createElement('link');
+    link.id = 'accordion-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/Accordion.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
 
 export function createAccordion(config) {
+
+  // Ensure the CSS is loaded
+    loadAccordionStyles();
   // Create container
   const accordion = document.createElement('div');
   accordion.className = `${config.styling || ''} accordion`;

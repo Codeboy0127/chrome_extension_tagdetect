@@ -1,8 +1,20 @@
 // data-layer-settings.js - Vanilla JS implementation of DataLayerSettings component
-import { pageInteractionEvent } from '../google-analytics.js';
+import { pageInteractionEvent } from '../../google-analytics.js';
 
+// Function to dynamically load the CSS file
+function loadDataLayerSettingsStyles() {
+  if (!document.getElementById('DataLayerSettings-styles')) {
+    const link = document.createElement('link');
+    link.id = 'DataLayerSettings-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/settings/DataLayerSettings.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
 
 export function createDataLayerSettings(options = {}) {
+    // Ensure the CSS is loaded
+    loadDataLayerSettingsStyles();
     // Create main container
     const panel = document.createElement('div');
     panel.className = 'dl-settings-panel settings-panel custom-scrollbar';

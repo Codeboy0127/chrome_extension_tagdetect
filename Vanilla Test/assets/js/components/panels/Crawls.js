@@ -1,9 +1,21 @@
 // crawls.js - Vanilla JS implementation of Crawls panel
-import { createControlBar } from '../ControlBar'
+import { createControlBar } from '../ControlBar.js'
 import { pageInteractionEvent } from '../../google-analytics.js';
 import { chromeHelper } from '../../lib/chromeHelpers.js';
 
+// Function to dynamically load the CSS file
+function loadCrawlsStyles() {
+  if (!document.getElementById('Crawls-styles')) {
+    const link = document.createElement('link');
+    link.id = 'Crawls-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/panels/Crawls.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
 export function createCrawlsPanel(options = {}) {
+    // Ensure the CSS is loaded
+    loadCrawlsStyles();
     // Create main container
     const panel = document.createElement('div');
     panel.className = 'panel';

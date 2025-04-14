@@ -1,6 +1,18 @@
 // read-more.js - Vanilla JS implementation of ReadMore component
+// Function to dynamically load the CSS file
+function loadReadMoreStyles() {
+  if (!document.getElementById('ReadMore-styles')) {
+    const link = document.createElement('link');
+    link.id = 'ReadMore-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/ReadMore.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
 
 export function createReadMore(text, id = '') {
+    // Ensure the CSS is loaded
+    loadReadMoreStyles();
     // Create container
     const container = document.createElement('span');
     container.className = 'show-more';

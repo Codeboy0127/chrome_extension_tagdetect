@@ -1,0 +1,81 @@
+.scenario-add-footer{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.scenario-add-footer button {
+    width: 100%;
+    font-size: small;
+    padding: 1rem 2rem;
+}
+
+.scenarios {
+  overflow-x: auto;
+}
+
+.scenarios::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scenarios::-webkit-scrollbar-thumb {
+  background: var(--darkblue);
+  border-radius: 40px;
+}
+
+.scenarios table {
+  border-collapse: separate;
+  text-align: left;
+  width: 100%;
+
+}
+
+.scenarios table th,.scenarios table td{
+    padding: 10px;
+    min-width: 75px;
+    font-size: small;
+}
+
+.scenarios table th{ 
+  background-color: rgb(216, 216, 216);
+  text-align: center;
+  font-weight: 400;
+}
+
+.scenarios table td {
+  background-color: rgb(239, 239, 239);
+  font-weight: 300;
+  font-size: x-small;
+}
+
+.new-scenario-fields{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+}
+
+.new-scenario-fields input {
+    width: -webkit-fill-available;
+    padding: 1rem;
+    border: 1px solid #2ca148;
+    border-radius: 45px;
+}
+
+.scenarios table tr.success{
+    background-color: #b2e8b2;
+}
+.scenarios table tr.processing{
+    background-color: #ffffaf;
+}
+.scenarios table tr.failed{
+    background-color: #ff9f9f;
+}
+
+.scenarios table td.xpath{
+  width: 73%;
+  word-wrap: break-word;
+  word-break: break-all;
+}

@@ -7,10 +7,22 @@ import { createDataLayerView } from './panels/DataLayerView.js';
 import { createModal } from './Modal.js';
 import { createNotificationManager } from './Notification.js';
 import { chromeHelper, isDevTools } from '../lib/chromeHelpers.js';
-import * as FileSaver from 'file-saver';
-import * as XLSX from 'xlsx';
+// import FileSaver from '../lib/FileSaver.min.js';
+// import XLSX from '../lib/xlsx.full.min.js';
+
+function loadpopupStyles() {
+  if (!document.getElementById('popup-styles')) {
+    const link = document.createElement('link');
+    link.id = 'popup-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/popup.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
 
 export function createPopup() {
+  // Ensure the CSS is loaded
+  loadpopupStyles();
   // Create wrapper
   const wrapper = document.createElement('div');
   wrapper.className = 'wrapper';
@@ -472,7 +484,7 @@ export function createPopup() {
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const data1 = new Blob([excelBuffer], { type: fileType });
-    FileSaver.saveAs(data1, state.fileName + ".xlsx");
+    saveAs(data1, state.fileName + ".xlsx");
     state.showModal = false;
     modal.close();
   }
@@ -540,15 +552,18 @@ export function createPopup() {
   });
 
   // Public API
-  return {
-    element: wrapper,
-    updateData(newData) {
-      state.data = newData;
-      tagView.updateData(state.data);
-      dataLayerView.updateData(state.data);
-    }
-  };
+  return wrapper;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const app = document.getElementById('app');
+  if (app) {
+    const popup = createPopup();
+    app.appendChild(popup);
+  } else {
+    console.error("No element with id 'app' found.");
+  }
+});
 
 // CSS (same as original, include in your stylesheet)
 /*

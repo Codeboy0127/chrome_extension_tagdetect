@@ -1,0 +1,72 @@
+.default-object-layers-container {
+    display: flex;
+    flex-direction: row;
+    row-gap: 10px;
+    column-gap: 12px;
+    padding-left: 8px;
+    display: flex;
+    column-gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .default-object-layers-column {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    column-gap: 12px;
+  }
+  
+  .default-object-layers-container label {
+    display: flex;
+    flex-direction: row;
+    column-gap: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  .custom-object-layers {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 12px;
+    column-gap: 12px;
+    margin-top: 8px;
+  }
+  
+  .custom-object-layer {
+    background: #12b922;
+    padding: 8px 16px;
+    border-radius: 16px;
+    font-family: "Poppins";
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    padding-right: 26px;
+    position: relative;
+  }
+  
+  .custom-object-layer img {
+    width: 13px;
+    position: absolute;
+    right: 6px;
+    cursor: pointer;
+  }
+  
+  .dl-settings h3 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+  }
+  
+  input#newDLObject {
+    font-size: small;
+    padding: 8px 12px;
+    border-radius: 1rem;
+    border: 1px solid #bbbbbb;
+    margin-bottom: 12px;
+    margin-right: 8px;
+    min-width: 200px;
+  }
+  
+  label {
+    font-size: 14px;
+  }
