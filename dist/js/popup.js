@@ -1056,6 +1056,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     pushData: function pushData(data, name, identifier, icon) {
       try {
         var urlListLength = this.data.length - 1;
+		console.log("here-->", this.data);
         if (!this.data[urlListLength].hasOwnProperty('events')) return;
         var eventListLength = this.data[urlListLength].events.length - 1;
         this.queueData(data, name, urlListLength, eventListLength, icon);

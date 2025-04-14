@@ -324,6 +324,7 @@ export default {
         pushData(data, name, identifier, icon) {
             try {
                 const urlListLength = this.data.length - 1
+                
                 if (!this.data[urlListLength].hasOwnProperty('events')) return
                 const eventListLength = this.data[urlListLength].events.length - 1
                 this.queueData(data, name, urlListLength, eventListLength, icon)

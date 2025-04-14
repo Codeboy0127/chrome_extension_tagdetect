@@ -403,6 +403,7 @@ export function createPopup() {
   function pushData(data, name, identifier, icon) {
     try {
       const urlListLength = state.data.length - 1;
+      console.log("here--->", state.data)
       if (!state.data[urlListLength].hasOwnProperty('events')) return;
       const eventListLength = state.data[urlListLength].events.length - 1;
       queueData(data, name, urlListLength, eventListLength, icon);
