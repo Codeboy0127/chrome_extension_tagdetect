@@ -1,28 +1,14 @@
-// data-layer-view.js - Vanilla JS implementation of DataLayerView component
+// data-layer-view.js - Updated Vanilla JS implementation with proper integration
 import { createDataLayerSettings } from '../settings/DataLayerSettings.js';
 import { createAccordion } from '../Accordion.js';
 import { createControlBar } from '../ControlBar.js';
 import { pageInteractionEvent } from '../../google-analytics.js';
 
-// Function to dynamically load the CSS file
-function loadDataLayerViewStyles() {
-  if (!document.getElementById('DataLayerView-styles')) {
-    const link = document.createElement('link');
-    link.id = 'DataLayerView-styles';
-    link.rel = 'stylesheet';
-    link.href = '/assets/js/components/panels/DataLayerView.css'; // Adjust the path to your CSS file
-    document.head.appendChild(link);
-  }
-}
-
 export function createDataLayerView(options = {}) {
-  // Ensure the CSS is loaded
-  loadDataLayerViewStyles();
-
   // Create main container
   const panel = document.createElement('div');
   panel.className = 'panel';
-  
+
   // State
   let state = {
     data: options.data || [],
@@ -52,24 +38,24 @@ export function createDataLayerView(options = {}) {
     isEventEditEnabled: { toggle: false, urlIndex: 0, eventIndex: 0 },
     newTitle: ""
   };
-  
-  const dlPanel = document.createElement('div');
-  dlPanel.className = `dl-panel ${state.listOrder.toLowerCase()}`;
+
   // Create DOM elements
   const panelTop = document.createElement('div');
   panelTop.className = 'panel-top';
-  // DataLayerSettings component would be initialized here
-    // Create data layer settings panel
+
+  const dlPanel = document.createElement('div');
+  dlPanel.className = `dl-panel ${state.listOrder.toLowerCase()}`;
+
+  // Create data layer settings panel
   const dataLayerSettings = createDataLayerSettings({
-    tags: [], // Initial empty tags
-    query: '' // Initial empty query
+    tags: state.tags,
+    query: state.searchFilter
   });
+
   // Add settings panel to DOM
   const dlSettings = document.createElement('div');
   dlSettings.className = 'dl-settings';
   dlSettings.appendChild(dataLayerSettings.element);
-  panel.append(panelTop, dlSettings, dlPanel);
-
 
   // Initialize Control Bar
   const controlBar = createControlBar({
@@ -90,19 +76,18 @@ export function createDataLayerView(options = {}) {
 
   panelTop.appendChild(controlBar.element);
 
-  // Add toggle handler to control bar
-  controlBar.onToggleSettings = () => {
-    dataLayerSettings.toggleVisibility();
-    pageInteractionEvent("Data Layer View", "toggle_settings_panel");
-  };
-
-  // Update when data changes
-  function updateDataLayerSettings(tags) {
-    dataLayerSettings.updateTags(tags);
-  }
-
   // Assemble panel
   panel.append(panelTop, dlSettings, dlPanel);
+
+  // Helper function to extract tags from data
+  function extractTagsFromData(data) {
+    const result = data
+      .flatMap(d => d.events || [])
+      .flatMap(e => e.dataLayers || [])
+      .filter(obj => obj.data)
+      .map(item => item.dLN);
+    return [...new Set(result)]; // Remove duplicates
+  }
 
   // Render data layers
   function renderDataLayers() {
@@ -186,13 +171,13 @@ export function createDataLayerView(options = {}) {
     
     const collapseImg = document.createElement('img');
     collapseImg.id = 'expand-all';
-    collapseImg.src = chrome.runtime.getURL('/assets/images/collapse.svg');
+    collapseImg.src = chrome.runtime.getURL('images/collapse.svg');
     collapseImg.style.height = '15px';
     collapseImg.addEventListener('click', collapseTree);
     
     const expandImg = document.createElement('img');
     expandImg.id = 'collapse-all';
-    expandImg.src = chrome.runtime.getURL('/assets/images/expand.svg');
+    expandImg.src = chrome.runtime.getURL('images/expand.svg');
     expandImg.style.height = '15px';
     expandImg.addEventListener('click', expandTree);
     
@@ -224,7 +209,7 @@ export function createDataLayerView(options = {}) {
           maxDepth: 0,
           rootKey: dl.type === 'var' ? dl.dLN : getDLName(dl.type)
         });
-        dlContainer.appendChild(jsonView);
+        dlContainer.appendChild(jsonView.element);
       }
       
       dataLayersContainer.appendChild(dlContainer);
@@ -307,7 +292,6 @@ export function createDataLayerView(options = {}) {
       panel.querySelector('.search-box')?.classList.remove('active');
     }
 
-    // This would need a lodash alternative implementation
     const result = state.data
       .flatMap(d => d.events || [])
       .flatMap(e => e.dataLayers || []);
@@ -326,7 +310,8 @@ export function createDataLayerView(options = {}) {
       return false;
     }).map(item => item.dLN);
     
-    state.tags = res1;
+    state.tags = [...new Set(res1)]; // Remove duplicates
+    dataLayerSettings.updateTags(state.tags);
     renderDataLayers();
   }
 
@@ -425,10 +410,9 @@ export function createDataLayerView(options = {}) {
   }
 
   function toggleSettingsPanel() {
-    const settingsPanel = panel.querySelector('.dl-settings-panel');
-    if (settingsPanel) {
-      settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
-    }
+    dataLayerSettings.element.style.display = 
+      dataLayerSettings.element.style.display === 'none' ? 'block' : 'none';
+    pageInteractionEvent("Data Layer View", "toggle_settings_panel");
   }
 
   function getDLName(type) {
@@ -457,147 +441,331 @@ export function createDataLayerView(options = {}) {
     element: panel,
     updateData(newData) {
       state.data = newData;
+      state.tags = extractTagsFromData(newData);
+      dataLayerSettings.updateTags(state.tags);
       renderDataLayers();
-      // Extract tags from new data and update settings panel
-      const tags = extractTagsFromData(newData);
-      updateDataLayerSettings(tags);
     },
     setIsInspecting(inspecting) {
       state.isInspecting = inspecting;
       controlBar.setIsInspecting(inspecting);
+    },
+    updateSearchFilter(filter) {
+      state.searchFilter = filter;
+      updateSearch();
     }
   };
 }
 
-// Helper function to create JSONView component (would need actual implementation)
-function createJSONView(options = {}) {
-  // Default properties
-  const state = {
-    data: options.data || {},
-    rootKey: options.rootKey || '',
-    maxDepth: options.maxDepth || 0,
-    colorScheme: options.colorScheme || 'light',
-  };
+// Helper function to create JSONView component
+// data-layer-view.js - Updated with complete JSON viewer implementation
+// ... (previous code remains the same until createJSONView function)
 
-  // Utility methods
-  function isObject(val) {
-    return val !== null && typeof val === 'object' && !Array.isArray(val);
-  }
+function createJSONView(config) {
+  const container = document.createElement('div');
+  container.className = 'json-view-container';
 
-  function isArray(val) {
-    return Array.isArray(val);
-  }
+  // Create root item
+  const rootItem = document.createElement('div');
+  rootItem.className = 'json-view-item root-item';
 
-  // Build the JSON structure recursively
-  function build(key, val, depth = 0, path = '', includeKey = true) {
-    if (depth > state.maxDepth && state.maxDepth > 0) {
-      return document.createTextNode('...');
-    }
+  const rootKey = document.createElement('span');
+  rootKey.className = 'data-key';
+  rootKey.textContent = config.rootKey || 'root';
+  rootKey.setAttribute('aria-expanded', 'true');
 
-    const container = document.createElement('div');
-    container.className = `json-view-depth-${depth}`;
+  const colon = document.createElement('span');
+  colon.className = 'colon';
+  colon.textContent = ': ';
 
-    if (includeKey) {
-      const keyElement = document.createElement('span');
-      keyElement.className = 'json-key';
-      keyElement.textContent = `${key}: `;
-      container.appendChild(keyElement);
-    }
+  const rootValue = document.createElement('span');
+  rootValue.className = 'data-value';
 
-    if (isObject(val)) {
-      const objectContainer = document.createElement('div');
-      objectContainer.className = 'json-object';
-      Object.keys(val).forEach((childKey) => {
-        const child = build(childKey, val[childKey], depth + 1, `${path}.${childKey}`);
-        objectContainer.appendChild(child);
-      });
-      container.appendChild(objectContainer);
-    } else if (isArray(val)) {
-      const arrayContainer = document.createElement('div');
-      arrayContainer.className = 'json-array';
-      val.forEach((item, index) => {
-        const child = build(index, item, depth + 1, `${path}[${index}]`, false);
-        arrayContainer.appendChild(child);
-      });
-      container.appendChild(arrayContainer);
-    } else {
-      const valueElement = document.createElement('span');
-      valueElement.className = 'json-value';
-      valueElement.textContent = JSON.stringify(val);
-      container.appendChild(valueElement);
-    }
-
-    return container;
-  }
-
-  // Render the JSON view as a single element
-  function render() {
-    const rootElement = document.createElement('div');
-    rootElement.className = `json-view json-view-${state.colorScheme}`;
-    rootElement.appendChild(build(state.rootKey, state.data));
-    return rootElement;
-  }
-
-  // Return the rendered element directly
-  return render();
-}
-
-function extractTagsFromData(data) {
-  const tags = [];
-  data.forEach((datalayer) => {
-    datalayer.events.forEach((event) => {
-      if (event.tags && event.tags.length > 0) {
-        event.tags.forEach((tag) => {
-          if (!tags.includes(tag)) {
-            tags.push(tag); // Add unique tags
-          }
-        });
-      }
+  // Create toggle arrow for objects/arrays
+  if (config.data && typeof config.data === 'object' && Object.keys(config.data).length > 0) {
+    const arrow = document.createElement('span');
+    arrow.className = 'chevron-arrow opened';
+    arrow.innerHTML = '&#9660;';
+    arrow.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleJsonItem(this);
     });
-  });
-  return tags;
+
+    rootKey.insertBefore(arrow, rootKey.firstChild);
+    rootValue.appendChild(renderJsonData(config.data, 1, config.maxDepth, `${config.rootKey}.`));
+  } else {
+    rootValue.appendChild(renderJsonValue(config.data));
+  }
+
+  rootItem.append(rootKey, colon, rootValue);
+  container.appendChild(rootItem);
+
+  // Add styles (should be in a separate CSS file, but included here for completeness)
+  addJsonViewStyles();
+
+  return {
+    element: container,
+    expandAll: function() {
+      container.querySelectorAll('.json-view-item').forEach(item => {
+        item.style.display = '';
+      });
+      container.querySelectorAll('.chevron-arrow').forEach(arrow => {
+        arrow.classList.add('opened');
+      });
+      container.querySelectorAll('.data-key').forEach(key => {
+        key.setAttribute('aria-expanded', 'true');
+      });
+    },
+    collapseAll: function() {
+      container.querySelectorAll('.json-view-item:not(.root-item)').forEach(item => {
+        item.style.display = 'none';
+      });
+      container.querySelectorAll('.chevron-arrow').forEach(arrow => {
+        arrow.classList.remove('opened');
+      });
+      container.querySelectorAll('.data-key').forEach(key => {
+        key.setAttribute('aria-expanded', 'false');
+      });
+    }
+  };
 }
 
-// Helper function to create Accordion component (would need actual implementation)
-// function createAccordion(config) {
-//   // This would be replaced with actual Accordion implementation
-//   const container = document.createElement('div');
-//   container.className = 'accordion ' + (config.styling || '');
-  
-//   const header = document.createElement('h3');
-//   header.textContent = config.title;
-  
-//   if (config.editTitleSlot) {
-//     header.appendChild(config.editTitleSlot);
-//   }
-  
-//   const content = document.createElement('div');
-//   content.className = 'content';
-//   if (typeof config.content === 'string') {
-//     content.textContent = config.content;
-//   } else {
-//     content.appendChild(config.content);
-//   }
-  
-//   if (config.isOpen) {
-//     content.style.display = 'block';
-//     header.classList.add('selected');
-//   } else {
-//     content.style.display = 'none';
-//   }
-  
-//   header.addEventListener('click', () => {
-//     if (content.style.display === 'none') {
-//       content.style.display = 'block';
-//       header.classList.add('selected');
-//     } else {
-//       content.style.display = 'none';
-//       header.classList.remove('selected');
-//     }
-//   });
-  
-//   container.append(header, content);
-//   return {
-//     element: container
-//   };
-// }
+function renderJsonData(data, depth, maxDepth, path) {
+  const container = document.createElement('div');
+  container.className = 'json-data-container';
+
+  if (maxDepth && depth > maxDepth) {
+    const ellipsis = document.createElement('span');
+    ellipsis.className = 'ellipsis';
+    ellipsis.textContent = '...';
+    return ellipsis;
+  }
+
+  if (Array.isArray(data)) {
+    container.appendChild(renderJsonArray(data, depth, maxDepth, path));
+  } else if (typeof data === 'object' && data !== null) {
+    container.appendChild(renderJsonObject(data, depth, maxDepth, path));
+  } else {
+    container.appendChild(renderJsonValue(data));
+  }
+
+  return container;
+}
+
+function renderJsonObject(obj, depth, maxDepth, path) {
+  const container = document.createElement('div');
+  container.className = 'json-object';
+
+  const braceOpen = document.createElement('div');
+  braceOpen.className = 'json-brace';
+  braceOpen.textContent = '{';
+  container.appendChild(braceOpen);
+
+  const innerContainer = document.createElement('div');
+  innerContainer.className = 'json-object-inner';
+
+  Object.entries(obj).forEach(([key, value]) => {
+    const item = document.createElement('div');
+    item.className = 'json-view-item';
+    item.style.marginLeft = `${depth * 10}px`;
+
+    const keySpan = document.createElement('span');
+    keySpan.className = 'data-key';
+    keySpan.textContent = key;
+    keySpan.setAttribute('aria-expanded', 'false');
+
+    const colon = document.createElement('span');
+    colon.className = 'colon';
+    colon.textContent = ': ';
+
+    const valueSpan = document.createElement('span');
+    valueSpan.className = 'data-value';
+
+    if (value && typeof value === 'object') {
+      const arrow = document.createElement('span');
+      arrow.className = 'chevron-arrow';
+      arrow.innerHTML = '&#9658;';
+      arrow.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleJsonItem(this);
+      });
+
+      keySpan.insertBefore(arrow, keySpan.firstChild);
+      valueSpan.appendChild(renderJsonData(value, depth + 1, maxDepth, `${path}${key}.`));
+    } else {
+      valueSpan.appendChild(renderJsonValue(value));
+    }
+
+    item.append(keySpan, colon, valueSpan);
+    innerContainer.appendChild(item);
+  });
+
+  const braceClose = document.createElement('div');
+  braceClose.className = 'json-brace';
+  braceClose.textContent = '}';
+  braceClose.style.marginLeft = `${(depth - 1) * 10}px`;
+
+  container.append(innerContainer, braceClose);
+  return container;
+}
+
+function renderJsonArray(arr, depth, maxDepth, path) {
+  const container = document.createElement('div');
+  container.className = 'json-array';
+
+  const bracketOpen = document.createElement('div');
+  bracketOpen.className = 'json-bracket';
+  bracketOpen.textContent = '[';
+  container.appendChild(bracketOpen);
+
+  const innerContainer = document.createElement('div');
+  innerContainer.className = 'json-array-inner';
+
+  arr.forEach((value, index) => {
+    const item = document.createElement('div');
+    item.className = 'json-view-item';
+    item.style.marginLeft = `${depth * 10}px`;
+
+    const indexSpan = document.createElement('span');
+    indexSpan.className = 'data-key';
+    indexSpan.textContent = index;
+    indexSpan.setAttribute('aria-expanded', 'false');
+
+    const colon = document.createElement('span');
+    colon.className = 'colon';
+    colon.textContent = ': ';
+
+    const valueSpan = document.createElement('span');
+    valueSpan.className = 'data-value';
+
+    if (value && typeof value === 'object') {
+      const arrow = document.createElement('span');
+      arrow.className = 'chevron-arrow';
+      arrow.innerHTML = '&#9658;';
+      arrow.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleJsonItem(this);
+      });
+
+      indexSpan.insertBefore(arrow, indexSpan.firstChild);
+      valueSpan.appendChild(renderJsonData(value, depth + 1, maxDepth, `${path}${index}.`));
+    } else {
+      valueSpan.appendChild(renderJsonValue(value));
+    }
+
+    item.append(indexSpan, colon, valueSpan);
+    innerContainer.appendChild(item);
+  });
+
+  const bracketClose = document.createElement('div');
+  bracketClose.className = 'json-bracket';
+  bracketClose.textContent = ']';
+  bracketClose.style.marginLeft = `${(depth - 1) * 10}px`;
+
+  container.append(innerContainer, bracketClose);
+  return container;
+}
+
+function renderJsonValue(value) {
+  const span = document.createElement('span');
+  span.className = 'json-value';
+
+  if (value === null) {
+    span.textContent = 'null';
+    span.className += ' json-null';
+  } else if (typeof value === 'boolean') {
+    span.textContent = value ? 'true' : 'false';
+    span.className += ' json-boolean';
+  } else if (typeof value === 'number') {
+    span.textContent = value;
+    span.className += ' json-number';
+  } else if (typeof value === 'string') {
+    span.textContent = `"${value}"`;
+    span.className += ' json-string';
+  } else {
+    span.textContent = String(value);
+  }
+
+  return span;
+}
+
+function toggleJsonItem(arrow) {
+  const keySpan = arrow.parentElement;
+  const valueContainer = keySpan.nextElementSibling.nextElementSibling;
+  const isExpanded = arrow.classList.contains('opened');
+
+  if (isExpanded) {
+    arrow.classList.remove('opened');
+    arrow.innerHTML = '&#9658;';
+    keySpan.setAttribute('aria-expanded', 'false');
+    valueContainer.querySelectorAll('.json-view-item').forEach(item => {
+      item.style.display = 'none';
+    });
+  } else {
+    arrow.classList.add('opened');
+    arrow.innerHTML = '&#9660;';
+    keySpan.setAttribute('aria-expanded', 'true');
+    valueContainer.querySelectorAll('.json-view-item').forEach(item => {
+      item.style.display = '';
+    });
+  }
+}
+
+function addJsonViewStyles() {
+  if (document.getElementById('json-view-styles')) return;
+
+  const style = document.createElement('style');
+  style.id = 'json-view-styles';
+  style.textContent = `
+    .json-view-container {
+      font-family: monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #333;
+    }
+    .json-view-item {
+      margin: 2px 0;
+    }
+    .data-key {
+      color: #881391;
+      cursor: pointer;
+      user-select: none;
+    }
+    .data-value {
+      color: #333;
+    }
+    .colon {
+      color: #333;
+    }
+    .chevron-arrow {
+      display: inline-block;
+      width: 10px;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+    .json-brace, .json-bracket {
+      color: #333;
+      margin-left: 10px;
+    }
+    .json-string {
+      color: #C41A16;
+    }
+    .json-number {
+      color: #1C00CF;
+    }
+    .json-boolean {
+      color: #0D22AA;
+    }
+    .json-null {
+      color: #666;
+    }
+    .ellipsis {
+      color: #666;
+    }
+    .json-object-inner, .json-array-inner {
+      margin-left: 10px;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+// ... (rest of the DataLayerView implementation remains the same)

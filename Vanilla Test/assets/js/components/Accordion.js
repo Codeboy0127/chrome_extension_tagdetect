@@ -10,7 +10,7 @@ function loadAccordionStyles() {
 }
 
 export function createAccordion(config) {
-
+  
   // Ensure the CSS is loaded
     loadAccordionStyles();
   // Create container
