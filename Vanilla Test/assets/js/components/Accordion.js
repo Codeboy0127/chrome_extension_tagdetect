@@ -30,14 +30,6 @@ export function createAccordion(config) {
   abbr.textContent = config.title || '';
   
   titleSpan.appendChild(abbr);
-  
-  // Add time if provided
-  if (config.time) {
-    const timeSpan = document.createElement('span');
-    timeSpan.className = 'time';
-    timeSpan.textContent = config.time;
-    titleSpan.appendChild(timeSpan);
-  }
 
   // Add edit title slot if provided
   if (config.editTitleSlot) {
@@ -58,7 +50,13 @@ export function createAccordion(config) {
   const buttonsContainer = document.createElement('div');
   buttonsContainer.className = 'accordion-buttons';
   buttonsContainer.addEventListener('click', (e) => e.stopPropagation());
-  
+    // Add time if provided
+    if (config.time) {
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'time';
+      timeSpan.textContent = config.time;
+      buttonsContainer.appendChild(timeSpan);
+    }
   // Add buttons slot if provided
   if (config.buttonsSlot) {
     buttonsContainer.appendChild(config.buttonsSlot);
@@ -70,6 +68,7 @@ export function createAccordion(config) {
   }
 
   header.appendChild(buttonsContainer);
+  
 
   // Create horizontal line if needed
   let horizontalLine = null;

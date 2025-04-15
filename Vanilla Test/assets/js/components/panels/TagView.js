@@ -101,6 +101,16 @@ export function createTagView(options = {}) {
   // Assemble panel
   panel.append(panelTop, tagSettings, tagPanel);
 
+  const dateFormatter = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  
+  const formattedDateTime = dateFormatter.format(new Date());
+
   // Render data
   function renderData() {
     tagPanel.innerHTML = '';
@@ -110,7 +120,8 @@ export function createTagView(options = {}) {
         id: `tech-${urlIndex}`,
         styling: 'rounded gray-header accordion-shadow',
         title: url.pageUrl,
-        content: renderEvents(url.events, urlIndex)
+        content: renderEvents(url.events, urlIndex),
+        time: formattedDateTime
       });
       
       tagPanel.appendChild(urlAccordion.element);
