@@ -281,3 +281,15 @@ chrome.runtime.onInstalled.addListener(function(details) {
     chrome.storage.local.set({ dataLayers: presetJSObjects });
   }
 });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "TAGS_COUNT") {
+    const count = message.count.toString();
+
+    // Optional: limit badge to 3 characters (e.g., 999+)
+    const badgeText = count.length > 3 ? "999" : count;
+
+    chrome.action.setBadgeText({ text: badgeText, tabId: sender.tab.id });
+    chrome.action.setBadgeBackgroundColor({ color: "#FF0000", tabId: sender.tab.id });
+  }
+});

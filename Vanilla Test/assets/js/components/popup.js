@@ -182,6 +182,8 @@ export function createPopup() {
   async function init() {
     state.regexList = await getRegexList();
     dispatchListeners();
+    // Initialize the badge
+    updateBadge();
   }
 
   function parsePostData(postData) {
@@ -406,9 +408,27 @@ export function createPopup() {
       if (!state.data[urlListLength].hasOwnProperty('events')) return;
       const eventListLength = state.data[urlListLength].events.length - 1;
       queueData(data, name, urlListLength, eventListLength, icon);
+      
+      // Update the badge with the total number of tags
+      updateBadge();
     } catch (error) {
       console.error(error);
     }
+  }
+
+  function updateBadge() {
+    // Calculate the total number of tags
+    const totalTags = state.data.reduce((count, url) => {
+      return count + url.events.reduce((eventCount, event) => {
+        return eventCount + (event.tags ? event.tags.length : 0);
+      }, 0);
+    }, 0);
+  
+    // Set the badge text
+    chrome.action.setBadgeText({ text: totalTags > 0 ? totalTags.toString() : '' });
+  
+    // Set the badge background color
+    chrome.action.setBadgeBackgroundColor({ color: '#FF0000' }); // Red background
   }
 
   function queueData(data, name, urlListLength, eventListLength, icon) {
