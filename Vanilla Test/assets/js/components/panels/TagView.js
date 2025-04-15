@@ -9,6 +9,7 @@ export function createTagView(options = {}) {
   // Create main container
   const panel = document.createElement('div');
   panel.className = 'panel';
+console.log("tag--->", options.data);
 
   // State
   let state = {

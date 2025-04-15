@@ -72,6 +72,7 @@ export function createPopup() {
   
   // Create tabs system
   const tabs = createTabs();
+  console.log("tagdata--->", state.data);
   
   // Create TagView tab
   const tagView = createTagView({
@@ -229,9 +230,10 @@ export function createPopup() {
   }
 
   function devtoolsNetworkRequest(request) {
-    const details = request.request;
 
+    const details = request.request;
     state.regexList.forEach((element, index) => {
+      console.log("devtools", element);
       if (RegExp(element.pattern).test(details.url) && !element.ignore && details.hasOwnProperty('url') && state.isInspecting) {
         var initiatorChain = [];
         var initiator = request.initiator;
@@ -400,10 +402,9 @@ export function createPopup() {
     dataLayerView.updateData(state.data);
   }
 
-  function pushData(data, name, identifier, icon) {
+  function pushData(data, name, identifier, icon) {  
     try {
       const urlListLength = state.data.length - 1;
-      console.log("here--->", state.data)
       if (!state.data[urlListLength].hasOwnProperty('events')) return;
       const eventListLength = state.data[urlListLength].events.length - 1;
       queueData(data, name, urlListLength, eventListLength, icon);

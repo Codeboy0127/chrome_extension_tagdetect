@@ -91,6 +91,8 @@ export function createTabs() {
 
   // Methods
   function selectTab(index, tabName) {
+    
+    console.log("tabindex---", index, tabName);
     selectedIndex = index;
     
     // Update tab visibility
@@ -110,11 +112,10 @@ export function createTabs() {
 
   function addTab(tabInstance, title) {
     tabs.push(tabInstance);
-    
     // Create tab header
     const tabHeader = document.createElement('li');
     tabHeader.textContent = title;
-    tabHeader.addEventListener('click', () => selectTab(tabs.length - 1, title));
+    tabHeader.addEventListener('click', () => selectTab(title=="Tags View"?0:1, title));
     
     if (tabs.length === 1) {
       tabHeader.classList.add('tabs-selected');
