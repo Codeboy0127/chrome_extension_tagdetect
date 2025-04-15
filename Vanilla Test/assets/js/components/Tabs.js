@@ -80,7 +80,7 @@ export function createTabs() {
       <a target="_blank" href="https://taglab.net/?utm_source=extension&utm_medium=owned-media&utm_campaign=why-taglab-web" class="primary-btn">
         Discover
       </a>
-      <button class="btn" onClick="close">Go Back</button>
+      <button class="btn modal-default-button">Go Back</button>
     `
   });
 
