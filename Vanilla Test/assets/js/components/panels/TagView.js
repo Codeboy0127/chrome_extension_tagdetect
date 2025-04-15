@@ -121,7 +121,7 @@ export function createTagView(options = {}) {
         styling: 'rounded gray-header accordion-shadow',
         title: url.pageUrl,
         content: renderEvents(url.events, urlIndex),
-        time: formattedDateTime
+        date: formattedDateTime
       });
       
       tagPanel.appendChild(urlAccordion.element);

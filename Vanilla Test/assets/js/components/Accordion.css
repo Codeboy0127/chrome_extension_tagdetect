@@ -117,10 +117,9 @@
 }
 
 .time {
-  /* background-color: #cce8d2; */
+  background-color: #cce8d2;
   border-radius: 19px;
   padding: 2px 10px;
-  float: right;
 }
 
 .horizontal {
