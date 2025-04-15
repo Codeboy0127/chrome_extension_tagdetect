@@ -52,3 +52,31 @@
   transform: scale(1.1);*/
   opacity: 0;
 }
+
+.btn {
+  border-radius: 45px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #2ca148;
+  border: 1px solid #2ca148;
+  padding: 0.5rem 1.5rem;
+}
+
+.primary-btn {
+  border-radius: 45px;
+  background-color: #2ca148;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.5rem;
+}
+
+.modal-footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}

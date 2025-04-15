@@ -104,7 +104,7 @@ export function createPopup() {
     }
   });
   
-  const dataLayerViewTab = createTab('Data Layer View');
+  const dataLayerViewTab = createTab('Data Layer View', false);
   dataLayerViewTab.appendContent(dataLayerView.element);
   tabs.addTab(dataLayerViewTab, 'Data Layer View');
 

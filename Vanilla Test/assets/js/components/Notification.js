@@ -13,10 +13,11 @@ export function createNotificationManager() {
     // Ensure the CSS is loaded
     loadNotificationStyles();
     // Create container
-    const container = document.createElement('div');
+    // const container = document.createElement('div');
     const notificationWrapper = document.createElement('div');
     notificationWrapper.className = 'notification-wrapper custom-scrollbar';
-    container.appendChild(notificationWrapper);
+    notificationWrapper.style.display="none";
+    // container.appendChild(notificationWrapper);
   
     // State
     let notifications = [];
@@ -54,6 +55,8 @@ export function createNotificationManager() {
     // Render notifications
     function renderNotifications() {
       notificationWrapper.innerHTML = '';
+      console.log("Notifications: ", notifications);
+      notificationWrapper.style.display = notifications.length > 0 ? "flex" : "none";
       
       notifications.forEach(notification => {
         const notificationElement = document.createElement('div');
@@ -79,7 +82,7 @@ export function createNotificationManager() {
   
     // Public API
     return {
-      element: container,
+      element: notificationWrapper,
       addNotification,
       removeNotification,
       clearAll,
