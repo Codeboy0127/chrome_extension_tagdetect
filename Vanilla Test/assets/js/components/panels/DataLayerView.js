@@ -19,7 +19,6 @@ export function createDataLayerView(options = {}) {
   // Create main container
   const panel = document.createElement('div');
   panel.className = 'panel';
-console.log("datalayer---", options.data);
 
   // State
   let state = {
@@ -407,7 +406,6 @@ console.log("datalayer---", options.data);
   }
 
   function collapseTree(event) {
-    console.log("collapseTree=-----", event.currentTarget);
     const parent = event.currentTarget.closest('.accordion');
     const content = parent.querySelector('div.content');
     if (content) {

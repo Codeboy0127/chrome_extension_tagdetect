@@ -5,11 +5,21 @@ import { createReadMore } from '../ReadMore.js';
 import { createTagSettings } from '../settings/TagSettings.js';
 import { pageInteractionEvent } from '../../google-analytics.js';
 
+function loadTagViewStyles() {
+  if (!document.getElementById('TagView-styles')) {
+    const link = document.createElement('link');
+    link.id = 'TagView-styles';
+    link.rel = 'stylesheet';
+    link.href = '/assets/js/components/panels/TagView.css'; // Adjust the path to your CSS file
+    document.head.appendChild(link);
+  }
+}
+
 export function createTagView(options = {}) {
+  loadTagViewStyles();
   // Create main container
   const panel = document.createElement('div');
   panel.className = 'panel';
-console.log("tag--->", options.data);
 
   // State
   let state = {
@@ -182,6 +192,7 @@ console.log("tag--->", options.data);
     }
     
     tags.forEach((tag, index) => {
+      console.log(tag);
       const title = `${tag.name}${tag.content.tid ? ' - ' + tag.content.tid : ''}${tag.content.en ? ' - ' + tag.content.en : ''}`;
       const time = `(${tag.timeStamp - tags[eventIndex].timeStamp})ms`;
       
@@ -205,7 +216,7 @@ console.log("tag--->", options.data);
   function renderTagIcon(icon) {
     const img = document.createElement('img');
     img.className = 'tag-icon';
-    img.src = chrome.runtime.getURL(`images/regex_icons/${icon}`);
+    img.src = chrome.runtime.getURL(`/assets/images/regex_icons/${icon}`);
     img.alt = '';
     return img;
   }
@@ -572,16 +583,3 @@ console.log("tag--->", options.data);
   };
 }
 
-// CSS (same as original, include in your stylesheet)
-/*
-.tag-panel {
-  gap: 1rem;
-}
-
-ul.tag-params {
-  list-style: none;
-  background: #fff;
-}
-
-... (rest of the CSS from the original component)
-*/

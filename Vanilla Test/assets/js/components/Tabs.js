@@ -92,7 +92,6 @@ export function createTabs() {
   // Methods
   function selectTab(index, tabName) {
     
-    console.log("tabindex---", index, tabName);
     selectedIndex = index;
     
     // Update tab visibility

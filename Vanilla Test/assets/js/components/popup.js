@@ -72,8 +72,7 @@ export function createPopup() {
   
   // Create tabs system
   const tabs = createTabs();
-  console.log("tagdata--->", state.data);
-  
+
   // Create TagView tab
   const tagView = createTagView({
     isInspecting: state.isInspecting,
@@ -233,7 +232,6 @@ export function createPopup() {
 
     const details = request.request;
     state.regexList.forEach((element, index) => {
-      console.log("devtools", element);
       if (RegExp(element.pattern).test(details.url) && !element.ignore && details.hasOwnProperty('url') && state.isInspecting) {
         var initiatorChain = [];
         var initiator = request.initiator;

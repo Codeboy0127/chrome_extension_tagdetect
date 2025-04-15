@@ -281,7 +281,7 @@ export function createTagSettings(options = {}) {
   
     function getIconPath(index) {
       if (state.regExPatterns[index]?.iconPath) {
-        return chrome.runtime.getURL('images/regex_icons/' + state.regExPatterns[index].iconPath);
+        return chrome.runtime.getURL('assets/images/regex_icons/' + state.regExPatterns[index].iconPath);
       }
       return '';
     }
