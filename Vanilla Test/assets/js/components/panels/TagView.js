@@ -232,7 +232,7 @@ export function createTagView(options = {}) {
     const count = document.createElement('span');
     count.style.fontSize = 'small';
     count.style.fontWeight = '400';
-    count.textContent = `${state.occurrences[tagName].occurrences}/${state.data.length} pages`;
+    count.textContent = `${state.occurrences[tagName].occurrences?state.occurrences[tagName].occurrences:state.data.length}/${state.data.length} pages`;
     
     container.append(label, br, count);
     return container;
