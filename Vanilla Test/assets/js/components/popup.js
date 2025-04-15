@@ -245,7 +245,9 @@ export function createPopup() {
         const urlParams = details.url;
         const postData = parsePostData(details.postData?.text);
         const initiatior = parseInitiator(request._initiator);
-        const content = { ...{ request: details.url }, ...initiatior, ...getUrlParams(urlParams) };
+        const domain = new URL(details.url).hostname; // Extract the domain name
+        
+        const content = { ...{ request: details.url }, ...initiatior, ...getUrlParams(urlParams), domain };
         if (!state.regexOccurances[element.name].passed) {
           state.regexOccurances[element.name].passed = true;
           const occurences = state.regexOccurances[element.name].occurences + 1;
@@ -253,7 +255,7 @@ export function createPopup() {
         }
         const data = { 
           name: element.name, 
-          occurences: 0, 
+          occurences: state.regexOccurances[element.name].occurences, // Include the impression count
           content: content, 
           timeStamp: Date.now(), 
           payload: postData, 
@@ -407,6 +409,11 @@ export function createPopup() {
       const urlListLength = state.data.length - 1;
       if (!state.data[urlListLength].hasOwnProperty('events')) return;
       const eventListLength = state.data[urlListLength].events.length - 1;
+      
+      // Add domain and impression count to the data
+      data.domain = new URL(state.data[urlListLength].pageUrl).hostname; // Add domain name
+      data.impressions = state.regexOccurances[identifier]?.occurences || 0; // Add impression count
+
       queueData(data, name, urlListLength, eventListLength, icon);
       
       // Update the badge with the total number of tags
