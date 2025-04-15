@@ -17,6 +17,7 @@ function loadTagViewStyles() {
 
 export function createTagView(options = {}) {
   loadTagViewStyles();
+
   // Create main container
   const panel = document.createElement('div');
   panel.className = 'panel';
@@ -55,19 +56,19 @@ export function createTagView(options = {}) {
   const searchBox = document.createElement('div');
   searchBox.className = 'search-box';
 
-  const prevButton = document.createElement('button');
-  prevButton.className = 'sec-btn';
-  prevButton.style.padding = '0 1rem';
-  prevButton.textContent = 'Previous';
-  prevButton.addEventListener('click', searchPrev);
+  // const prevButton = document.createElement('button');
+  // prevButton.className = 'sec-btn';
+  // prevButton.style.padding = '0 1rem';
+  // prevButton.textContent = 'Previous';
+  // prevButton.addEventListener('click', searchPrev);
 
-  const nextButton = document.createElement('button');
-  nextButton.className = 'sec-btn';
-  nextButton.style.padding = '0 1rem';
-  nextButton.textContent = 'Next';
-  nextButton.addEventListener('click', searchNext);
+  // const nextButton = document.createElement('button');
+  // nextButton.className = 'sec-btn';
+  // nextButton.style.padding = '0 1rem';
+  // nextButton.textContent = 'Next';
+  // nextButton.addEventListener('click', searchNext);
 
-  searchBox.append(prevButton, nextButton);
+  // searchBox.append(prevButton, nextButton);
 
   const searchCount = document.createElement('span');
   searchCount.style.display = 'none';
@@ -92,10 +93,7 @@ export function createTagView(options = {}) {
   panelTop.append(searchBox, searchCount, controlBar.element);
 
   // Create tag settings
-  const tagSettings = document.createElement('div');
-  tagSettings.className = 'tag-settings';
-  // TagSettings component would be initialized here
-
+  const tagSettings = createTagSettings().element;
   // Create tag panel
   const tagPanel = document.createElement('div');
   tagPanel.className = `tag-panel ${state.listOrder.toLowerCase()}`;
@@ -192,7 +190,6 @@ export function createTagView(options = {}) {
     }
     
     tags.forEach((tag, index) => {
-      console.log(tag);
       const title = `${tag.name}${tag.content.tid ? ' - ' + tag.content.tid : ''}${tag.content.en ? ' - ' + tag.content.en : ''}`;
       const time = `(${tag.timeStamp - tags[eventIndex].timeStamp})ms`;
       
@@ -541,6 +538,7 @@ export function createTagView(options = {}) {
 
   function toggleSettingsPanel() {
     const settingsPanel = panel.querySelector('.tag-settings-panel');
+    console.log(settingsPanel, panel)
     if (settingsPanel) {
       settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
     }

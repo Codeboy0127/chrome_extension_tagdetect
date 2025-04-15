@@ -93,7 +93,8 @@ export function createControlBar(options = {}) {
   }
 
   function handleToggleSettings() {
-    if (options.onToggleSettings) options.onToggleSettings();
+    
+    if (options.onToggleSettingsPanel) options.onToggleSettingsPanel();
     pageInteractionEvent(panel, 'toggle_settings_panel');
   }
 
