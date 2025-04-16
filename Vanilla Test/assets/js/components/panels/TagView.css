@@ -2,6 +2,15 @@
   gap: 1rem;
 }
 
+.tags-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0px 10px;
+  justify-content: space-between;
+}
+
 ul.tag-params {
   list-style: none;
   background: #fff;
@@ -115,4 +124,9 @@ body[data-theme='dark'] ul.tag-params{
 
 .prevent-btn:hover {
   background-color: #d32f2f;
+}
+
+body[data-theme='dark'] .prevent-btn {
+  background-color: #f44336;
+  color: #fff;
 }

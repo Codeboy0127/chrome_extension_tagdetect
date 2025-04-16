@@ -94,6 +94,10 @@
   border: none;
   border-top: none;
 }
+ 
+.flat.rounded.accordion-border.accordion {
+  width: 100%
+}
 
 .content span {
   /*word-break: break-all;
@@ -139,4 +143,14 @@ body[data-theme='dark'] .accordion.gray-header span, .accordion.green-header spa
 
 body[data-theme='dark'] .flat.accordion .selected{
   color: white;
+}
+
+@media (min-width: 768px) {
+  .flat.rounded.accordion-border.accordion {
+    width: 48%;
+  }
+
+  .accordion-buttons h4{
+    display: none;
+  }
 }

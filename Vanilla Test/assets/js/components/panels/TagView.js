@@ -279,7 +279,7 @@ export function createTagView(options = {}) {
 
   function renderTags(tags, urlIndex, eventIndex) {
     const container = document.createElement('div');
-    
+    container.className = 'tags-container';
     if (!tags || tags.length === 0) {
       const noTags = document.createElement('p');
       noTags.textContent = 'No recorded tags';
