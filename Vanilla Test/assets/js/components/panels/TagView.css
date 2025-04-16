@@ -28,7 +28,7 @@ ul.tag-params li span:first-child {
   width: auto; */
   flex: 1 1 100%;
   min-width: 100px;
-  max-width: 200px;
+  max-width: 100%;
   background-color: #e9f9ed;
   font-weight: 200;
   /* text-transform: capitalize; */
@@ -68,4 +68,19 @@ span.search-hit.currentHit {
   font-weight: 400;
   text-decoration: underline;
   margin-top: 16px;
+}
+
+.search-dropdown {
+  margin-left: 10px;
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+}
+
+.search-dropdown:focus {
+  outline: none;
+  border-color: #007bff;
 }

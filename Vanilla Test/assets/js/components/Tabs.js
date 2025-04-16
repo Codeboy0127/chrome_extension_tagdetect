@@ -34,6 +34,13 @@ export function createTabs() {
   logoLink.appendChild(logoImg);
   logoContainer.appendChild(logoLink);
 
+  //Create toggle theme button
+  const themeToggle = document.createElement('button');
+  themeToggle.textContent = 'Toggle Theme';
+  themeToggle.className = 'theme-toggle';
+  themeToggle.addEventListener('click', toggleTheme);
+  logoContainer.appendChild(themeToggle);
+
   // Create header navigation
   const headerNav = document.createElement('div');
   headerNav.className = 'header-nav';
@@ -123,6 +130,29 @@ export function createTabs() {
     tabsHeader.appendChild(tabHeader);
     tabsContainer.appendChild(tabInstance.element);
   }
+
+  function toggleTheme() {
+    const currentTheme = document.body.dataset.theme || 'light';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.body.dataset.theme = newTheme;
+  
+    // Save the theme preference to localStorage
+    localStorage.setItem('theme', newTheme);
+  }
+
+  //When the popup loads, check for the saved theme in localStorage and apply it.
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.dataset.theme = savedTheme;
+  
+    const app = document.getElementById('app');
+    if (app) {
+      const popup = createPopup();
+      app.appendChild(popup);
+    } else {
+      console.error("No element with id 'app' found.");
+    }
+  });
 
   // Initial setup
   tabsHeaderContainer.appendChild(tabsHeader);

@@ -126,3 +126,41 @@
       flex: 1 0 40%;
     }
   }
+
+  body[data-theme='light'] {
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  body[data-theme='light'] .tabs,
+body[data-theme='light'] .header-nav,
+body[data-theme='light'] .c-tabs-header,
+body[data-theme='light'] .theme-toggle {
+  background-color: #f9f9f9;
+  color: #000000;
+}
+  
+  body[data-theme='dark'] {
+    background-color: #000000;
+    color: #ffffff;
+  }
+  
+  
+body[data-theme='dark'] h3,
+body[data-theme='dark'] .action-btn
+body[data-theme='dark'] .c-tabs-header,
+body[data-theme='dark'] .theme-toggle {
+  background-color: #1e1e1e;
+  color: #ffffff;
+}
+
+  .theme-toggle {
+    margin: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+
+  body[data-theme='dark'] * {
+    background-color: inherit;
+    color: inherit;
+  }

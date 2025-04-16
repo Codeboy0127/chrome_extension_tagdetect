@@ -23,7 +23,7 @@ export function createDataLayerView(options = {}) {
   // State
   let state = {
     data: options.data || [],
-    listOrder: options.listOrder || 'DESC',
+    listOrder: options.listOrder || 'ASC',
     isInspecting: options.isInspecting || false,
     tags: [],
     tagNames: {
@@ -595,6 +595,7 @@ export function createDataLayerView(options = {}) {
         }
         
         Object.entries(data).forEach(([key, value]) => {
+     
             const item = document.createElement('div');
             item.className = 'json-view-item';
             
@@ -621,7 +622,16 @@ export function createDataLayerView(options = {}) {
             colon.className = 'colon';
             colon.textContent = ':';
             keyElement.appendChild(colon);
+                // Add event
+            const event = document.createElement('span');
             
+              Object.entries(value).forEach(([key2, value2]) => {
+                if (key2 == 'event') {
+                    event.textContent = value2;
+                    event.className = 'event-name';
+                }
+            })
+            keyElement.appendChild(event);
             item.appendChild(keyElement);
             
             const valueContainer = document.createElement('div');

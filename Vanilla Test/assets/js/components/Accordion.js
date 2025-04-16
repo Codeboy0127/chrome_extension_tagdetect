@@ -62,7 +62,16 @@ export function createAccordion(config) {
     if (config.date) {
       const dateSpan = document.createElement('span');
       dateSpan.className = 'date';
-      dateSpan.textContent = config.date;
+      const dateFormatter = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      const formattedDateTime = dateFormatter.format(config.date);
+      dateSpan.textContent = formattedDateTime;
       buttonsContainer.appendChild(dateSpan);
     }
   // Add buttons slot if provided

@@ -1,5 +1,6 @@
 // tag-view.js - Vanilla JS implementation of TagView component
 import { createControlBar } from '../ControlBar.js';
+import { createDropdown } from '../Dropdown.js';
 import { createAccordion } from '../Accordion.js';
 import { createReadMore } from '../ReadMore.js';
 import { createTagSettings } from '../settings/TagSettings.js';
@@ -21,7 +22,6 @@ export function createTagView(options = {}) {
   // Create main container
   const panel = document.createElement('div');
   panel.className = 'panel';
-
   // State
   let state = {
     isInspecting: options.isInspecting || false,
@@ -70,6 +70,8 @@ export function createTagView(options = {}) {
 
   // searchBox.append(prevButton, nextButton);
 
+  const filterBox = createDropdown();
+
   const searchCount = document.createElement('span');
   searchCount.style.display = 'none';
 
@@ -90,7 +92,7 @@ export function createTagView(options = {}) {
     onToggleSettingsPanel: toggleSettingsPanel
   });
 
-  panelTop.append(searchBox, searchCount, controlBar.element);
+  panelTop.append(searchBox, searchCount,filterBox, controlBar.element);
 
   // Create tag settings
   const tagSettings = createTagSettings().element;
@@ -100,16 +102,6 @@ export function createTagView(options = {}) {
 
   // Assemble panel
   panel.append(panelTop, tagSettings, tagPanel);
-
-  const dateFormatter = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-  
-  const formattedDateTime = dateFormatter.format(new Date());
 
   // Render data
   function renderData() {
@@ -121,7 +113,7 @@ export function createTagView(options = {}) {
         styling: 'rounded gray-header accordion-shadow',
         title: url.pageUrl,
         content: renderEvents(url.events, urlIndex),
-        date: formattedDateTime
+        date: url.events[0].timeStamp
       });
       
       tagPanel.appendChild(urlAccordion.element);

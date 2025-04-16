@@ -479,6 +479,7 @@ export function createPopup() {
     }
     tagView.updateData(state.data);
     dataLayerView.updateData(state.data);
+    chrome.action.setBadgeText({ text: '' });
   }
 
   function errorHandler(errorAt) {
