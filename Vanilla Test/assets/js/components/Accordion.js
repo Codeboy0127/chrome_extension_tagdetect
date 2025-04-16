@@ -154,18 +154,3 @@ export function createAccordion(config) {
   };
 }
 
-// CSS (same as original, include in your stylesheet)
-/*
-.accordion {
-  margin-top: 0.5em;
-  cursor: pointer;
-  border-radius: 10px;
-}
-
-.accordion-shadow {
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-}
-
-... (rest of the CSS from the original component)
-*/

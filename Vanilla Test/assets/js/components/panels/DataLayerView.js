@@ -129,18 +129,19 @@ export function createDataLayerView(options = {}) {
     
     // Reverse events based on listOrder
     const eventsToRender = state.listOrder === 'ASC' ? [...events] : [...events].reverse();
-    
     eventsToRender.forEach((event, eventIndex) => {
-      const originalIndex = state.listOrder === 'ASC' ? eventIndex : events.length - eventIndex - 1;
-      const eventAccordion = createAccordion({
-        title: event.name,
-        styling: 'rounded green-header accordion-shadow',
-        editTitleSlot: renderEditTitle(event.name, urlIndex, originalIndex),
-        buttonsSlot: event.dataLayers ? renderButtons() : null,
-        content: renderDataLayerContent(event, urlIndex, originalIndex)
-      });
-      
-      container.appendChild(eventAccordion.element);
+      if (event.name == "Load") {
+        const originalIndex = state.listOrder === 'ASC' ? eventIndex : events.length - eventIndex - 1;
+        const eventAccordion = createAccordion({
+          title: event.name,
+          styling: 'rounded green-header accordion-shadow',
+          editTitleSlot: renderEditTitle(event.name, urlIndex, originalIndex),
+          buttonsSlot: event.dataLayers ? renderButtons() : null,
+          content: renderDataLayerContent(event, urlIndex, originalIndex)
+        });
+        
+        container.appendChild(eventAccordion.element);
+      }
     });
     
     return container;

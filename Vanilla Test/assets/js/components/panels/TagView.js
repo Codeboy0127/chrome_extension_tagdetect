@@ -212,8 +212,9 @@ export function createTagView(options = {}) {
     filteredTags.forEach((tag, index) => {
 
       const title = `${tag.name}${tag.content.tid ? ' - ' + tag.content.tid : ''}${tag.content.en ? ' - ' + tag.content.en : ''}`;
-      const time = `(${tag.timeStamp - tags[eventIndex].timeStamp})ms`;
-      
+      const time = tags[eventIndex]
+        ? `(${tag.timeStamp - tags[eventIndex].timeStamp})ms`
+        : '(No timestamp available)';
       const tagAccordion = createAccordion({
         id: `tech-${urlIndex}-${eventIndex}-${index}`,
         styling: 'flat rounded accordion-border',

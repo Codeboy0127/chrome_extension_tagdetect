@@ -407,6 +407,11 @@ export function createPopup() {
   function pushData(data, name, identifier, icon) {  
     try {
       const urlListLength = state.data.length - 1;
+      // Ensure state.data[urlListLength] exists
+      if (!state.data[urlListLength]) {
+        console.error(`state.data is undefined`);
+        return;
+      }
       if (!state.data[urlListLength].hasOwnProperty('events')) return;
       const eventListLength = state.data[urlListLength].events.length - 1;
       
