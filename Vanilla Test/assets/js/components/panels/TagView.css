@@ -84,3 +84,21 @@ span.search-hit.currentHit {
   outline: none;
   border-color: #007bff;
 }
+
+body[data-theme='dark'] ul.tag-params li span:first-child {
+  background-color: #191919;
+  border: none;
+  color: #fff;
+} 
+
+body[data-theme='dark'] ul.tag-params li {
+  background-color: inherit;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border: 1px solid #1f1e1e66;
+} 
+
+
+body[data-theme='dark'] ul.tag-params{
+  background-color: #0b0909;
+}

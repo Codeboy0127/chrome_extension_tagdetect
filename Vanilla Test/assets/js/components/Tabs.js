@@ -35,10 +35,13 @@ export function createTabs() {
   logoContainer.appendChild(logoLink);
 
   //Create toggle theme button
-  const themeToggle = document.createElement('button');
-  themeToggle.textContent = 'Toggle Theme';
-  themeToggle.className = 'theme-toggle';
-  themeToggle.addEventListener('click', toggleTheme);
+  const themeToggle = document.createElement('label');
+  themeToggle.className = 'theme-toggle-switch';
+  themeToggle.innerHTML = `
+    <input type="checkbox" id="theme-checkbox">
+    <span class="slider"></span>
+  `;
+  themeToggle.querySelector('#theme-checkbox').addEventListener('change', toggleTheme);
   logoContainer.appendChild(themeToggle);
 
   // Create header navigation
@@ -136,15 +139,24 @@ export function createTabs() {
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     document.body.dataset.theme = newTheme;
   
-    // Save the theme preference to localStorage
-    localStorage.setItem('theme', newTheme);
+    applyTheme(newTheme);
   }
 
+  function applyTheme(theme) {
+    document.body.dataset.theme = theme;
+  
+    // Save the theme preference to localStorage
+    localStorage.setItem('theme', theme);
+  }
   //When the popup loads, check for the saved theme in localStorage and apply it.
   document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.body.dataset.theme = savedTheme;
-  
+    // Sync the toggle switch with the saved theme
+    const themeCheckbox = document.getElementById('theme-checkbox');
+    if (themeCheckbox) {
+      themeCheckbox.checked = savedTheme === 'dark';
+    }
     const app = document.getElementById('app');
     if (app) {
       const popup = createPopup();

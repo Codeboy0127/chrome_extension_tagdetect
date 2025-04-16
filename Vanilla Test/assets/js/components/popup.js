@@ -409,7 +409,7 @@ export function createPopup() {
       const urlListLength = state.data.length - 1;
       // Ensure state.data[urlListLength] exists
       if (!state.data[urlListLength]) {
-        console.error(`state.data is undefined`);
+        console.log("state.data is undefined");
         return;
       }
       if (!state.data[urlListLength].hasOwnProperty('events')) return;

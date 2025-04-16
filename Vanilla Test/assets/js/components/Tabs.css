@@ -141,18 +141,46 @@ body[data-theme='light'] .theme-toggle {
 }
   
   body[data-theme='dark'] {
-    background-color: #000000;
+    background-color: #0a0a0a;
+    color: #ffffff;
+  }
+
+  body[data-theme='dark'] *{
     color: #ffffff;
   }
   
   
 body[data-theme='dark'] h3,
-body[data-theme='dark'] .action-btn
+body[data-theme='dark'] .flat,
+body[data-theme='dark'] .content,
+body[data-theme='dark'] .selected,
+body[data-theme='dark'] .tag-params,
+body[data-theme='dark'] .tag-params li,
+body[data-theme='dark'] .tag-params li span:first-child,
 body[data-theme='dark'] .c-tabs-header,
 body[data-theme='dark'] .theme-toggle {
-  background-color: #1e1e1e;
   color: #ffffff;
 }
+body[data-theme='dark'] .dl-buttons {
+  background-color: #161616;
+}
+body[data-theme='dark'] #expand-all,
+body[data-theme='dark'] #collapse-all
+ {
+  color: #ffffff!important;
+  background-color: #161616!important;
+  outline-color: #ffffff!important;
+}
+body[data-theme='dark'] .tabs-selected
+ {
+  background-color: #4caf50;
+}
+body[data-theme='dark'] .accordion-buttons h4
+ {
+  color: white!important;
+}
+
+
 
   .theme-toggle {
     margin: 10px;
@@ -164,3 +192,107 @@ body[data-theme='dark'] .theme-toggle {
     background-color: inherit;
     color: inherit;
   }
+
+
+/* The switch container */
+.theme-toggle-switch {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  /* display: inline-block; */
+  width: 50px;
+  height: 24px;
+  margin-left: 10px;
+
+}
+
+/* Hide the default checkbox */
+.theme-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.theme-toggle-switch .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+/* The circle inside the slider */
+.theme-toggle-switch .slider:before {
+  position: absolute;
+  content: '';
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* When the checkbox is checked */
+.theme-toggle-switch input:checked + .slider {
+  background-color: #4caf50;
+}
+
+.theme-toggle-switch input:checked/* filepath: e:\Projects\VUe\extension-chrome\Vanilla Test\assets\js\components\Tabs.css */
+
+/* The switch container */
+.theme-toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  margin-left: 10px;
+}
+
+/* Hide the default checkbox */
+.theme-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.theme-toggle-switch .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+/* The circle inside the slider */
+.theme-toggle-switch .slider:before {
+  position: absolute;
+  content: '';
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* When the checkbox is checked */
+.theme-toggle-switch input:checked + .slider {
+  background-color: #4caf50;
+}
+
+.theme-toggle-switch input:checked + .slider:before {
+  transform: translateX(26px);
+}

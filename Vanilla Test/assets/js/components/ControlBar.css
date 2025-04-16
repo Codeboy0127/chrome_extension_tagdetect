@@ -5,6 +5,7 @@ button.action-btn {
     color: #5c5c5c;
     border-radius: 12px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    font-size: 15px;
   }
   
   button.action-btn:hover {
@@ -20,6 +21,8 @@ button.action-btn {
   .control-bar {
     display: flex;
     column-gap: 8px;
+    padding: 10px 30px;
+    border-radius: 15px;
   }
   
   @media screen and (min-width: 620px) {
@@ -32,4 +35,18 @@ button.action-btn {
   .control-bar img {
     height: 24px;
     cursor: pointer;
+  }
+
+  body[data-theme='dark'] .control-bar{
+    background-color: #161616;
+  }
+  body[data-theme='dark'] .action-btn {
+    background-color: black;
+    border: none;
+    color: #fff;
+  }  
+  
+  body[data-theme='dark'] .action-btn:hover {
+    background-color: #0066ff;
+    color: #fff;
   }
