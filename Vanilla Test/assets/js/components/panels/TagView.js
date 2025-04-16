@@ -35,6 +35,7 @@ export function createTagView(options = {}) {
     searchResultCount: 0,
     searchFilterIndex: -1,
     searchHits: [],
+    selectedFilters: [],
     count: 0,
     controlBar: {
       record: true,
@@ -70,7 +71,12 @@ export function createTagView(options = {}) {
 
   // searchBox.append(prevButton, nextButton);
 
-  const filterBox = createDropdown();
+  const filterBox = createDropdown((selectedFilters) => {
+    console.log('Selected filters:', selectedFilters);
+    // Update state and rerender data based on selected filters
+    state.selectedFilters = selectedFilters;
+    renderData();
+  }).element;
 
   const searchCount = document.createElement('span');
   searchCount.style.display = 'none';
@@ -191,8 +197,20 @@ export function createTagView(options = {}) {
       container.appendChild(noTags);
       return container;
     }
-    
-    tags.forEach((tag, index) => {
+    // tags.filter(tag => FileSystemWritableFileStream.indexof(tag.name));
+    // Filter tags based on selected filters
+    const filteredTags = state.selectedFilters && state.selectedFilters.length > 0
+      ? tags.filter(tag => state.selectedFilters.includes(tag.name.toLowerCase().replace(/\s+/g, '-')))
+      : tags;
+
+    if (filteredTags.length === 0) {
+      const noTags = document.createElement('p');
+      noTags.textContent = 'No tags match the selected filters';
+      container.appendChild(noTags);
+      return container;
+    }
+    filteredTags.forEach((tag, index) => {
+
       const title = `${tag.name}${tag.content.tid ? ' - ' + tag.content.tid : ''}${tag.content.en ? ' - ' + tag.content.en : ''}`;
       const time = `(${tag.timeStamp - tags[eventIndex].timeStamp})ms`;
       
