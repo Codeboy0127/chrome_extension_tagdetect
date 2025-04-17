@@ -19,7 +19,6 @@ export function createTagSettings(options = {}) {
 
     // Create main container
     const panel = document.createElement('div');
-    console.log("settings panel created");
     panel.className = 'tag-settings-panel settings-panel custom-scrollbar';
     panel.style.display = 'none';
   

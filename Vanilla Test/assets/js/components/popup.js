@@ -446,7 +446,6 @@ export function createPopup() {
   
     //update filter options
     const tagCounts = getTagCounts();
-    console.log(tagCounts);
     state.tagCounts = tagCounts;
     tagView.updateFilterOptions(tagCounts);
       // Update dropdown with new tagCounts
@@ -487,7 +486,6 @@ export function createPopup() {
     if (icon) data.icon = icon;
     
     state.data[urlListLength].events[eventListLength][name].push(data);
-    console.log("Pushed data: ", state.data);
     tagView.updateData(state.data);
     dataLayerView.updateData(state.data);
   }
@@ -621,7 +619,6 @@ export function createPopup() {
 document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme') || 'light';
     document.body.dataset.theme = savedTheme;
-    console.log(`Loaded theme: ${document.body.dataset.theme}`);
     // Sync the toggle switch with the saved theme
     const themeCheckbox = document.getElementById('theme-checkbox');
     if (themeCheckbox) {

@@ -74,7 +74,6 @@ export function createTagView(options = {}) {
   // Add filter options with checkboxes
 
   const filterBox = createDropdown(state.filterOptions, (selectedFilters) => {
-    console.log('Selected filters:', selectedFilters);
     // Update state and rerender data based on selected filters
     state.selectedFilters = selectedFilters;
     renderData();
@@ -693,7 +692,6 @@ export function createTagView(options = {}) {
     updateFilterOptions(newFilterOptions) {
       state.filterOptions = newFilterOptions;
       filterBox.updateOptions(newFilterOptions);
-      console.log('FilterBox element:', filterBox.element);
     }
   };
 }

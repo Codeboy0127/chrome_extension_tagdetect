@@ -34,6 +34,22 @@ export function createTabs() {
   logoLink.appendChild(logoImg);
   logoContainer.appendChild(logoLink);
 
+  // Create settings button
+  const settingsButton = document.createElement('button');
+  settingsButton.className = 'settings-button';
+  settingsButton.innerHTML = `
+     <img src="https://cdn-icons-png.flaticon.com/512/3524/3524659.png" alt="Settings" style="height: 24px; width: 24px;">
+  `;
+
+  // Add event listener for settings button
+  settingsButton.addEventListener('click', () => {
+    console.log('Settings button clicked');
+    // Add your settings functionality here
+  });
+
+  // Append settings button to logoContainer
+  logoContainer.appendChild(settingsButton);
+
   //Create toggle theme button
   const themeToggle = document.createElement('label');
   themeToggle.className = 'theme-toggle-switch';
@@ -96,7 +112,6 @@ export function createTabs() {
 
   // Event listeners
   whyButton.addEventListener('click', () => {
-    console.log('Why button clicked');
     modal.open();
   });
 

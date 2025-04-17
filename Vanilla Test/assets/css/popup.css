@@ -51,6 +51,9 @@ button {
   align-items: center;
   justify-content: center;
 }
+body[data-theme='dark'] .sec-btn {
+  border: 2px solid #454349;
+}
 
 .sec-btn:hover {
   background-color: rgba(44, 161, 72, 0.3764705882);

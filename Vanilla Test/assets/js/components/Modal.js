@@ -58,7 +58,6 @@ export function createModal({ header = 'default header', body = 'default body', 
     }
   
     function close() {
-      console.log("click!")
       modalMask.style.display = 'none';
       document.body.style.overflow = '';
     }

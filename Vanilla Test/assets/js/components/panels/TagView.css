@@ -94,9 +94,9 @@ span.search-hit.currentHit {
 }
 
 body[data-theme='dark'] ul.tag-params li span:first-child {
-  background-color: #191919;
+  background-color: #151419;
   border: none;
-  color: #fff;
+  color: #b5b5b7;
 } 
 
 body[data-theme='dark'] ul.tag-params li {
@@ -108,7 +108,7 @@ body[data-theme='dark'] ul.tag-params li {
 
 
 body[data-theme='dark'] ul.tag-params{
-  background-color: #0b0909;
+  background-color: #1f1e25;
 }
 
 .prevent-btn {
@@ -128,5 +128,5 @@ body[data-theme='dark'] ul.tag-params{
 
 body[data-theme='dark'] .prevent-btn {
   background-color: #f44336;
-  color: #fff;
+  color: #b5b5b7;
 }

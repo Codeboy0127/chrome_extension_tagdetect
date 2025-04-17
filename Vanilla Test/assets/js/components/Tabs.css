@@ -66,7 +66,7 @@
     display: flex;
     list-style: none;
     padding: 10px;
-    border: 2px solid rgb(208, 208, 208);
+    border: 2px solid #454349;
     border-radius: 45px;
     flex-wrap: wrap;
     align-items: baseline;
@@ -74,6 +74,8 @@
     row-gap: 4px;
     background-color: #fff;
   }
+
+
   
   ul.tabs-header>li {
     padding: 8px 30px;
@@ -111,7 +113,7 @@
     color: #aaa;
   } */
   li.tabs-selected {
-    background-color: #12b922;
+    background-color: #2CA148;
     color: white;
   }
   
@@ -141,12 +143,12 @@ body[data-theme='light'] .theme-toggle {
 }
   
   body[data-theme='dark'] {
-    background-color: #0a0a0a;
-    color: #ffffff;
+    background-color: #1F1E25;
+    color: #b5b5b7;
   }
 
   body[data-theme='dark'] *{
-    color: #ffffff;
+    color: #b5b5b7;
   }
   
   
@@ -159,7 +161,7 @@ body[data-theme='dark'] .tag-params li,
 body[data-theme='dark'] .tag-params li span:first-child,
 body[data-theme='dark'] .c-tabs-header,
 body[data-theme='dark'] .theme-toggle {
-  color: #ffffff;
+  color: #b5b5b7;
 }
 body[data-theme='dark'] .dl-buttons {
   background-color: #161616;
@@ -167,9 +169,9 @@ body[data-theme='dark'] .dl-buttons {
 body[data-theme='dark'] #expand-all,
 body[data-theme='dark'] #collapse-all
  {
-  color: #ffffff!important;
+  color: #b5b5b7!important;
   background-color: #161616!important;
-  outline-color: #ffffff!important;
+  outline-color: #b5b5b7!important;
 }
 body[data-theme='dark'] .tabs-selected
  {
@@ -177,7 +179,12 @@ body[data-theme='dark'] .tabs-selected
 }
 body[data-theme='dark'] .accordion-buttons h4
  {
-  color: white!important;
+  color: #b5b5b7!important;
+}
+
+body[data-theme='dark'] .accordion-shadow .accordion
+ {
+  border: #151419 solid 2px;
 }
 
 
@@ -197,7 +204,7 @@ body[data-theme='dark'] .accordion-buttons h4
 /* The switch container */
 .theme-toggle-switch {
   position: absolute;
-  top: 10px;
+  top: 15px;
   right: 10px;
   /* display: inline-block; */
   width: 50px;
@@ -241,7 +248,7 @@ body[data-theme='dark'] .accordion-buttons h4
 
 /* When the checkbox is checked */
 .theme-toggle-switch input:checked + .slider {
-  background-color: #4caf50;
+  background-color: #2CA148;
 }
 
 .theme-toggle-switch input:checked/* filepath: e:\Projects\VUe\extension-chrome\Vanilla Test\assets\js\components\Tabs.css */
@@ -290,9 +297,26 @@ body[data-theme='dark'] .accordion-buttons h4
 
 /* When the checkbox is checked */
 .theme-toggle-switch input:checked + .slider {
-  background-color: #4caf50;
+  background-color: #2CA148;
 }
 
 .theme-toggle-switch input:checked + .slider:before {
   transform: translateX(26px);
 }
+
+.settings-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px; /* Adjust spacing as needed */
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 75px;
+}
+
+.settings-button img {
+  display: block;
+}
+

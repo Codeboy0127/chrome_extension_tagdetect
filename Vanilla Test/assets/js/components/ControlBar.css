@@ -38,15 +38,15 @@ button.action-btn {
   }
 
   body[data-theme='dark'] .control-bar{
-    background-color: #161616;
+    background-color: #1F1E25;
   }
   body[data-theme='dark'] .action-btn {
-    background-color: black;
+    background-color: #151419;
     border: none;
-    color: #fff;
+    color: #b5b5b7;
   }  
   
   body[data-theme='dark'] .action-btn:hover {
     background-color: #0066ff;
-    color: #fff;
+    color: #b5b5b7;
   }
