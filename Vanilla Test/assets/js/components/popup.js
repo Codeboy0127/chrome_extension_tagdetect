@@ -589,13 +589,21 @@ export function createPopup() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const app = document.getElementById('app');
-  if (app) {
-    const popup = createPopup();
-    app.appendChild(popup);
-  } else {
-    console.error("No element with id 'app' found.");
-  }
+  const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.dataset.theme = savedTheme;
+    console.log(`Loaded theme: ${document.body.dataset.theme}`);
+    // Sync the toggle switch with the saved theme
+    const themeCheckbox = document.getElementById('theme-checkbox');
+    if (themeCheckbox) {
+      themeCheckbox.checked = savedTheme === 'dark';
+    }
+    const app = document.getElementById('app');
+    if (app) {
+      const popup = createPopup();
+      app.appendChild(popup);
+    } else {
+      console.error("No element with id 'app' found.");
+    }
 });
 
 // CSS (same as original, include in your stylesheet)

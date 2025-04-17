@@ -208,7 +208,6 @@ export function createTagView(options = {}) {
         styling: 'rounded gray-header accordion-shadow',
         title: url.pageUrl,
         content: renderEvents(url.events, urlIndex),
-        date: url.events[0].timeStamp
       });
       
       tagPanel.appendChild(urlAccordion.element);
@@ -231,13 +230,15 @@ export function createTagView(options = {}) {
     const eventsToRender = state.listOrder === 'ASC' ? [...events] : [...events].reverse();
     
     eventsToRender.forEach((event, eventIndex) => {
+      console.log("event----->", event);
       const originalIndex = state.listOrder === 'ASC' ? eventIndex : events.length - eventIndex - 1;
       const eventAccordion = createAccordion({
         id: `tech-${urlIndex}-${eventIndex}`,
         styling: 'rounded green-header accordion-shadow',
         title: event.name,
         editTitleSlot: renderEditTitle(event.name, urlIndex, originalIndex),
-        content: renderTags(event.tags, urlIndex, originalIndex)
+        content: renderTags(event.tags, urlIndex, originalIndex),
+        date: event.timeStamp
       });
       
       container.appendChild(eventAccordion.element);

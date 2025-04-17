@@ -72,7 +72,7 @@ const default_regex = [
   {
     name: "Inspectlet",
     pattern: "cdn\\.inspectlet\\.com\\/inspectlet.js",
-    iconPath: "inspectlet.png",
+    iconPath: "inspectlet.svg",
     ignore: false,
     canBeDeleted: false,
   },
@@ -202,13 +202,13 @@ const default_regex = [
     ignore: false,
     canBeDeleted: false,
   },
-  {
-    name: "Qubit Open Tag",
-    pattern: "d3c3cq33003psk\\.cloudfront\\.net",
-    iconPath: "qubitopentag.webp",
-    ignore: false,
-    canBeDeleted: false,
-  },
+  // {
+  //   name: "Qubit Open Tag",
+  //   pattern: "d3c3cq33003psk\\.cloudfront\\.net",
+  //   iconPath: "qubitopentag.webp",
+  //   ignore: false,
+  //   canBeDeleted: false,
+  // },
   {
     name: "Mixpanel",
     pattern: ".mixpanel.com\\/track.*",

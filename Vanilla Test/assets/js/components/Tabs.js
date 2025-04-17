@@ -96,6 +96,7 @@ export function createTabs() {
 
   // Event listeners
   whyButton.addEventListener('click', () => {
+    console.log('Why button clicked');
     modal.open();
   });
 
@@ -148,23 +149,7 @@ export function createTabs() {
     // Save the theme preference to localStorage
     localStorage.setItem('theme', theme);
   }
-  //When the popup loads, check for the saved theme in localStorage and apply it.
-  document.addEventListener('DOMContentLoaded', () => {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.body.dataset.theme = savedTheme;
-    // Sync the toggle switch with the saved theme
-    const themeCheckbox = document.getElementById('theme-checkbox');
-    if (themeCheckbox) {
-      themeCheckbox.checked = savedTheme === 'dark';
-    }
-    const app = document.getElementById('app');
-    if (app) {
-      const popup = createPopup();
-      app.appendChild(popup);
-    } else {
-      console.error("No element with id 'app' found.");
-    }
-  });
+
 
   // Initial setup
   tabsHeaderContainer.appendChild(tabsHeader);

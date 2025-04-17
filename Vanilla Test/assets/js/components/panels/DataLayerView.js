@@ -137,7 +137,8 @@ export function createDataLayerView(options = {}) {
           styling: 'rounded green-header accordion-shadow',
           editTitleSlot: renderEditTitle(event.name, urlIndex, originalIndex),
           buttonsSlot: event.dataLayers ? renderButtons() : null,
-          content: renderDataLayerContent(event, urlIndex, originalIndex)
+          content: renderDataLayerContent(event, urlIndex, originalIndex),
+          date: event.timeStamp
         });
         
         container.appendChild(eventAccordion.element);
