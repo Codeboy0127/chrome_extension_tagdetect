@@ -18,7 +18,6 @@ function loadTagViewStyles() {
 
 export function createTagView(options = {}) {
   loadTagViewStyles();
-
   // Create main container
   const panel = document.createElement('div');
   panel.className = 'panel';
@@ -28,6 +27,7 @@ export function createTagView(options = {}) {
     data: options.data || [],
     listOrder: options.listOrder || 'ASC',
     occurrences: options.occurrences || [],
+    filterOptions: options.filterOptions || [],
     tags: [],
     newTitle: "",
     isEventEditEnabled: { toggle: false, urlIndex: 0, eventIndex: 0 },
@@ -71,12 +71,14 @@ export function createTagView(options = {}) {
 
   // searchBox.append(prevButton, nextButton);
 
-  const filterBox = createDropdown((selectedFilters) => {
+  // Add filter options with checkboxes
+
+  const filterBox = createDropdown(state.filterOptions, (selectedFilters) => {
     console.log('Selected filters:', selectedFilters);
     // Update state and rerender data based on selected filters
     state.selectedFilters = selectedFilters;
     renderData();
-  }).element;
+  });
 
   const searchCount = document.createElement('span');
   searchCount.style.display = 'none';
@@ -187,7 +189,7 @@ export function createTagView(options = {}) {
     isBlocking = !isBlocking;
   });
 
-  panelTop.append(preventLoadButton, searchBox, searchCount, controlBar.element, filterBox);
+  panelTop.append(preventLoadButton, searchBox, searchCount, controlBar.element, filterBox.element);
 
   // Create tag settings
   const tagSettings = createTagSettings().element;
@@ -201,7 +203,6 @@ export function createTagView(options = {}) {
   // Render data
   function renderData() {
     tagPanel.innerHTML = '';
-    
     state.data.forEach((url, urlIndex) => {
       const urlAccordion = createAccordion({
         id: `tech-${urlIndex}`,
@@ -230,7 +231,6 @@ export function createTagView(options = {}) {
     const eventsToRender = state.listOrder === 'ASC' ? [...events] : [...events].reverse();
     
     eventsToRender.forEach((event, eventIndex) => {
-      console.log("event----->", event);
       const originalIndex = state.listOrder === 'ASC' ? eventIndex : events.length - eventIndex - 1;
       const eventAccordion = createAccordion({
         id: `tech-${urlIndex}-${eventIndex}`,
@@ -689,6 +689,11 @@ export function createTagView(options = {}) {
     setSearchFilter(filter) {
       state.searchFilter = filter;
       updateSearch();
+    },
+    updateFilterOptions(newFilterOptions) {
+      state.filterOptions = newFilterOptions;
+      filterBox.updateOptions(newFilterOptions);
+      console.log('FilterBox element:', filterBox.element);
     }
   };
 }

@@ -41,6 +41,7 @@ export function createPopup() {
     data: [],
     notificationData: [],
     tagExport: [],
+    tagCounts: [],
     dlExport: [],
     allowedLayers: [
       'google_tag_manager_push',
@@ -78,6 +79,7 @@ export function createPopup() {
     isInspecting: state.isInspecting,
     data: state.data,
     occurrences: state.regexOccurances,
+    filterOptions: state.tagCounts,
     onEditEventTitle: editEventTitle,
     onToggleInspection: toggleInspection,
     onExportData: exportDataConfirm,
@@ -441,6 +443,33 @@ export function createPopup() {
   
     // Set the badge background color
     chrome.action.setBadgeBackgroundColor({ color: '#FF0000' }); // Red background
+  
+    //update filter options
+    const tagCounts = getTagCounts();
+    console.log(tagCounts);
+    state.tagCounts = tagCounts;
+    tagView.updateFilterOptions(tagCounts);
+      // Update dropdown with new tagCounts
+  }
+
+  function getTagCounts() {
+    const tagCounts = {};
+  
+    // Iterate through the data to count tags by name
+    state.data.forEach((url) => {
+      url.events.forEach((event) => {
+        if (event.tags) {
+          event.tags.forEach((tag) => {
+            if (tag.name) {
+              tagCounts[tag.name] = (tagCounts[tag.name] || 0) + 1;
+            }
+          });
+        }
+      });
+    });
+  
+    // Convert the tagCounts object into an array of objects
+    return Object.entries(tagCounts).map(([tagname, count]) => ({ tagname, count }));
   }
 
   function queueData(data, name, urlListLength, eventListLength, icon) {
@@ -458,6 +487,7 @@ export function createPopup() {
     if (icon) data.icon = icon;
     
     state.data[urlListLength].events[eventListLength][name].push(data);
+    console.log("Pushed data: ", state.data);
     tagView.updateData(state.data);
     dataLayerView.updateData(state.data);
   }
