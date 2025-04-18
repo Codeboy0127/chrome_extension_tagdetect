@@ -46,7 +46,7 @@ export function createTabs() {
   // State to track whether we are in "settings mode"
   let isSettingsMode = false;
 
-  // Declare settingsView and alternateView outside the block
+  // Declare settingsView.element and alternateView.element outside the block
   let settingsView = null;
   let alternateView = null;
 
@@ -58,9 +58,9 @@ export function createTabs() {
       // Enter settings mode
       console.log('Entering settings mode');
 
-      // Initialize settingsView and alternateView
-      settingsView = createTagSettings().element;
-      alternateView = createDataLayerSettings().element;
+      // Initialize settingsView.element and alternateView.element
+      settingsView = createTagSettings();
+      alternateView = createDataLayerSettings();
 
       // Preserve the original tab elements and state
 
@@ -68,7 +68,7 @@ export function createTabs() {
       // Replace all tabInstance.element with the settings view
       tabs.forEach((tab) => {
         if (tabsContainer.contains(tab.element)) {
-          tabsContainer.replaceChild(settingsView, tab.element);
+          tabsContainer.replaceChild(settingsView.element, tab.element);
         }
       });
 
@@ -77,29 +77,29 @@ export function createTabs() {
         <img src="https://cdn-icons-png.flaticon.com/512/1828/1828778.png" alt="Close" style="height: 20px; width: 20px;">
       `;
 
-      // Add functionality to toggle between settingsView and alternateView
+      // Add functionality to toggle between settingsView.element and alternateView.element
       tabsHeader.addEventListener('click', (event) => {
         const clickedTab = event.target;
         if (clickedTab.tagName === 'LI') {
           const index = Array.from(tabsHeader.children).indexOf(clickedTab);
 
-          // Show settingsView for the first tab, alternateView for the second tab
+          // Show settingsView.element for the first tab, alternateView.element for the second tab
           if (index === 0) {
-            if (!tabsContainer.contains(settingsView)) {
-              if (tabsContainer.contains(alternateView)) {
-                tabsContainer.replaceChild(settingsView, alternateView); // Swap alternateView with settingsView
+            if (!tabsContainer.contains(settingsView.element)) {
+              if (tabsContainer.contains(alternateView.element)) {
+                tabsContainer.replaceChild(settingsView.element, alternateView.element); // Swap alternateView.element with settingsView.element
               } else {
-                tabsContainer.innerHTML = ''; // Clear the container
-                tabsContainer.appendChild(settingsView); // Show settingsView
+                tabsContainer.removeChild(alternateView.element); // Clear the container
+                tabsContainer.appendChild(settingsView.element); // Show settingsView.element
               }
             }
           } else if (index === 1) {
-            if (!tabsContainer.contains(alternateView)) {
-              if (tabsContainer.contains(settingsView)) {
-                tabsContainer.replaceChild(alternateView, settingsView); // Swap settingsView with alternateView
+            if (!tabsContainer.contains(alternateView.element)) {
+              if (tabsContainer.contains(settingsView.element)) {
+                tabsContainer.replaceChild(alternateView.element, settingsView.element); // Swap settingsView.element with alternateView.element
               } else {
-                tabsContainer.innerHTML = ''; // Clear the container
-                tabsContainer.appendChild(alternateView); // Show alternateView
+                tabsContainer.removeChild(settingsView.element); // Clear the container
+                tabsContainer.appendChild(alternateView.element); // Show alternateView.element
               }
             }
           }
@@ -113,14 +113,28 @@ export function createTabs() {
       console.log('Exiting settings mode');
 
       // Restore the original tab elements and state
-      tabs.forEach((tab, index) => {
-        if (tabsContainer.contains(settingsView) || tabsContainer.contains(alternateView)) {
-          tabsContainer.innerHTML = ''; // Clear the container
-          originalTabElements.forEach((element) => {
-            tabsContainer.appendChild(element); // Restore original tab elements
-          });
+      // Remove settingsView.element or alternateView.element if present
+      if (tabsContainer.contains(settingsView.element)) {
+        tabsContainer.removeChild(settingsView.element);
+      }
+      if (tabsContainer.contains(alternateView.element)) {
+        tabsContainer.removeChild(alternateView.element);
+      }
+
+      // Restore the original tab elements
+      originalTabElements.forEach((element) => {
+        if (!tabsContainer.contains(element)) {
+          tabsContainer.appendChild(element);
         }
       });
+
+      // Ensure logoContainer and headerNav remain intact
+      if (!tabsContainer.contains(logoContainer)) {
+        tabsContainer.insertBefore(logoContainer, tabsContainer.firstChild);
+      }
+      if (!tabsContainer.contains(headerNav)) {
+        tabsContainer.insertBefore(headerNav, tabsContainer.children[1]);
+      }
 
       // Restore the original tabHeaders functionality
       tabs.forEach((tab, index) => {
