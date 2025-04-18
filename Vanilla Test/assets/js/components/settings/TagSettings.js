@@ -20,17 +20,53 @@ export function createTagSettings(options = {}) {
     // Create main container
     const panel = document.createElement('div');
     panel.className = 'tag-settings-panel settings-panel custom-scrollbar';
+
     // State
     let state = {
-      RegExIdToEdit: -1,
-      showModal: false,
-      errors: [],
-      regExPatterns: [],
-      regexName: '',
-      regexPattern: '',
-      tags: options.tags || [],
-      query: options.query || ''
+        RegExIdToEdit: -1,
+        showModal: false,
+        errors: [],
+        regExPatterns: [],
+        regexName: '',
+        regexPattern: '',
+        tags: options.tags || [],
+        query: options.query || ''
     };
+
+    // Create "Add" and "Delete" buttons container
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'button-container';
+
+    // Create "Add" button
+    const addButton = document.createElement('button');
+    addButton.className = 'add-button';
+    addButton.textContent = 'Add';
+    addButton.addEventListener('click', () => {
+        // Open the modal for adding a new regex
+        editRegex(-1); // Pass -1 to indicate a new regex
+    });
+
+    // Create "Delete" button
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'delete-button';
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', () => {
+        // Delete all selected regex patterns
+        const selectedPatterns = state.regExPatterns.filter((regEx) => !regEx.ignore);
+        if (selectedPatterns.length === 0) {
+            alert('No regex patterns selected for deletion.');
+            return;
+        }
+
+        if (confirm('Are you sure you want to delete the selected regex patterns?')) {
+            state.regExPatterns = state.regExPatterns.filter((regEx) => regEx.ignore);
+            updateRegex();
+        }
+    });
+
+    // Append buttons to the container
+    buttonContainer.appendChild(addButton);
+    buttonContainer.appendChild(deleteButton);
 
     // Create "Select All" checkbox
     const selectAllContainer = document.createElement('div');
@@ -50,7 +86,6 @@ export function createTagSettings(options = {}) {
     // Add event listener for "Select All" functionality
     selectAllCheckbox.addEventListener('change', (event) => {
       const isChecked = event.target.checked;
-
       // Update all tag checkboxes
       state.regExPatterns.forEach((regEx, index) => {
         regEx.ignore = !isChecked; // Set ignore to false if checked, true if unchecked
@@ -58,10 +93,11 @@ export function createTagSettings(options = {}) {
 
       // Re-render the regex patterns to reflect the changes
       renderRegexPatterns();
+      updateRegex();
     });
-
-    // Append "Select All" checkbox to the panel
-    panel.prepend(selectAllContainer);
+    buttonContainer.prepend(selectAllContainer); // Append "Select All" checkbox to the button container
+      // Append button container to the panel
+      panel.prepend(buttonContainer);
 
     // Create regex manager container
     const regexManager = document.createElement('div');
@@ -200,8 +236,8 @@ export function createTagSettings(options = {}) {
 
     function editRegex(id) {
       state.RegExIdToEdit = id;
-      state.regexName = state.regExPatterns[id].name;
-      state.regexPattern = state.regExPatterns[id].pattern;
+      state.regexName = state.regExPatterns[id]?.name || '';
+      state.regexPattern = state.regExPatterns[id]?.pattern || '';
       state.showModal = true;
 
       modal.updateContent({
@@ -358,4 +394,4 @@ export function createTagSettings(options = {}) {
       updateQuery,
       getRegexPatterns: () => [...state.regExPatterns]
     };
-  }
+}

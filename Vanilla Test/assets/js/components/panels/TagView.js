@@ -21,6 +21,7 @@ export function createTagView(options = {}) {
   // Create main container
   const panel = document.createElement('div');
   panel.className = 'panel';
+  console.log("options--->", options)
   // State
   let state = {
     isInspecting: options.isInspecting || false,

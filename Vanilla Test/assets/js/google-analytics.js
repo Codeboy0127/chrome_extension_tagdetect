@@ -99,3 +99,29 @@ export const pageInteractionEvent = async (page, interaction) => {
     }
   );
 };
+
+export const trackTagImpressionEvent = async (tagName, pageUrl) => {
+  const domainName = new URL(pageUrl).hostname; // Extract the domain name from the URL
+  fetch(
+    `${GA_ENDPOINT}?measurement_id=${MEASUREMENT_ID}&api_secret=${API_SECRET}`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        client_id: await getOrCreateClientId(),
+        events: [
+          {
+            name: "tag_impression",
+            params: {
+              session_id: await getOrCreateSessionId(),
+              engagement_time_msec: DEFAULT_ENGAGEMENT_TIME_IN_MSEC,
+              tag_name: tagName,
+              domain_name: domainName,
+              page_url: pageUrl,
+              user_id: await getOrCreateClientId(),
+            },
+          },
+        ],
+      }),
+    }
+  );
+};

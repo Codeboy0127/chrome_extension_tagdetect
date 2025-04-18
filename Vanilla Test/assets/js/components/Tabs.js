@@ -89,8 +89,12 @@ export function createTabs() {
               if (tabsContainer.contains(alternateView.element)) {
                 tabsContainer.replaceChild(settingsView.element, alternateView.element); // Swap alternateView.element with settingsView.element
               } else {
-                tabsContainer.removeChild(alternateView.element); // Clear the container
-                tabsContainer.appendChild(settingsView.element); // Show settingsView.element
+                if (tabsContainer.contains(alternateView.element)) {
+                  tabsContainer.removeChild(alternateView.element); // Clear the container only if it exists
+                }
+                console.log("here???", isSettingsMode)
+                if(isSettingsMode){
+                tabsContainer.appendChild(settingsView.element);} // Show settingsView.element
               }
             }
           } else if (index === 1) {
@@ -98,8 +102,11 @@ export function createTabs() {
               if (tabsContainer.contains(settingsView.element)) {
                 tabsContainer.replaceChild(alternateView.element, settingsView.element); // Swap settingsView.element with alternateView.element
               } else {
-                tabsContainer.removeChild(settingsView.element); // Clear the container
-                tabsContainer.appendChild(alternateView.element); // Show alternateView.element
+                if (tabsContainer.contains(settingsView.element)) {
+                  tabsContainer.removeChild(settingsView.element); // Clear the container only if it exists
+                }
+                if(isSettingsMode){
+                tabsContainer.appendChild(alternateView.element);} // Show alternateView.element
               }
             }
           }

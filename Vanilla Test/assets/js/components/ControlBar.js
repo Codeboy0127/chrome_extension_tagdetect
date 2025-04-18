@@ -18,7 +18,7 @@ export function createControlBar(options = {}) {
   // Create container
   const controlBar = document.createElement('div');
   controlBar.className = 'control-bar';
-
+  
   // State
   let isInspecting = options.isInspecting || false;
   const controlBarConfig = options.controlBar || {

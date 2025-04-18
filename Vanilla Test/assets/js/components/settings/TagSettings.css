@@ -178,6 +178,33 @@ img.regex-icon {
     column-gap: 16px;
 }
 
+.add-button {
+    background-color: #4caf50;
+    color: #fff;
+    border-radius: 45px;
+    padding: 0.5rem 1rem;
+    font-size: small;
+    font-weight: 500;
+    width: 60px;
+}
+
+.delete-button {
+    background-color: #ff4d4d;
+    color: #fff;
+    border-radius: 45px;
+    padding: 0.5rem 1rem;
+    font-size: small;
+    font-weight: 500;
+    width: 60px;
+}
+
+.button-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
 @media screen and (max-width: 600px) {}
 
 /* @media (min-width: 768px) {
