@@ -20,8 +20,6 @@ export function createTagSettings(options = {}) {
     // Create main container
     const panel = document.createElement('div');
     panel.className = 'tag-settings-panel settings-panel custom-scrollbar';
-    panel.style.display = 'none';
-  
     // State
     let state = {
       RegExIdToEdit: -1,
@@ -33,67 +31,102 @@ export function createTagSettings(options = {}) {
       tags: options.tags || [],
       query: options.query || ''
     };
-  
+
+    // Create "Select All" checkbox
+    const selectAllContainer = document.createElement('div');
+    selectAllContainer.className = 'select-all-container';
+
+    const selectAllCheckbox = document.createElement('input');
+    selectAllCheckbox.type = 'checkbox';
+    selectAllCheckbox.id = 'select-all-checkbox';
+
+    const selectAllLabel = document.createElement('label');
+    selectAllLabel.htmlFor = 'select-all-checkbox';
+    selectAllLabel.textContent = 'Select All';
+
+    selectAllContainer.appendChild(selectAllCheckbox);
+    selectAllContainer.appendChild(selectAllLabel);
+
+    // Add event listener for "Select All" functionality
+    selectAllCheckbox.addEventListener('change', (event) => {
+      const isChecked = event.target.checked;
+
+      // Update all tag checkboxes
+      state.regExPatterns.forEach((regEx, index) => {
+        regEx.ignore = !isChecked; // Set ignore to false if checked, true if unchecked
+      });
+
+      // Re-render the regex patterns to reflect the changes
+      renderRegexPatterns();
+    });
+
+    // Append "Select All" checkbox to the panel
+    panel.prepend(selectAllContainer);
+
     // Create regex manager container
     const regexManager = document.createElement('div');
     regexManager.className = 'regex-manager';
-  
+
     // Create regex table container
     const regexTableContainer = document.createElement('div');
     regexTableContainer.className = 'regex-table-container';
-  
+
     const regexTableWrapper = document.createElement('div');
     regexTableWrapper.className = 'regex-table-wrapper';
-  
+
     regexTableContainer.appendChild(regexTableWrapper);
     regexManager.appendChild(regexTableContainer);
-  
+
     // Create modal
     const modal = createModal();
     modal.element.style.display = 'none';
-  
+
     // Assemble panel
     panel.append(regexManager, modal.element);
-  
+
     // Helper functions
     function renderRegexPatterns() {
       regexTableWrapper.innerHTML = '';
-      
+
+      // Check if all tags are selected
+      const allSelected = state.regExPatterns.every((regEx) => !regEx.ignore);
+      selectAllCheckbox.checked = allSelected;
+
       getFilteredRegExPatterns().forEach((regEx, index) => {
         const regexAcc = document.createElement('div');
         regexAcc.className = 'regex-acc';
-        
+
         // Create header
         const header = document.createElement('div');
         header.className = 'regex-acc-header';
-        
+
         const leftDiv = document.createElement('div');
-        
+
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
-        if (!regEx.ignore) checkbox.checked = true;
+        checkbox.checked = !regEx.ignore; // Checked if not ignored
         checkbox.addEventListener('click', (e) => toggleRegex(e, index));
-        
+
         leftDiv.appendChild(checkbox);
-        
+
         if (regEx.iconPath) {
           const icon = document.createElement('img');
           icon.className = 'regex-icon';
           icon.src = getIconPath(index);
           leftDiv.appendChild(icon);
         }
-        
+
         const name = document.createElement('p');
         name.textContent = regEx.name;
         leftDiv.appendChild(name);
-        
+
         const rightDiv = document.createElement('div');
-        
+
         if (regEx.canBeDeleted) {
           const actionsDiv = document.createElement('div');
           actionsDiv.style.display = 'flex';
           actionsDiv.style.gap = '1.5rem';
-          
+
           const editBtn = document.createElement('div');
           editBtn.className = 'regex-action';
           editBtn.innerHTML = `
@@ -102,7 +135,7 @@ export function createTagSettings(options = {}) {
             </svg>
           `;
           editBtn.addEventListener('click', () => editRegex(index));
-          
+
           const deleteBtn = document.createElement('div');
           deleteBtn.className = 'regex-action';
           deleteBtn.innerHTML = `
@@ -111,52 +144,52 @@ export function createTagSettings(options = {}) {
             </svg>
           `;
           deleteBtn.addEventListener('click', () => deleteRegex(index));
-          
+
           actionsDiv.append(editBtn, deleteBtn);
           rightDiv.appendChild(actionsDiv);
         }
-        
+
         const accBtn = document.createElement('span');
         accBtn.className = 'acc-btn';
         accBtn.addEventListener('click', toggleAccordion);
         rightDiv.appendChild(accBtn);
-        
+
         header.append(leftDiv, rightDiv);
         regexAcc.appendChild(header);
-        
+
         // Create content
         const content = document.createElement('div');
         content.className = 'regex-acc-content';
-        
+
         const pattern = document.createElement('p');
         pattern.style.padding = '1rem 0';
         pattern.textContent = regEx.pattern;
         content.appendChild(pattern);
-        
+
         regexAcc.appendChild(content);
         regexTableWrapper.appendChild(regexAcc);
       });
     }
-  
+
     function getFilteredRegExPatterns() {
       if (!state.query.length) return state.regExPatterns;
       return state.regExPatterns.filter(item => 
         state.tags.includes(item.name)
       );
     }
-  
+
     function toggleAccordion(event) {
       const container = event.target.closest('.regex-acc');
       const content = container.querySelector('.regex-acc-content');
       container.classList.toggle("active");
-      
+
       if (content.style.maxHeight) {
         content.style.maxHeight = null;
       } else {
         content.style.maxHeight = '100px';
       }
     }
-  
+
     function closeModal() {
       state.RegExIdToEdit = -1;
       state.regexName = '';
@@ -164,13 +197,13 @@ export function createTagSettings(options = {}) {
       state.showModal = false;
       modal.close();
     }
-  
+
     function editRegex(id) {
       state.RegExIdToEdit = id;
       state.regexName = state.regExPatterns[id].name;
       state.regexPattern = state.regExPatterns[id].pattern;
       state.showModal = true;
-      
+
       modal.updateContent({
         header: '<h3>Add new Regex Pattern</h3>',
         body: `
@@ -189,28 +222,28 @@ export function createTagSettings(options = {}) {
           <button class="btn">Cancel</button>
         `
       });
-      
+
       modal.element.querySelector('.primary-btn').addEventListener('click', addRegexPattern);
       modal.element.querySelector('.btn').addEventListener('click', closeModal);
-      
+
       modal.element.querySelector('#regexName').addEventListener('input', (e) => {
         state.regexName = e.target.value;
       });
-      
+
       modal.element.querySelector('#regexPattern').addEventListener('input', (e) => {
         state.regexPattern = e.target.value;
       });
-      
+
       modal.open();
     }
-  
+
     function fetchRegExPatterns() {
       chrome.storage.local.get(["regExPatterns"]).then((result) => {
         state.regExPatterns = result.regExPatterns || [];
         renderRegexPatterns();
       });
     }
-  
+
     function isRegExValid() {
       try {
         new RegExp(state.regexPattern);
@@ -219,11 +252,11 @@ export function createTagSettings(options = {}) {
         return false;
       }
     }
-  
+
     function addRegexPattern() {
       pageInteractionEvent("Tags View", "settings_add_new_regex_pattern");
       state.errors = [];
-      
+
       // Validate inputs
       if (!state.regexName) {
         state.errors.push('Regex Name required.');
@@ -234,7 +267,7 @@ export function createTagSettings(options = {}) {
       if (!isRegExValid()) {
         state.errors.push('Regex Pattern invalid.');
       }
-      
+
       // Show errors or proceed
       const errorContainer = modal.element.querySelector('#error-messages');
       if (state.errors.length > 0) {
@@ -248,7 +281,7 @@ export function createTagSettings(options = {}) {
         `;
         return;
       }
-      
+
       // Add or edit pattern
       const id = state.RegExIdToEdit >= 0 ? state.RegExIdToEdit : state.regExPatterns.length;
       const newPattern = {
@@ -258,65 +291,67 @@ export function createTagSettings(options = {}) {
         ignore: false,
         canBeDeleted: true
       };
-      
+
       if (state.RegExIdToEdit >= 0) {
         state.regExPatterns[id] = newPattern;
       } else {
         state.regExPatterns.push(newPattern);
       }
-      
+
       updateRegex();
       closeModal();
     }
-  
+
     function deleteRegex(id) {
       state.regExPatterns.splice(id, 1);
       updateRegex();
     }
-  
+
     function updateRegex() {
       chrome.storage.local.set({ regExPatterns: state.regExPatterns });
       renderRegexPatterns();
     }
-  
+
     function getIconPath(index) {
       if (state.regExPatterns[index]?.iconPath) {
         return chrome.runtime.getURL('assets/images/regex_icons/' + state.regExPatterns[index].iconPath);
       }
       return '';
     }
-  
+
     function toggleRegex(event, index) {
       const ignore = !event.target.checked;
       state.regExPatterns[index].ignore = ignore;
       updateRegex();
     }
-  
+
     // Public methods
     function show() {
       panel.style.display = 'block';
     }
-  
+
     function hide() {
       panel.style.display = 'none';
     }
-  
+
     function updateTags(newTags) {
       state.tags = newTags;
       renderRegexPatterns();
     }
-  
+
     function updateQuery(newQuery) {
       state.query = newQuery;
       renderRegexPatterns();
     }
-  
+
     // Initialize
     fetchRegExPatterns();
-  
+
     // Public API
     return {
       element: panel,
+      tags: state.tags,
+      query: state.query,
       show,
       hide,
       updateTags,

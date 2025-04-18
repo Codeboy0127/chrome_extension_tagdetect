@@ -72,13 +72,13 @@ export function createControlBar(options = {}) {
     }
 
     // Settings/Toggle button
-    if (controlBarConfig.settings) {
-      const settingsBtn = document.createElement('button');
-      settingsBtn.className = 'action-btn';
-      settingsBtn.textContent = controlBarConfig.tabIndex === 0 ? 'Tags' : 'Data Layers';
-      settingsBtn.addEventListener('click', handleToggleSettings);
-      controlBar.appendChild(settingsBtn);
-    }
+  //   if (controlBarConfig.settings) {
+  //     const settingsBtn = document.createElement('button');
+  //     settingsBtn.className = 'action-btn';
+  //     settingsBtn.textContent = controlBarConfig.tabIndex === 0 ? 'Tags' : 'Data Layers';
+  //     settingsBtn.addEventListener('click', handleToggleSettings);
+  //     controlBar.appendChild(settingsBtn);
+  //   }
   }
 
   // Event handlers

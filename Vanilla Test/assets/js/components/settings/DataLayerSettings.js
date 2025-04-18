@@ -18,7 +18,6 @@ export function createDataLayerSettings(options = {}) {
     // Create main container
     const panel = document.createElement('div');
     panel.className = 'dl-settings-panel settings-panel custom-scrollbar';
-    panel.style.display = 'none';
   
     // State
     let state = {

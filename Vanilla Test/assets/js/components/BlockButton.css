@@ -1,0 +1,19 @@
+.prevent-btn {
+  padding: 12px 10px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.prevent-btn:hover {
+  background-color: #d32f2f;
+}
+
+body[data-theme='dark'] .prevent-btn {
+  background-color: #f44336;
+  color: #b5b5b7;
+}

@@ -3,8 +3,8 @@ import { createControlBar } from '../ControlBar.js';
 import { createDropdown } from '../Dropdown.js';
 import { createAccordion } from '../Accordion.js';
 import { createReadMore } from '../ReadMore.js';
-import { createTagSettings } from '../settings/TagSettings.js';
 import { pageInteractionEvent } from '../../google-analytics.js';
+import { createBlockButton } from '../BlockButton.js';
 
 function loadTagViewStyles() {
   if (!document.getElementById('TagView-styles')) {
@@ -96,108 +96,19 @@ export function createTagView(options = {}) {
     },
     onCollapseAll: collapseAll,
     onExpandAll: expandAll,
-    onToggleSettingsPanel: toggleSettingsPanel
+    // onToggleSettingsPanel: toggleSettingsPanel
   });
 
   // Add the button to the control bar
-  const preventLoadButton = document.createElement('button');
-  preventLoadButton.className = 'prevent-btn';
-  preventLoadButton.textContent = '🚦 Block Navigation';
-  preventLoadButton.style.marginLeft = '10px';
-  preventLoadButton.style.display = 'block';
-
-  // State to track prevention status
-  let isBlocking = false;
-
-  preventLoadButton.addEventListener('click', () => {
-    if (!isBlocking) {
-      chrome.devtools.inspectedWindow.eval(`
-        if (!window.__NAVIGATION_BLOCKER_ACTIVE__) {
-          window.__NAVIGATION_BLOCKER_ACTIVE__ = true;
-
-          window.__removeNavBlockListeners__ = () => {};
-
-          const clickHandler = (e) => {
-            const target = e.target.closest('a');
-            if (target && target.href) {
-              e.preventDefault();
-              console.log('Navigation blocked:', target.href);
-            }
-          };
-
-          const submitHandler = (e) => {
-            e.preventDefault();
-            console.log('Form submission blocked');
-          };
-
-          const popHandler = () => {
-            console.log('Back/forward blocked');
-            history.pushState(null, '', window.location.href);
-          };
-
-          const unloadHandler = (e) => {
-            e.preventDefault();
-            e.returnValue = '';
-          };
-
-          document.addEventListener('click', clickHandler, true);
-          document.addEventListener('submit', submitHandler, true);
-          window.addEventListener('popstate', popHandler);
-          window.addEventListener('beforeunload', unloadHandler);
-
-          const blockPush = new Proxy(history.pushState, {
-            apply(target, thisArg, args) {
-              console.log('pushState blocked');
-              return null;
-            }
-          });
-
-          const blockReplace = new Proxy(history.replaceState, {
-            apply(target, thisArg, args) {
-              console.log('replaceState blocked');
-              return null;
-            }
-          });
-
-          history.pushState = blockPush;
-          history.replaceState = blockReplace;
-          history.pushState(null, '', window.location.href);
-
-          window.__removeNavBlockListeners__ = () => {
-            document.removeEventListener('click', clickHandler, true);
-            document.removeEventListener('submit', submitHandler, true);
-            window.removeEventListener('popstate', popHandler);
-            window.removeEventListener('beforeunload', unloadHandler);
-            console.log('%cNavigation blocking disabled ❎', 'color: gray; font-weight: bold');
-          };
-
-          console.log('%cNavigation blocking enabled 🚫', 'color: red; font-weight: bold');
-        }
-      `);
-      preventLoadButton.textContent = '🛑 Stop Blocking';
-    } else {
-      chrome.devtools.inspectedWindow.eval(`
-        if (window.__NAVIGATION_BLOCKER_ACTIVE__) {
-          window.__NAVIGATION_BLOCKER_ACTIVE__ = false;
-          window.__removeNavBlockListeners__?.();
-        }
-      `);
-      preventLoadButton.textContent = '🚦 Block Navigation';
-    }
-
-    isBlocking = !isBlocking;
-  });
-
+  const preventLoadButton = createBlockButton();
   panelTop.append(preventLoadButton, searchBox, searchCount, controlBar.element, filterBox.element);
 
-  // Create tag settings
-  const tagSettings = createTagSettings().element;
   // Create tag panel
   const tagPanel = document.createElement('div');
   tagPanel.className = `tag-panel ${state.listOrder.toLowerCase()}`;
 
   // Assemble panel
-  panel.append(panelTop, tagSettings, tagPanel);
+  panel.append(panelTop, tagPanel);
 
   // Render data
   function renderData() {
@@ -237,7 +148,6 @@ export function createTagView(options = {}) {
         title: event.name,
         editTitleSlot: renderEditTitle(event.name, urlIndex, originalIndex),
         content: renderTags(event.tags, urlIndex, originalIndex),
-        date: event.timeStamp
       });
       
       container.appendChild(eventAccordion.element);
@@ -309,6 +219,7 @@ export function createTagView(options = {}) {
         styling: 'flat rounded accordion-border',
         title: title,
         time: time,
+        date: tag.timeStamp,
         hasHorizontalLine: true,
         iconSlot: tag.icon ? renderTagIcon(tag.icon) : null,
         extraSlot: state.occurrences ? renderOccurrences(tag.name) : null,

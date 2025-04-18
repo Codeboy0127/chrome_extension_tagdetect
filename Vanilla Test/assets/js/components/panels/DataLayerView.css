@@ -142,3 +142,15 @@
     color: #999;
     font-style: italic;
   }
+
+  .ghost-div {
+    padding: 12px 10px;
+    background-color:unset;
+    color: unset;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    cursor: pointer;
+    width: 150px;
+  }
+

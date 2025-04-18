@@ -1,9 +1,8 @@
 // data-layer-view.js - Updated Vanilla JS implementation with proper integration
-import { createDataLayerSettings } from '../settings/DataLayerSettings.js';
 import { createAccordion } from '../Accordion.js';
 import { createControlBar } from '../ControlBar.js';
 import { pageInteractionEvent } from '../../google-analytics.js';
-
+import { createBlockButton } from '../BlockButton.js';
 // Function to dynamically load the CSS file
 function loadDataLayerViewStyles() {
   if (!document.getElementById('DataLayerView-styles')) {
@@ -42,7 +41,7 @@ export function createDataLayerView(options = {}) {
       collapse: true,
       expand: true,
       save: true,
-      settings: true,
+      // settings: true,
       tabIndex: 1
     },
     searchFilter: "",
@@ -56,17 +55,6 @@ export function createDataLayerView(options = {}) {
 
   const dlPanel = document.createElement('div');
   dlPanel.className = `dl-panel ${state.listOrder.toLowerCase()}`;
-
-  // Create data layer settings panel
-  const dataLayerSettings = createDataLayerSettings({
-    tags: state.tags,
-    query: state.searchFilter
-  });
-
-  // Add settings panel to DOM
-  const dlSettings = document.createElement('div');
-  dlSettings.className = 'dl-settings';
-  dlSettings.appendChild(dataLayerSettings.element);
 
   // Initialize Control Bar
   const controlBar = createControlBar({
@@ -83,13 +71,17 @@ export function createDataLayerView(options = {}) {
     onCollapseAll: collapseAll,
     onExpandAll: expandAll,
     
-    onToggleSettingsPanel: toggleSettingsPanel
+    // onToggleSettingsPanel: toggleSettingsPanel
   });
-
-  panelTop.appendChild(controlBar.element);
+  // Add the button to the control bar
+  const preventLoadButton = createBlockButton();
+  console.log("controlbar",controlBar.element);
+  const ghostDiv = document.createElement('div');
+  ghostDiv.className = 'ghost-div';
+  panelTop.append(preventLoadButton, controlBar.element, ghostDiv);
 
   // Assemble panel
-  panel.append(panelTop, dlSettings, dlPanel);
+  panel.append(panelTop, dlPanel);
 
   // Helper function to extract tags from data
   function extractTagsFromData(data) {
@@ -325,7 +317,6 @@ export function createDataLayerView(options = {}) {
     }).map(item => item.dLN);
     
     state.tags = [...new Set(res1)]; // Remove duplicates
-    dataLayerSettings.updateTags(state.tags);
     renderDataLayers();
   }
 
@@ -423,12 +414,6 @@ export function createDataLayerView(options = {}) {
     }
   }
 
-  function toggleSettingsPanel() {
-    dataLayerSettings.element.style.display = 
-      dataLayerSettings.element.style.display === 'none' ? 'block' : 'none';
-    pageInteractionEvent("Data Layer View", "toggle_settings_panel");
-  }
-
   function getDLName(type) {
     return state.tagNames[type] ?? "Unknown Layer";
   }
@@ -456,7 +441,6 @@ export function createDataLayerView(options = {}) {
     updateData(newData) {
       state.data = newData;
       state.tags = extractTagsFromData(newData);
-      dataLayerSettings.updateTags(state.tags);
       renderDataLayers();
     },
     setIsInspecting(inspecting) {

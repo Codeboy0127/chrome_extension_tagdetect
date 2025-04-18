@@ -2,6 +2,8 @@
 
 import { createModal } from './Modal.js';
 import { pageSelectEvent } from '../google-analytics.js';
+import { createTagSettings } from './settings/TagSettings.js';
+import { createDataLayerSettings } from './settings/DataLayerSettings.js';
 
 // Function to dynamically load the CSS file
 function loadTabsStyles() {
@@ -38,13 +40,103 @@ export function createTabs() {
   const settingsButton = document.createElement('button');
   settingsButton.className = 'settings-button';
   settingsButton.innerHTML = `
-     <img src="https://cdn-icons-png.flaticon.com/512/3524/3524659.png" alt="Settings" style="height: 24px; width: 24px;">
+    <img src="https://cdn-icons-png.flaticon.com/512/3524/3524659.png" alt="Settings" style="height: 24px; width: 24px;">
   `;
+
+  // State to track whether we are in "settings mode"
+  let isSettingsMode = false;
+
+  // Declare settingsView and alternateView outside the block
+  let settingsView = null;
+  let alternateView = null;
 
   // Add event listener for settings button
   settingsButton.addEventListener('click', () => {
-    console.log('Settings button clicked');
-    // Add your settings functionality here
+    const originalTabElements = tabs.map((tab) => tab.element);
+    const originalSelectedIndex = selectedIndex;
+    if (!isSettingsMode) {
+      // Enter settings mode
+      console.log('Entering settings mode');
+
+      // Initialize settingsView and alternateView
+      settingsView = createTagSettings().element;
+      alternateView = createDataLayerSettings().element;
+
+      // Preserve the original tab elements and state
+
+
+      // Replace all tabInstance.element with the settings view
+      tabs.forEach((tab) => {
+        if (tabsContainer.contains(tab.element)) {
+          tabsContainer.replaceChild(settingsView, tab.element);
+        }
+      });
+
+      // Change button icon to "go back"
+      settingsButton.innerHTML = `
+        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828778.png" alt="Close" style="height: 20px; width: 20px;">
+      `;
+
+      // Add functionality to toggle between settingsView and alternateView
+      tabsHeader.addEventListener('click', (event) => {
+        const clickedTab = event.target;
+        if (clickedTab.tagName === 'LI') {
+          const index = Array.from(tabsHeader.children).indexOf(clickedTab);
+
+          // Show settingsView for the first tab, alternateView for the second tab
+          if (index === 0) {
+            if (!tabsContainer.contains(settingsView)) {
+              if (tabsContainer.contains(alternateView)) {
+                tabsContainer.replaceChild(settingsView, alternateView); // Swap alternateView with settingsView
+              } else {
+                tabsContainer.innerHTML = ''; // Clear the container
+                tabsContainer.appendChild(settingsView); // Show settingsView
+              }
+            }
+          } else if (index === 1) {
+            if (!tabsContainer.contains(alternateView)) {
+              if (tabsContainer.contains(settingsView)) {
+                tabsContainer.replaceChild(alternateView, settingsView); // Swap settingsView with alternateView
+              } else {
+                tabsContainer.innerHTML = ''; // Clear the container
+                tabsContainer.appendChild(alternateView); // Show alternateView
+              }
+            }
+          }
+        }
+      });
+
+      // Update state
+      isSettingsMode = true;
+    } else {
+      // Exit settings mode
+      console.log('Exiting settings mode');
+
+      // Restore the original tab elements and state
+      tabs.forEach((tab, index) => {
+        if (tabsContainer.contains(settingsView) || tabsContainer.contains(alternateView)) {
+          tabsContainer.innerHTML = ''; // Clear the container
+          originalTabElements.forEach((element) => {
+            tabsContainer.appendChild(element); // Restore original tab elements
+          });
+        }
+      });
+
+      // Restore the original tabHeaders functionality
+      tabs.forEach((tab, index) => {
+        tabsContainer.appendChild(tab.element); // Ensure all tab elements are reattached
+      });
+
+      selectTab(selectedIndex, tabs[selectedIndex]?.title || '');
+
+      // Change button icon back to "settings"
+      settingsButton.innerHTML = `
+        <img src="https://cdn-icons-png.flaticon.com/512/3524/3524659.png" alt="Settings" style="height: 24px; width: 24px;">
+      `;
+
+      // Update state
+      isSettingsMode = false;
+    }
   });
 
   // Append settings button to logoContainer
