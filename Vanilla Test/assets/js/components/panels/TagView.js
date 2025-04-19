@@ -27,7 +27,7 @@ export function createTagView(options = {}) {
     isInspecting: options.isInspecting || false,
     data: options.data || [],
     listOrder: options.listOrder || 'ASC',
-    occurrences: options.occurrences || [],
+    occurrences: options.occurrences || {},
     filterOptions: options.filterOptions || [],
     tags: [],
     newTitle: "",
@@ -99,7 +99,7 @@ export function createTagView(options = {}) {
     onExpandAll: expandAll,
     // onToggleSettingsPanel: toggleSettingsPanel
   });
-
+console.log("controbar--------->", controlBar)
   // Add the button to the control bar
   const preventLoadButton = createBlockButton();
   panelTop.append(preventLoadButton, searchBox, searchCount, controlBar.element, filterBox.element);
@@ -255,8 +255,13 @@ export function createTagView(options = {}) {
     const count = document.createElement('span');
     count.style.fontSize = 'small';
     count.style.fontWeight = '400';
-    count.textContent = `${state.occurrences[tagName].occurrences?state.occurrences[tagName].occurrences:state.data.length}/${state.data.length} pages`;
-    
+      // Check if occurrences for the tagName exist
+  const tagOccurrences = state.occurrences[tagName];
+  if (tagOccurrences && tagOccurrences.occurrences !== undefined) {
+    count.textContent = `${tagOccurrences.occurrences}/${state.data.length} pages`;
+  } else {
+    count.textContent = `0/${state.data.length} pages`; // Default to 0 if no occurrences found
+  }
     container.append(label, br, count);
     return container;
   }

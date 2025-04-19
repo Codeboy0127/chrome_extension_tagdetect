@@ -13,12 +13,13 @@ function loadControlBarStyles() {
 }
 
 export function createControlBar(options = {}) {
+  console.log('Creating ControlBar with options:', options);
   // Ensure the CSS is loaded
   loadControlBarStyles();
   // Create container
   const controlBar = document.createElement('div');
   controlBar.className = 'control-bar';
-  
+  let historyMode = false;
   // State
   let isInspecting = options.isInspecting || false;
   const controlBarConfig = options.controlBar || {
@@ -32,17 +33,41 @@ export function createControlBar(options = {}) {
   const panel = options.panel || '';
 
   // Create buttons based on config
-  function renderButtons() {
+  async function renderButtons() {
     controlBar.innerHTML = '';
+    historyMode = await chrome.storage.local.get("historyMode");
+// Record/Pause toggle button
+if (controlBarConfig.record) {
+  const inspectBtn = document.createElement('button');
+  inspectBtn.className = 'action-btn';
 
-    // Record/Pause toggle button
-    if (controlBarConfig.record) {
-      const inspectBtn = document.createElement('button');
-      inspectBtn.className = 'action-btn';
-      inspectBtn.textContent = isInspecting ? 'Pause' : 'Record';
-      inspectBtn.addEventListener('click', handleToggleInspection);
-      controlBar.appendChild(inspectBtn);
+  // Set button text based on mode and inspection state
+  if (historyMode) {
+    inspectBtn.textContent = isInspecting ? 'Pause' : 'Record';
+  } else {
+    inspectBtn.textContent = isInspecting ? 'Pause' : 'Record';
+  }
+
+  // Add click event listener
+  inspectBtn.addEventListener('click', () => {
+    if (historyMode) {
+      // Toggle inspection state in history mode
+      isInspecting = !isInspecting;
+      historyMode = !isInspecting; // Switch to normal mode when recording starts
+    } else {
+      // Toggle inspection state in normal mode
+      isInspecting = !isInspecting;
     }
+
+    // Update button text and re-render buttons
+    renderButtons();
+
+    // Trigger the inspection toggle callback
+    if (options.onToggleInspection) options.onToggleInspection();
+  });
+
+  controlBar.appendChild(inspectBtn);
+}
 
     // Clear button
     if (controlBarConfig.clear) {

@@ -17,7 +17,7 @@ function loadTabsStyles() {
   }
 }
 
-export function createTabs(state, clearHistory, toggleHistoryMode) {
+export function createTabs() {
     // Ensure the CSS is loaded
     loadTabsStyles();
   // Create main container
@@ -63,7 +63,7 @@ export function createTabs(state, clearHistory, toggleHistoryMode) {
       // Initialize settingsView.element and alternateView.element
       settingsView = createTagSettings();
       alternateView = createDataLayerSettings();
-      logSettingView = createLogSettings(state, clearHistory, toggleHistoryMode);
+      logSettingView = createLogSettings();
       // Preserve the original tab elements and state
 
 

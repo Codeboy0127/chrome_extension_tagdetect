@@ -64,7 +64,8 @@ export function createPopup() {
       'launchdataelements': true,
       'adobetags': false
     },
-    tabId: null
+    tabId: null,
+    historyMode: false, 
   };
 
   // Initialize components
@@ -73,7 +74,7 @@ export function createPopup() {
   modal.element.style.display = 'none';
   
   // Create tabs system
-  const tabs = createTabs();
+  const tabs = createTabs(state, clearHistory, toggleHistoryMode);
 
   // Create TagView tab
   const tagView = createTagView({
@@ -133,6 +134,10 @@ export function createPopup() {
   // Initialize
   if (isDevTools()) {
     state.tabId = chrome.devtools.inspectedWindow.tabId;
+    if (!state.tabId) {
+      console.error("No valid tabId found.");
+      return;
+    }
     init();
   }
   toggleInspection();
@@ -195,12 +200,89 @@ export function createPopup() {
   }
 
   async function init() {
-    state.regexList = await getRegexList();
-    dispatchListeners();
-    // Initialize the badge
-    updateBadge();
+    // Check the historyMode value from Chrome storage
+    chrome.storage.local.get(['historyMode', 'savedData'], (result) => {
+      const historyMode = result.historyMode || false;
+
+      if (historyMode) {
+        console.log('History mode is enabled.');
+
+        // Render saved data from Chrome storage
+        if (result.savedData) {
+          state.data = result.savedData;
+          tagView.updateData(state.data);
+          dataLayerView.updateData(state.data);
+        }
+
+        // Disable new tag detection
+        state.isInspecting = false;
+        removeListeners(); // Ensure no listeners are active
+      } else {
+        console.log('Normal mode is enabled.');
+
+        // Normal mode: Initialize regex list and start detection
+        initializeNormalMode();
+      }
+    });
   }
 
+  function initializeNormalMode() {
+    // Load regex patterns and initialize listeners
+    getRegexList().then((regexList) => {
+      state.regexList = regexList;
+      dispatchListeners();
+      updateBadge();
+    });
+
+    // Enable inspection
+    state.isInspecting = true;
+  }
+
+  // // Start button click handler
+  // document.getElementById('start-button').addEventListener('click', () => {
+  //   console.log('Start button clicked.');
+
+  //   // Clear history and start new detection
+  //   chrome.storage.local.remove(['savedData', 'historyMode'], () => {
+  //     console.log('History cleared and historyMode set to false.');
+
+  //     // Set historyMode to false and start new detection
+  //     state.isInspecting = true;
+  //     toggleInspection(); // Start new detection
+  //   });
+  // });
+
+  // Save data to Chrome storage when DevTools or Chrome is closed
+  chrome.runtime.onSuspend.addListener(() => {
+    console.log('Saving data to Chrome storage before suspension.');
+    chrome.storage.local.set({ savedData: state.data }, () => {
+      console.log('Data saved to Chrome storage.');
+    });
+  });
+
+  chrome.tabs.onRemoved.addListener((tabId) => {
+    if (tabId === state.tabId) {
+      console.log('Saving data to Chrome storage before tab is closed.');
+      chrome.storage.local.set({ savedData: state.data }, () => {
+        console.log('Data saved to Chrome storage.');
+      });
+    }
+  });
+
+  function clearHistory() {
+    chrome.storage.local.remove('savedData', () => {
+      console.log('History cleared.');
+      state.data = [];
+      tagView.updateData(state.data);
+      dataLayerView.updateData(state.data);
+      updateBadge();
+    });
+  }
+  
+  function toggleHistoryMode() {
+    state.historyMode = !state.historyMode;
+    init(); // Reinitialize based on the selected mode
+  }
   function parsePostData(postData) {
     if (postData !== undefined) {
       const KeywordRegex = /[a-z]+=/;
@@ -328,11 +410,15 @@ export function createPopup() {
   }
 
   function removeListeners() {
+    try {
     chromeHelper.removeLocalStorageChangeListener(listenOnRegexChange);
     chromeHelper.removeRuntimeMessagesListener(captureDataLayer);
     chromeHelper.removeTabUpdatedListener(listenToUrlChanges);
     chromeHelper.removeTabClosedListener(handleTabclosed);
     chrome.devtools.network.onRequestFinished.removeListener(devtoolsNetworkRequest);
+  } catch (error) {
+    console.error("Error removing listeners:", error);
+  }
   }
 
   function listenOnRegexChange(changes, areaName) {
@@ -435,7 +521,7 @@ export function createPopup() {
       data.impressions = state.regexOccurances[identifier]?.occurences || 0; // Add impression count
 
       queueData(data, name, urlListLength, eventListLength, icon);
-      
+
       // Update the badge with the total number of tags
       updateBadge();
     } catch (error) {
@@ -565,6 +651,7 @@ export function createPopup() {
 
   function handleTabclosed(tabId) {
     if (tabId === state.tabId) {
+      console.warn("Tab closed. Reloading extension.");
       chrome.runtime.reload();
     }
   }
