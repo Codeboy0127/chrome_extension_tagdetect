@@ -253,7 +253,7 @@ export function createTabs() {
     // Create tab header
     const tabHeader = document.createElement('li');
     tabHeader.textContent = title;
-    tabHeader.addEventListener('click', () => selectTab(title=="Tags View"?0:1, title));
+    tabHeader.addEventListener('click', () => selectTab(title=="Tags View"?0:title=="Data Layer View"?1:2, title));
     
     if (tabs.length === 1) {
       tabHeader.classList.add('tabs-selected');

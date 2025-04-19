@@ -7,6 +7,7 @@ import { createDataLayerView } from './panels/DataLayerView.js';
 import { createModal } from './Modal.js';
 import { createNotificationManager } from './Notification.js';
 import { chromeHelper, isDevTools } from '../lib/chromeHelpers.js';
+import { createAudit } from './audit.js';
 // import FileSaver from '../lib/FileSaver.min.js';
 // import XLSX from '../lib/xlsx.full.min.js';
 
@@ -109,6 +110,18 @@ export function createPopup() {
   const dataLayerViewTab = createTab('Data Layer View', false);
   dataLayerViewTab.appendContent(dataLayerView.element);
   tabs.addTab(dataLayerViewTab, 'Data Layer View');
+
+  // Create NewView tab
+  const newView = createAudit({
+    someOption: true, // Pass any required options for the new view
+    onSomeAction: () => {
+      console.log('Action triggered from Aaudit');
+    },
+  });
+
+  const newViewTab = createTab('Aaudit', false); // Create the Aaudit
+  newViewTab.appendContent(newView.element); // Append the content of the new view
+  tabs.addTab(newViewTab, 'Aaudit'); // Add the Aaudit to the tabs system
 
   // Create footer
   const footer = document.createElement('div');

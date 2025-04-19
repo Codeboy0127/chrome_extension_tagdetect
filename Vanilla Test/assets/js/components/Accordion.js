@@ -1,4 +1,6 @@
 // accordion.js - Vanilla JS implementation of Accordion component
+import { addReport, attachScreenshot } from './audit.js'; // Import the addReport function from audit.js
+
 function loadAccordionStyles() {
   if (!document.getElementById('accordion-styles')) {
     const link = document.createElement('link');
@@ -60,7 +62,21 @@ export function createAccordion(config) {
   buttonsContainer.addEventListener('click', (e) => e.stopPropagation());
   // Add Date if provided
     if (config.date) {
-      const dateSpan = document.createElement('span');
+
+// Create dropdown
+const button = document.createElement('button');
+button.textContent = 'Add to Audit';
+button.className = 'add-report-button';
+button.addEventListener('click', () => {
+  if (config.content) {
+    console.log(config);
+    
+    addReport(config.content);
+  }
+});
+
+buttonsContainer.appendChild(button);
+  const dateSpan = document.createElement('span');
       dateSpan.className = 'date';
       const dateFormatter = new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
