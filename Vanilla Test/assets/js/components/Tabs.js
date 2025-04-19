@@ -3,6 +3,7 @@
 import { createModal } from './Modal.js';
 import { pageSelectEvent } from '../google-analytics.js';
 import { createTagSettings } from './settings/TagSettings.js';
+import { createLogSettings } from './settings/LogSettings.js';
 import { createDataLayerSettings } from './settings/DataLayerSettings.js';
 
 // Function to dynamically load the CSS file
@@ -16,7 +17,7 @@ function loadTabsStyles() {
   }
 }
 
-export function createTabs() {
+export function createTabs(state, clearHistory, toggleHistoryMode) {
     // Ensure the CSS is loaded
     loadTabsStyles();
   // Create main container
@@ -49,6 +50,7 @@ export function createTabs() {
   // Declare settingsView.element and alternateView.element outside the block
   let settingsView = null;
   let alternateView = null;
+  let logSettingView = null;
 
   // Add event listener for settings button
   settingsButton.addEventListener('click', () => {
@@ -61,7 +63,7 @@ export function createTabs() {
       // Initialize settingsView.element and alternateView.element
       settingsView = createTagSettings();
       alternateView = createDataLayerSettings();
-
+      logSettingView = createLogSettings(state, clearHistory, toggleHistoryMode);
       // Preserve the original tab elements and state
 
 
@@ -89,12 +91,12 @@ export function createTabs() {
               if (tabsContainer.contains(alternateView.element)) {
                 tabsContainer.replaceChild(settingsView.element, alternateView.element); // Swap alternateView.element with settingsView.element
               } else {
-                if (tabsContainer.contains(alternateView.element)) {
-                  tabsContainer.removeChild(alternateView.element); // Clear the container only if it exists
-                }
-                console.log("here???", isSettingsMode)
-                if(isSettingsMode){
-                tabsContainer.appendChild(settingsView.element);} // Show settingsView.element
+                tabsContainer.replaceChild(settingsView.element, logSettingView.element); 
+                // if (tabsContainer.contains(alternateView.element)) {
+                //   tabsContainer.removeChild(alternateView.element); // Clear the container only if it exists
+                // }
+                // if(isSettingsMode){
+                // tabsContainer.appendChild(settingsView.element);} // Show settingsView.element
               }
             }
           } else if (index === 1) {
@@ -102,11 +104,15 @@ export function createTabs() {
               if (tabsContainer.contains(settingsView.element)) {
                 tabsContainer.replaceChild(alternateView.element, settingsView.element); // Swap settingsView.element with alternateView.element
               } else {
-                if (tabsContainer.contains(settingsView.element)) {
-                  tabsContainer.removeChild(settingsView.element); // Clear the container only if it exists
-                }
-                if(isSettingsMode){
-                tabsContainer.appendChild(alternateView.element);} // Show alternateView.element
+                tabsContainer.replaceChild(alternateView.element, logSettingView.element); 
+              }
+            }
+          } else if (index === 2) {
+            if (!tabsContainer.contains(logSettingView.element)) {
+              if (tabsContainer.contains(settingsView.element)) {
+                tabsContainer.replaceChild(logSettingView.element, settingsView.element); // Swap settingsView.element with logSettingView.element
+              } else {
+                tabsContainer.replaceChild(logSettingView.element, alternateView.element); 
               }
             }
           }
@@ -126,6 +132,9 @@ export function createTabs() {
       }
       if (tabsContainer.contains(alternateView.element)) {
         tabsContainer.removeChild(alternateView.element);
+      }
+      if (tabsContainer.contains(logSettingView.element)) {
+        tabsContainer.removeChild(logSettingView.element);
       }
 
       // Restore the original tab elements
