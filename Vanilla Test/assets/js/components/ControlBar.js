@@ -66,8 +66,12 @@ async function renderButtons() {
 
     // Trigger the inspection toggle callback
     if (options.onToggleInspection) options.onToggleInspection();
-  });
+  })
 
+  function handleResetData() {
+    if (options.onResetData) options.onResetData();
+    pageInteractionEvent(panel, 'clear_data');
+  }
   controlBar.appendChild(inspectBtn);
   }
 
@@ -120,12 +124,6 @@ async function renderButtons() {
     if (options.onCollapseAll) options.onCollapseAll();
     pageInteractionEvent(panel, 'collapse_all');
   }
-
-  function handleExpandAll() {
-    if (options.onExpandAll) options.onExpandAll();
-    pageInteractionEvent(panel, 'expand_all');
-  }
-
   function handleToggleSettings() {
     
     if (options.onToggleSettingsPanel) options.onToggleSettingsPanel();
@@ -145,12 +143,6 @@ async function renderButtons() {
   function handleResetData() {
     if (options.onResetData) options.onResetData();
     pageInteractionEvent(panel, 'clear_data');
-  }
-
-  // Public methods
-  function updateConfig(newConfig) {
-    Object.assign(controlBarConfig, newConfig);
-    renderButtons();
   }
 
   function setIsInspecting(inspecting) {
