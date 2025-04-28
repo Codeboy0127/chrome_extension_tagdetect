@@ -9,8 +9,6 @@ function loadDropdownStyles() {
     document.head.appendChild(link);
   }
 }
-
-
 export function createDropdown(filterOptions, onChangeCallback) {
   // Ensure the CSS is loaded
   loadDropdownStyles();
