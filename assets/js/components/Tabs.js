@@ -34,10 +34,6 @@ export function createTabs() {
   // Create promo section
   const promoSection = document.createElement('div');
   promoSection.innerHTML = 'Tag View is better with Taglab Web ';
-  const whyButton = document.createElement('button');
-  whyButton.className = 'sec-btn';
-  whyButton.textContent = 'Why?';
-  promoSection.appendChild(whyButton);
 
   // State
   let tabs = [];
@@ -49,7 +45,12 @@ export function createTabs() {
     "Cloud-based robust digital marketing testing suite.",
     "Limitless page inspection and crawling capabilities for unparalleled insights",
   ];
-
+  
+  const whyButton = document.createElement('button');
+  whyButton.className = 'sec-btn';
+  whyButton.textContent = 'Why?';
+  promoSection.appendChild(whyButton);
+  
   // Create modal
   const modal = createModal({
     header: '<h3>Benefits of Taglab Web</h3>',
