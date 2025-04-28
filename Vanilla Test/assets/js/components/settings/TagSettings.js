@@ -20,7 +20,10 @@ export function createTagSettings(options = {}) {
     // Create main container
     const panel = document.createElement('div');
     panel.className = 'tag-settings-panel settings-panel custom-scrollbar';
-
+    const settingsTitle = document.createElement('h3');
+    settingsTitle.textContent = 'Regex Patterns';
+    settingsTitle.className = 'settings-title';
+    panel.appendChild(settingsTitle);
     // State
     let state = {
         RegExIdToEdit: -1,
@@ -66,7 +69,7 @@ export function createTagSettings(options = {}) {
 
     // Append buttons to the container
     buttonContainer.appendChild(addButton);
-    buttonContainer.appendChild(deleteButton);
+    // buttonContainer.appendChild(deleteButton);
 
     // Create "Select All" checkbox
     const selectAllContainer = document.createElement('div');
@@ -97,7 +100,7 @@ export function createTagSettings(options = {}) {
     });
     buttonContainer.prepend(selectAllContainer); // Append "Select All" checkbox to the button container
       // Append button container to the panel
-      panel.prepend(buttonContainer);
+      panel.append(buttonContainer);
 
     // Create regex manager container
     const regexManager = document.createElement('div');
@@ -199,7 +202,21 @@ export function createTagSettings(options = {}) {
 
         const pattern = document.createElement('p');
         pattern.style.padding = '1rem 0';
-        pattern.textContent = regEx.pattern;
+        function regexToReadableUrls(regexStr) {
+          return regexStr.split('|').map((pattern) => {
+            return pattern
+              .replace(/\\\./g, '.')             // unescape .
+              .replace(/\\\//g, '/')             // unescape /
+              .replace(/\[a-z]\*?/g, '')        // [a-z]* → *
+              .replace(/\[a-z]\.*/g, '')        // [a-z]\.* → *
+              .replace(/\([^)]+\)/g, '')        // optional groups → *
+              .replace(/\\\?/g, '?')             // unescape ?
+              .replace(/\\=/g, '=')              // unescape =
+              // .replace(/^\*?/, 'https://*.')     // add wildcard protocol + subdomain
+              .replace(/\/+/g, '/')              // clean up double slashes
+          });
+        }
+        pattern.textContent = regexToReadableUrls(regEx.pattern);;
         content.appendChild(pattern);
 
         regexAcc.appendChild(content);

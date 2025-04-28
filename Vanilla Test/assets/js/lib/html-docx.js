@@ -3739,7 +3739,7 @@ ZipEntries.prototype = {
             } else {
                 // We found some records but not all.
                 // Something is wrong but we got something for the user: no error here.
-                // console.warn("expected", this.centralDirRecords, "records in central dir, got", this.files.length);
+                // console.log("expected", this.centralDirRecords, "records in central dir, got", this.files.length);
             }
         }
     },
@@ -3802,7 +3802,7 @@ ZipEntries.prototype = {
 
             // now the zip64 EOCD record
             if (!this.isSignature(this.relativeOffsetEndOfZip64CentralDir, sig.ZIP64_CENTRAL_DIRECTORY_END)) {
-                // console.warn("ZIP64 end of central directory not where expected.");
+                // console.log("ZIP64 end of central directory not where expected.");
                 this.relativeOffsetEndOfZip64CentralDir = this.reader.lastIndexOfSignature(sig.ZIP64_CENTRAL_DIRECTORY_END);
                 if (this.relativeOffsetEndOfZip64CentralDir < 0) {
                     throw new Error("Corrupted zip : can't find the ZIP64 end of central directory");
@@ -3822,7 +3822,7 @@ ZipEntries.prototype = {
         var extraBytes = endOfCentralDirOffset - expectedEndOfCentralDirOffset;
 
         if (extraBytes > 0) {
-            // console.warn(extraBytes, "extra bytes at beginning or within zipfile");
+            // console.log(extraBytes, "extra bytes at beginning or within zipfile");
             if (this.isSignature(endOfCentralDirOffset, sig.CENTRAL_FILE_HEADER)) {
                 // The offsets seem wrong, but we have something at the specified offset.
                 // So… we keep it.

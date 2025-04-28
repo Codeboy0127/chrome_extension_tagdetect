@@ -293,3 +293,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.action.setBadgeBackgroundColor({ color: "#FF0000", tabId: sender.tab.id });
   }
 });
+
+chrome.action.onClicked.addListener((tab) => {
+  // Inject the Google Analytics script into the active tab
+  chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    files: ['assets/js/google-analytics.js'],
+  });
+});

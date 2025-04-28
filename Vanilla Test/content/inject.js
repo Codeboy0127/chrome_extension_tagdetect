@@ -23,36 +23,34 @@ var dataslayer = {
 };
 
 dataslayer.sanitize = function(obj) {
-  var localDL = {};
-  for (var ddel in obj) {
-    if (obj[ddel] instanceof Element) {
-      localDL[ddel] = 'element';
-      if (obj.event === 'gtm.linkClick' || obj.event === 'gtm.click')
-        localDL['Click Text'] = obj[ddel].innerText;
-    } else if (obj[ddel] instanceof Function) {
-    } //tag commander has many of these
-    else if (ddel.substr(0, 9) === 'function ') {
-    } //tag commander has many of these
-    else if (Array.isArray(obj[ddel])) {
-      //console.log('ARRAY: ', ddel, obj[ddel]);
-      var convert = {};
-      for (var i in Object.keys(obj[ddel])) {
-        if (!(obj[ddel][i] instanceof Function)) convert[i] = obj[ddel][i];
-        if (Array.isArray(convert[i]))
-          convert[i] = dataslayer.sanitize(convert[i]);
-      }
-      localDL[ddel] = convert;
-    }else {
-      if (obj[ddel] instanceof Object){
-        //utag circular
-        if(ddel === 'o'){
-          obj[ddel] = undefined
-        }
-      }
-      localDL[ddel] = obj[ddel];
+  const seen = new WeakSet();
+
+  function sanitizeObject(obj) {
+    if (obj === null || typeof obj !== 'object') {
+      return obj; // Return primitive values as-is
     }
+
+    if (seen.has(obj)) {
+      return '[Circular]'; // Replace circular references with a placeholder
+    }
+
+    seen.add(obj);
+
+    if (Array.isArray(obj)) {
+      return obj.map(sanitizeObject); // Recursively sanitize array elements
+    }
+
+    const sanitized = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        sanitized[key] = sanitizeObject(obj[key]); // Recursively sanitize object properties
+      }
+    }
+
+    return sanitized;
   }
-  return localDL;
+
+  return sanitizeObject(obj);
 };
 
 dataslayer.helperListener = function(message, model) {
@@ -176,7 +174,7 @@ dataslayer.gtmSearch = function() {
         dataslayer.gtmID[i] = gtmLocation.searchParams.get('id');
         dataslayer.dLN[i] = gtmLocation.searchParams.get('l') || 'dataLayer';
       } catch (e) {
-        console.warn(
+        console.log(
           "Your browser likely doesn't support the URL type; please upgrade."
         );
       }
@@ -461,29 +459,24 @@ dataslayer.reduceIndex = function(obj, i) {
 };
 
 dataslayer.createListener = function(variable) {
-  var listener = function() {
+  const listener = function() {
     try {
+      const sanitizedData = dataslayer.sanitize(
+        variable.length === 1
+          ? window[variable[0]]
+          : variable.reduce(dataslayer.reduceIndex, window)
+      );
+
       window.parent.postMessage(
         {
           type: 'var',
           dLN: variable.length === 1 ? variable[0] : variable.join('.'),
-          //url:window == window.parent ? window.location.href : 'iframe',
-          data: JSON.stringify(
-            dataslayer.sanitize(
-              variable.length === 1
-                ? window[variable[0]]
-                : variable.reduce(dataslayer.reduceIndex, window)
-            )
-          ),
+          data: JSON.stringify(sanitizedData), // Serialize sanitized data
         },
         '*'
       );
     } catch (error) {
-      console.log('could not catch js object', error, dataslayer.sanitize(
-        variable.length === 1
-          ? window[variable[0]]
-          : variable.reduce(dataslayer.reduceIndex, window)
-      ))
+      console.error('Could not catch JS object:', error);
     }
   };
   return listener;
@@ -533,7 +526,7 @@ dataslayer.loadOtherLayers = function() {
         // initial call
         dataslayer.layers[i].listener();
       } else if (type !== 'object' && type !== 'undefined')
-        console.warn(
+        console.log(
           'dataslayer: cannot watch non-object ',
           dataslayer.layers[i].join('.')
         );
@@ -593,7 +586,7 @@ dataslayer.loadLaunchDataElements = function() {
         '*'
       );
     } catch (e) {
-      //console.warn(e);
+      //console.log(e);
     }
 
   }

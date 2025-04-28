@@ -64,6 +64,7 @@ body[data-theme='light'] .accordion .rounded {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 50%;
 }
 
 body[data-theme='light'] .accordion.green-header>h3 {
@@ -71,6 +72,10 @@ body[data-theme='light'] .accordion.green-header>h3 {
 }
 body[data-theme='dark'] .accordion.green-header>h3 {
   background: #151419;
+}
+
+body[data-theme='dark'] .add-report-button {
+  background: #e53935;
 }
 
 .accordion.gray-header>h3 {
@@ -158,12 +163,16 @@ body[data-theme='dark'] .flat.accordion .selected{
   display: inline-block;
 }
 
+.date {
+  align-content: center;
+}
+
 .add-report-button {
   padding: 8px 12px;
   font-size: 14px;
   font-weight: bold;
   color: #fff;
-  background-color: #007bff;
+  background-color: #e53935;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -171,7 +180,7 @@ body[data-theme='dark'] .flat.accordion .selected{
 }
 
 .add-report-button:hover {
-  background-color: #0056b3;
+  background-color: #e53835c1;
 }
 
 .dropdown-content {
@@ -199,4 +208,6 @@ body[data-theme='dark'] .flat.accordion .selected{
 .dropdown:hover .dropdown-content {
   display: block;
 }
+
+
 

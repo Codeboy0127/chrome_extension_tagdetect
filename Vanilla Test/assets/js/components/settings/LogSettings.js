@@ -16,7 +16,10 @@ export function createLogSettings() {
   // Create a container for the settings
   const container = document.createElement('div');
   container.className = 'log-settings';
-
+  const settingsTitle = document.createElement('h3');
+  settingsTitle.textContent = 'Log Settings';
+  settingsTitle.className = 'settings-title';
+  container.appendChild(settingsTitle);
   const state = {
     historyMode: false,
     history: [],
@@ -26,44 +29,46 @@ export function createLogSettings() {
   chrome.storage.local.get(['historyMode'], (result) => {
     state.historyMode = result.historyMode || false;
     toggleHistoryModeButton.textContent = state.historyMode
-      ? 'Switch to Normal Mode'
-      : 'Switch to History Mode';
+      ? '🛑History Off'
+      : '🚦History On';
   });
 
-  // Create Clear History button
-  const clearHistoryButton = document.createElement('button');
-  clearHistoryButton.textContent = 'Clear History';
-  clearHistoryButton.className = 'simple-button';
-  clearHistoryButton.addEventListener('click', () => {
-    // Clear saved data in Chrome storage
-    chrome.storage.local.remove('savedData', () => {
-      console.log('Saved data cleared from Chrome storage.');
-    });
-  });
-  container.appendChild(clearHistoryButton);
+  const buttonContainer = document.createElement('div');
+  buttonContainer.className = 'button-container';
 
   // Create Toggle History Mode button
   const toggleHistoryModeButton = document.createElement('button');
   toggleHistoryModeButton.textContent = state.historyMode
-    ? 'Switch to Normal Mode'
-    : 'Switch to History Mode';
-  toggleHistoryModeButton.className = 'simple-button';
+  ? '🛑History Off'
+  : '🚦History On';
+  toggleHistoryModeButton.className = 'preserve-button';
   toggleHistoryModeButton.addEventListener('click', () => {
     // Toggle the historyMode state
     state.historyMode = !state.historyMode;
 
     // Update the button text
     toggleHistoryModeButton.textContent = state.historyMode
-      ? 'Switch to Normal Mode'
-      : 'Switch to History Mode';
-
+    ? '🛑History Off'
+    : '🚦History On';
     // Save the updated historyMode state to Chrome storage
     chrome.storage.local.set({ historyMode: state.historyMode }, () => {
       console.log('History mode updated in Chrome storage:', state.historyMode);
     });
   });
-  container.appendChild(toggleHistoryModeButton);
+  buttonContainer.appendChild(toggleHistoryModeButton);
 
+  // Create Clear History button
+  const clearHistoryButton = document.createElement('button');
+  clearHistoryButton.textContent = 'Clear log';
+  clearHistoryButton.className = 'clear-button';
+  clearHistoryButton.addEventListener('click', () => {
+    // Clear saved data in Chrome storage
+    chrome.storage.local.remove('savedData', () => {
+      alert('Saved data cleared from Chrome storage.');
+    });
+  });
+  buttonContainer.appendChild(clearHistoryButton);
+  container.appendChild(buttonContainer);
   return {
     element: container,
   };

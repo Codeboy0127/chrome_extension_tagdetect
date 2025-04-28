@@ -176,6 +176,7 @@ body[data-theme='dark'] #collapse-all
 body[data-theme='dark'] .tabs-selected
  {
   background-color: #4caf50;
+  color: #151419;
 }
 body[data-theme='dark'] .accordion-buttons h4
  {
@@ -184,7 +185,7 @@ body[data-theme='dark'] .accordion-buttons h4
 
 body[data-theme='dark'] .accordion-shadow .accordion
  {
-  border: #151419 solid 2px;
+  border: #1F1E25 solid 2px;
 }
 
 

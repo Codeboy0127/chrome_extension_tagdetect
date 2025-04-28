@@ -5,7 +5,8 @@ import { pageSelectEvent } from '../google-analytics.js';
 import { createTagSettings } from './settings/TagSettings.js';
 import { createLogSettings } from './settings/LogSettings.js';
 import { createDataLayerSettings } from './settings/DataLayerSettings.js';
-
+import { chromeHelper, isDevTools } from '../lib/chromeHelpers.js';
+import { createPopup } from './popup.js';
 // Function to dynamically load the CSS file
 function loadTabsStyles() {
   if (!document.getElementById('Tabs-styles')) {
@@ -17,7 +18,7 @@ function loadTabsStyles() {
   }
 }
 
-export function createTabs() {
+export function createTabs(toggleInspection) {
     // Ensure the CSS is loaded
     loadTabsStyles();
   // Create main container
@@ -47,11 +48,6 @@ export function createTabs() {
   // State to track whether we are in "settings mode"
   let isSettingsMode = false;
 
-  // Declare settingsView.element and alternateView.element outside the block
-  let settingsView = null;
-  let alternateView = null;
-  let logSettingView = null;
-
   // Add event listener for settings button
   settingsButton.addEventListener('click', () => {
     const originalTabElements = tabs.map((tab) => tab.element);
@@ -59,112 +55,69 @@ export function createTabs() {
     if (!isSettingsMode) {
       // Enter settings mode
       console.log('Entering settings mode');
-
+      // const tabsHeader = document.getElementsByClassName("tabs-header")[0]; // Select the first element
+      // tabsHeader.querySelectorAll('li')[2].textContent = "Preserve";
       // Initialize settingsView.element and alternateView.element
-      settingsView = createTagSettings();
-      alternateView = createDataLayerSettings();
-      logSettingView = createLogSettings();
+      const settingsView = createTagSettings();
+      const alternateView = createDataLayerSettings();
+      const logSettingView = createLogSettings();
+      const settingsPanel = document.createElement('div');
+      settingsPanel.className = 'settings-panel';
       // Preserve the original tab elements and state
+      settingsPanel.append(settingsView.element, alternateView.element, logSettingView.element);
 
-
-      // Replace all tabInstance.element with the settings view
-      tabs.forEach((tab) => {
-        if (tabsContainer.contains(tab.element)) {
-          tabsContainer.replaceChild(settingsView.element, tab.element);
-        }
-      });
+      tabsContainer.innerHTML = ''; // Clear the container
+      tabsContainer.append(logoContainer, settingsPanel); // Append logoContainer back to tabsContainer
 
       // Change button icon to "go back"
       settingsButton.innerHTML = `
         <img src="https://cdn-icons-png.flaticon.com/512/1828/1828778.png" alt="Close" style="height: 20px; width: 20px;">
       `;
 
-      // Add functionality to toggle between settingsView.element and alternateView.element
-      tabsHeader.addEventListener('click', (event) => {
-        const clickedTab = event.target;
-        if (clickedTab.tagName === 'LI') {
-          const index = Array.from(tabsHeader.children).indexOf(clickedTab);
-
-          // Show settingsView.element for the first tab, alternateView.element for the second tab
-          if (index === 0) {
-            if (!tabsContainer.contains(settingsView.element)) {
-              if (tabsContainer.contains(alternateView.element)) {
-                tabsContainer.replaceChild(settingsView.element, alternateView.element); // Swap alternateView.element with settingsView.element
-              } else {
-                tabsContainer.replaceChild(settingsView.element, logSettingView.element); 
-                // if (tabsContainer.contains(alternateView.element)) {
-                //   tabsContainer.removeChild(alternateView.element); // Clear the container only if it exists
-                // }
-                // if(isSettingsMode){
-                // tabsContainer.appendChild(settingsView.element);} // Show settingsView.element
-              }
-            }
-          } else if (index === 1) {
-            if (!tabsContainer.contains(alternateView.element)) {
-              if (tabsContainer.contains(settingsView.element)) {
-                tabsContainer.replaceChild(alternateView.element, settingsView.element); // Swap settingsView.element with alternateView.element
-              } else {
-                tabsContainer.replaceChild(alternateView.element, logSettingView.element); 
-              }
-            }
-          } else if (index === 2) {
-            if (!tabsContainer.contains(logSettingView.element)) {
-              if (tabsContainer.contains(settingsView.element)) {
-                tabsContainer.replaceChild(logSettingView.element, settingsView.element); // Swap settingsView.element with logSettingView.element
-              } else {
-                tabsContainer.replaceChild(logSettingView.element, alternateView.element); 
-              }
-            }
-          }
-        }
-      });
-
       // Update state
       isSettingsMode = true;
     } else {
       // Exit settings mode
       console.log('Exiting settings mode');
-
+      // const app = document.getElementById('app');
+      // if (app) {
+      //   app.innerHTML = ''; // Clear the container
+      //   const popup = createPopup();
+      //   app.appendChild(popup);
+      // } else {
+      //   console.log("No element with id 'app' found.");
+      // }
       // Restore the original tab elements and state
-      // Remove settingsView.element or alternateView.element if present
-      if (tabsContainer.contains(settingsView.element)) {
-        tabsContainer.removeChild(settingsView.element);
-      }
-      if (tabsContainer.contains(alternateView.element)) {
-        tabsContainer.removeChild(alternateView.element);
-      }
-      if (tabsContainer.contains(logSettingView.element)) {
-        tabsContainer.removeChild(logSettingView.element);
-      }
-
-      // Restore the original tab elements
+      tabsContainer.innerHTML = ''; // Clear the container
+      tabsContainer.append(logoContainer, headerNav); // Append logoContainer and headerNav back to tabsContainer
+            // Restore the original tab elements
       originalTabElements.forEach((element) => {
         if (!tabsContainer.contains(element)) {
           tabsContainer.appendChild(element);
         }
-      });
-
-      // Ensure logoContainer and headerNav remain intact
-      if (!tabsContainer.contains(logoContainer)) {
-        tabsContainer.insertBefore(logoContainer, tabsContainer.firstChild);
-      }
-      if (!tabsContainer.contains(headerNav)) {
-        tabsContainer.insertBefore(headerNav, tabsContainer.children[1]);
-      }
-
-      // Restore the original tabHeaders functionality
-      tabs.forEach((tab, index) => {
-        tabsContainer.appendChild(tab.element); // Ensure all tab elements are reattached
-      });
-
-      selectTab(selectedIndex, tabs[selectedIndex]?.title || '');
-
+      }); 
+      selectTab(0, tabs[0]?.title || '');
       // Change button icon back to "settings"
       settingsButton.innerHTML = `
         <img src="https://cdn-icons-png.flaticon.com/512/3524/3524659.png" alt="Settings" style="height: 24px; width: 24px;">
       `;
 
-      // Update state
+      // // Restore the original tab elements
+      // originalTabElements.forEach((element) => {
+      //   if (!tabsContainer.contains(element)) {
+      //     tabsContainer.appendChild(element);
+      //   }
+      // });   
+      // // Restore the original tabHeaders functionality
+
+      // tabs.forEach((tab, index) => {
+      //   tabsContainer.appendChild(tab.element); // Ensure all tab elements are reattached
+      // });
+    
+      //     selectTab(selectedIndex, tabs[selectedIndex]?.title || '');
+      // // Update state
+      // chromeHelper.reloadTab(tabId); 
+      toggleInspection();
       isSettingsMode = false;
     }
   });

@@ -2,7 +2,7 @@
 import { createControlBar } from '../ControlBar.js';
 import { createDropdown } from '../Dropdown.js';
 import { createAccordion } from '../Accordion.js';
-import { createReadMore } from '../ReadMore.js';
+import { createReadMore } from '../readmore.js';
 import { pageInteractionEvent } from '../../google-analytics.js';
 import { createBlockButton } from '../BlockButton.js';
 
@@ -21,7 +21,6 @@ export function createTagView(options = {}) {
   // Create main container
   const panel = document.createElement('div');
   panel.className = 'panel';
-  console.log("options--->", options)
   // State
   let state = {
     isInspecting: options.isInspecting || false,
@@ -80,6 +79,50 @@ export function createTagView(options = {}) {
     renderData();
   });
 
+  const filterBoxWrapper = document.createElement('div');
+  filterBoxWrapper.className = 'filter-box-wrapper';
+  filterBoxWrapper.appendChild(filterBox.element);
+
+  const tooltip = document.createElement('div');
+    tooltip.className = 'custom-tooltip';
+    tooltip.textContent = 'Please pause recording to use this function.';
+
+   // Disable or enable the filterBox based on the inspection state
+   if (!state.isInspecting) {
+    // Disable the filterBox
+    filterBox.element.style.pointerEvents = 'none'; // Disable interactions
+    filterBox.element.style.opacity = '0.5'; // Optional: visually indicate it's disabled
+    tooltip.style.opacity = '100'; // Hide the tooltip
+    // Add custom tooltip for disabled state
+
+    filterBoxWrapper.addEventListener('mouseenter', () => {
+      tooltip.style.display = 'block';
+      // const rect = filterBoxWrapper.getBoundingClientRect();
+      // tooltip.style.top = `${rect.top - 10}px`; // Position above the wrapper
+      // tooltip.style.left = `${rect.left}px`;
+      document.body.appendChild(tooltip);
+    });
+
+    filterBoxWrapper.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+      if (tooltip.parentNode) {
+        tooltip.parentNode.removeChild(tooltip);
+      }
+    });
+  } else {
+    tooltip.style.display = 'none';
+    tooltip.style.opacity = '0'; // Hide the tooltip
+    // Enable the filterBox
+    filterBox.element.style.pointerEvents = 'auto'; // Enable interactions
+    filterBox.element.style.opacity = '1'; // Restore appearance
+
+    // Remove tooltip for active state
+    const existingTooltip = document.querySelector('.custom-tooltip');
+    if (existingTooltip) {
+      existingTooltip.remove();
+    }
+  }
+
   const searchCount = document.createElement('span');
   searchCount.style.display = 'none';
 
@@ -89,7 +132,42 @@ export function createTagView(options = {}) {
     isInspecting: state.isInspecting,
     panel: 'Tags View',
     onToggleInspection: () => {
-      if (options.onToggleInspection) options.onToggleInspection();
+    // Toggle inspection state
+    state.isInspecting = !state.isInspecting;
+    if (state.isInspecting) {
+      // Disable the filterBox
+      filterBox.element.style.pointerEvents = 'none'; // Disable interactions
+      filterBox.element.style.opacity = '0.5'; // Optional: visually indicate it's disabled
+      tooltip.style.opacity = '100'; // Hide the tooltip
+      filterBoxWrapper.addEventListener('mouseenter', () => {
+        tooltip.style.display = 'block';
+        // const rect = filterBoxWrapper.getBoundingClientRect();
+        // tooltip.style.top = `${rect.top - 30}px`; // Position above the wrapper
+        // tooltip.style.left = `${rect.left}px`;
+        document.body.appendChild(tooltip);
+      });
+  
+      filterBoxWrapper.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+        if (tooltip.parentNode) {
+          tooltip.parentNode.removeChild(tooltip);
+        }
+      });
+    } else {
+      tooltip.style.display = 'none';
+      tooltip.style.opacity = '0'; // Hide the tooltip
+      // Enable the filterBox
+      filterBox.element.style.pointerEvents = 'auto'; // Enable interactions
+      filterBox.element.style.opacity = '1'; // Restore appearance
+  
+      // Remove tooltip for active state
+      const existingTooltip = document.querySelector('.custom-tooltip');
+      if (existingTooltip) {
+        existingTooltip.remove();
+      }
+    }
+    // Call the provided callback if it exists
+    if (options.onToggleInspection) options.onToggleInspection();
     },
     onResetData: resetData,
     onExportData: () => {
@@ -99,10 +177,9 @@ export function createTagView(options = {}) {
     onExpandAll: expandAll,
     // onToggleSettingsPanel: toggleSettingsPanel
   });
-console.log("controbar--------->", controlBar)
   // Add the button to the control bar
   const preventLoadButton = createBlockButton();
-  panelTop.append(preventLoadButton, searchBox, searchCount, controlBar.element, filterBox.element);
+  panelTop.append(preventLoadButton, searchBox, searchCount, controlBar.element, filterBoxWrapper);
 
   // Create tag panel
   const tagPanel = document.createElement('div');
@@ -113,6 +190,12 @@ console.log("controbar--------->", controlBar)
 
   // Render data
   function renderData() {
+    try {
+      // Ensure the context is valid
+      if (!chrome.runtime || !chrome.runtime.id) {
+        console.log('Extension context invalidated. Skipping renderData.');
+        return;
+      }
     tagPanel.innerHTML = '';
     state.data.forEach((url, urlIndex) => {
       const urlAccordion = createAccordion({
@@ -126,6 +209,9 @@ console.log("controbar--------->", controlBar)
     });
     
     updateSearchCountDisplay();
+  } catch (error) {
+    console.log('Error rendering data:', error);
+  }
   }
 
   function renderEvents(events, urlIndex) {
@@ -143,15 +229,14 @@ console.log("controbar--------->", controlBar)
     
     eventsToRender.forEach((event, eventIndex) => {
       const originalIndex = state.listOrder === 'ASC' ? eventIndex : events.length - eventIndex - 1;
-      const eventAccordion = createAccordion({
-        id: `tech-${urlIndex}-${eventIndex}`,
-        styling: 'rounded green-header accordion-shadow',
-        title: event.name,
-        editTitleSlot: renderEditTitle(event.name, urlIndex, originalIndex),
-        content: renderTags(event.tags, urlIndex, originalIndex),
-      });
-      
-      container.appendChild(eventAccordion.element);
+      // const eventAccordion = createAccordion({
+      //   id: `tech-${urlIndex}-${eventIndex}`,
+      //   styling: 'rounded green-header accordion-shadow',
+      //   title: event.name,
+      //   editTitleSlot: renderEditTitle(event.name, urlIndex, originalIndex),
+      //   content: renderTags(event.tags, urlIndex, originalIndex),
+      // });
+      container.appendChild(renderTags(event.tags, urlIndex, originalIndex));
     });
     
     return container;
@@ -224,7 +309,8 @@ console.log("controbar--------->", controlBar)
         hasHorizontalLine: true,
         iconSlot: tag.icon ? renderTagIcon(tag.icon) : null,
         extraSlot: state.occurrences ? renderOccurrences(tag.name) : null,
-        content: renderTagContent(tag, urlIndex, eventIndex, index)
+        content: renderTagContent(tag, urlIndex, eventIndex, index),
+        tagContent: tag.content
       });
       
       container.appendChild(tagAccordion.element);
@@ -233,12 +319,22 @@ console.log("controbar--------->", controlBar)
     return container;
   }
 
-  function renderTagIcon(icon) {
-    const img = document.createElement('img');
-    img.className = 'tag-icon';
-    img.src = chrome.runtime.getURL(`/assets/images/regex_icons/${icon}`);
-    img.alt = '';
-    return img;
+  function renderTagIcon(tag) {
+    try {
+      // Ensure the context is valid
+      if (!chrome.runtime || !chrome.runtime.id) {
+        console.log('Extension context invalidated. Skipping renderTagIcon.');
+        return;
+      }
+      const icon = document.createElement('img');
+      icon.src = chrome.runtime.getURL(`/assets/images/regex_icons/${tag}`) || '/assets/images/regex_icons/default-icon.png'; // Fallback to a default icon
+      icon.alt = tag || 'Tag Icon';
+      icon.className = 'tag-icon';
+      return icon;
+    } catch (error) {
+      console.log('Error rendering tag icon:', error);
+      return null;
+    }
   }
 
   function renderOccurrences(tagName) {
@@ -268,11 +364,9 @@ console.log("controbar--------->", controlBar)
 
   function renderTagContent(tag, urlIndex, eventIndex, tagIndex) {
     const container = document.createElement('div');
-    
     // Render tag params
     const paramsList = document.createElement('ul');
     paramsList.className = 'tag-params';
-    
     Object.entries(tag.content).forEach(([key, value], contentIndex) => {
       const li = document.createElement('li');
       
@@ -321,7 +415,7 @@ console.log("controbar--------->", controlBar)
     // Render payload if exists
     if (tag.payload && tag.payload.length > 0) {
       const payloadDiv = document.createElement('div');
-      if (state.searchFilter.length === 0) payloadDiv.style.display = 'none';
+      // if (state.searchFilter.length === 0) payloadDiv.style.display = 'none';
       
       tag.payload.forEach((payload, payloadIndex) => {
         const payloadList = document.createElement('ul');

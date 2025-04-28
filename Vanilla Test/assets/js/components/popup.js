@@ -8,6 +8,7 @@ import { createModal } from './Modal.js';
 import { createNotificationManager } from './Notification.js';
 import { chromeHelper, isDevTools } from '../lib/chromeHelpers.js';
 import { createAudit } from './audit.js';
+import {trackTagImpressionEvent} from '../google-analytics.js';
 // import FileSaver from '../lib/FileSaver.min.js';
 // import XLSX from '../lib/xlsx.full.min.js';
 
@@ -65,16 +66,17 @@ export function createPopup() {
       'adobetags': false
     },
     tabId: null,
-    historyMode: false, 
+    historyMode: false,
+    trackedTags: {}, 
   };
 
   // Initialize components
   const notificationManager = createNotificationManager();
   const modal = createModal();
   modal.element.style.display = 'none';
-  
+
   // Create tabs system
-  const tabs = createTabs(state, clearHistory, toggleHistoryMode);
+  const tabs = createTabs(toggleInspection);
 
   // Create TagView tab
   const tagView = createTagView({
@@ -90,7 +92,7 @@ export function createPopup() {
       notificationManager.addNotification(notification);
     }
   });
-  
+
   const tagViewTab = createTab('Tags View');
   tagViewTab.appendContent(tagView.element);
   tabs.addTab(tagViewTab, 'Tags View');
@@ -107,7 +109,7 @@ export function createPopup() {
       notificationManager.addNotification(notification);
     }
   });
-  
+
   const dataLayerViewTab = createTab('Data Layer View', false);
   dataLayerViewTab.appendContent(dataLayerView.element);
   tabs.addTab(dataLayerViewTab, 'Data Layer View');
@@ -116,13 +118,13 @@ export function createPopup() {
   const newView = createAudit({
     someOption: true, // Pass any required options for the new view
     onSomeAction: () => {
-      console.log('Action triggered from Aaudit');
+      console.log('Action triggered from Audit');
     },
   });
 
-  const newViewTab = createTab('Aaudit', false); // Create the Aaudit
+  const newViewTab = createTab('Audit', false); // Create the Audit
   newViewTab.appendContent(newView.element); // Append the content of the new view
-  tabs.addTab(newViewTab, 'Aaudit'); // Add the Aaudit to the tabs system
+  tabs.addTab(newViewTab, 'Audit'); // Add the Audit to the tabs system
 
   // Create footer
   const footer = document.createElement('div');
@@ -135,12 +137,12 @@ export function createPopup() {
   if (isDevTools()) {
     state.tabId = chrome.devtools.inspectedWindow.tabId;
     if (!state.tabId) {
-      console.error("No valid tabId found.");
+      console.log("No valid tabId found.");
       return;
     }
     init();
   }
-  toggleInspection();
+  // toggleInspection();
 
   // Methods
   function primeExport() {
@@ -155,7 +157,7 @@ export function createPopup() {
           Url: url.pageUrl,
           Event: event.name,
         };
-        
+
         // Tags
         if (event.tags !== undefined && event.tags.length > 0) {
           event.tags.map((tag, index) => {
@@ -171,7 +173,7 @@ export function createPopup() {
         } else {
           exportData.tags.push(exportTags);
         }
-        
+
         // Data Layers
         if (event.dataLayers !== undefined && event.dataLayers.length > 0) {
           event.dataLayers.map((dL, index) => {
@@ -191,7 +193,7 @@ export function createPopup() {
         }
       });
     });
-    
+
     return exportData;
   }
 
@@ -200,6 +202,7 @@ export function createPopup() {
   }
 
   async function init() {
+
     // Check the historyMode value from Chrome storage
     chrome.storage.local.get(['historyMode', 'savedData'], (result) => {
       const historyMode = result.historyMode || false;
@@ -210,10 +213,13 @@ export function createPopup() {
         // Render saved data from Chrome storage
         if (result.savedData) {
           state.data = result.savedData;
+          console.log('Restored saved data:', state.data);
           tagView.updateData(state.data);
           dataLayerView.updateData(state.data);
         }
-
+        getRegexList().then((regexList) => {
+          state.regexList = regexList;
+        });
         // Disable new tag detection
         state.isInspecting = false;
         removeListeners(); // Ensure no listeners are active
@@ -233,7 +239,7 @@ export function createPopup() {
       dispatchListeners();
       updateBadge();
     });
-
+    toggleInspection(); // Start inspection
     // Enable inspection
     state.isInspecting = true;
   }
@@ -251,13 +257,31 @@ export function createPopup() {
   //     toggleInspection(); // Start new detection
   //   });
   // });
+  function simulateOnSuspend() {
+    alert('Simulating onSuspend...');
+    chrome.storage.local.set({ savedData: state.data }, (save) => {
+      chrome.storage.local.get("savedData", (result) => {
+        ;
+        console.log('Data saved to Chrome storage (simulation).', result);
+      });
+    }
+    )
+  }
 
+  // Call this function manually to test
+  // simulateOnSuspend();
   // Save data to Chrome storage when DevTools or Chrome is closed
   chrome.runtime.onSuspend.addListener(() => {
-    console.log('Saving data to Chrome storage before suspension.');
+    alert('Saving data to Chrome storage before suspension.');
     chrome.storage.local.set({ savedData: state.data }, () => {
       console.log('Data saved to Chrome storage.');
     });
+    stopInspection(); // Stop inspection and remove listeners
+  });
+
+  chrome.runtime.onSuspendCanceled.addListener(() => {
+    console.log('onSuspendCanceled triggered: Suspension was canceled.');
+    alert('onSuspendCanceled triggered: Suspension was canceled.');
   });
 
   chrome.tabs.onRemoved.addListener((tabId) => {
@@ -266,9 +290,20 @@ export function createPopup() {
       chrome.storage.local.set({ savedData: state.data }, () => {
         console.log('Data saved to Chrome storage.');
       });
+      stopInspection(); // Stop inspection and remove listeners
+      state.data = []; // Clear state data
     }
   });
-
+  // chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  //   if (tabId === state.tabId && changeInfo.status === 'loading') {
+  //     console.log('Tab reloaded. Resetting inspection.');
+  //     stopInspection(); // Stop inspection and remove listeners
+  //     state.data = []; // Clear state data
+  //   }
+  // });
+  chrome.runtime.onInstalled.addListener(() => {
+    console.log('Extension installed or reloaded.');
+  });
   function clearHistory() {
     chrome.storage.local.remove('savedData', () => {
       console.log('History cleared.');
@@ -278,7 +313,7 @@ export function createPopup() {
       updateBadge();
     });
   }
-  
+
   function toggleHistoryMode() {
     state.historyMode = !state.historyMode;
     init(); // Reinitialize based on the selected mode
@@ -309,54 +344,61 @@ export function createPopup() {
   }
 
   function parseInitiator(initiator) {
-    let initiatiorData = {};
+    let initiatorData = {};
+
     if (initiator.type === 'script') {
-      initiatiorData = {
-        type: 'script',
-        origin: initiator.stack.callFrames[0]?.url || initiator.stack.parent.callFrames[0]?.url
-      };
+      // Check if stack and callFrames exist
+      const callFrames = initiator.stack?.callFrames || initiator.stack?.parent?.callFrames;
+      if (callFrames && callFrames[0]) {
+        initiatorData = {
+          type: 'script',
+          origin: callFrames[0].url || 'Unknown origin',
+        };
+      } else {
+        initiatorData = {
+          type: 'script',
+          origin: 'Unknown origin',
+        };
+      }
     } else if (initiator.type === 'parser') {
-      initiatiorData = {
+      initiatorData = {
         type: 'parser',
-        origin: initiator.url
+        origin: initiator.url || 'Unknown origin',
       };
     } else {
-      console.log({ Else: 'Else', initiator });
+      console.log({ Else: 'Unhandled initiator type', initiator });
+      initiatorData = {
+        type: initiator.type || 'unknown',
+        origin: 'Unknown origin',
+      };
     }
-    
-    return initiatiorData;
+
+    return initiatorData;
   }
 
   function devtoolsNetworkRequest(request) {
-
     const details = request.request;
     state.regexList.forEach((element, index) => {
       if (RegExp(element.pattern).test(details.url) && !element.ignore && details.hasOwnProperty('url') && state.isInspecting) {
-        var initiatorChain = [];
-        var initiator = request.initiator;
-        while (initiator) {
-          initiatorChain.push(initiator);
-          initiator = initiator.stack.callFrames[0].url;
-        }
 
         const urlParams = details.url;
         const postData = parsePostData(details.postData?.text);
-        const initiatior = parseInitiator(request._initiator);
+        const initiator = parseInitiator(request._initiator);
         const domain = new URL(details.url).hostname; // Extract the domain name
-        
-        const content = { ...{ request: details.url }, ...initiatior, ...getUrlParams(urlParams), domain };
+
+        const content = { ...{ request: details.url }, ...initiator, ...getUrlParams(urlParams), domain };
         if (!state.regexOccurances[element.name].passed) {
           state.regexOccurances[element.name].passed = true;
           const occurences = state.regexOccurances[element.name].occurences + 1;
           state.regexOccurances[element.name].occurences = occurences;
         }
-        const data = { 
-          name: element.name, 
+        const data = {
+          name: element.name,
           occurences: state.regexOccurances[element.name].occurences, // Include the impression count
-          content: content, 
-          timeStamp: Date.now(), 
-          payload: postData, 
-          initiatior: initiatior 
+          content: content,
+          timeStamp: Date.now(),
+          payload: postData,
+          initiatior: initiator
         };
         pushData(data, 'tags', element.name, element.iconPath);
       }
@@ -364,6 +406,7 @@ export function createPopup() {
   }
 
   function dispatchListeners() {
+    
     removeListeners();
     addEventListeners();
   }
@@ -375,14 +418,14 @@ export function createPopup() {
       title: "Empty Regex Patterns List",
       message: "Regex patterns must be provided for recording tags"
     };
-    
+
     if (!regexList.regExPatterns) {
       regexList.regExPatterns = [];
       notificationManager.addNotification(regexWarnMessage);
     } else if (!regexList.regExPatterns.length) {
       notificationManager.addNotification(regexWarnMessage);
     }
-    
+
     initRegexOccurances(regexList.regExPatterns);
     return regexList.regExPatterns;
   }
@@ -411,14 +454,14 @@ export function createPopup() {
 
   function removeListeners() {
     try {
-    chromeHelper.removeLocalStorageChangeListener(listenOnRegexChange);
-    chromeHelper.removeRuntimeMessagesListener(captureDataLayer);
-    chromeHelper.removeTabUpdatedListener(listenToUrlChanges);
-    chromeHelper.removeTabClosedListener(handleTabclosed);
-    chrome.devtools.network.onRequestFinished.removeListener(devtoolsNetworkRequest);
-  } catch (error) {
-    console.error("Error removing listeners:", error);
-  }
+      chromeHelper.removeLocalStorageChangeListener(listenOnRegexChange);
+      chromeHelper.removeRuntimeMessagesListener(captureDataLayer);
+      chromeHelper.removeTabUpdatedListener(listenToUrlChanges);
+      chromeHelper.removeTabClosedListener(handleTabclosed);
+      chrome.devtools.network.onRequestFinished.removeListener(devtoolsNetworkRequest);
+    } catch (error) {
+      console.log("Error removing listeners:", error);
+    }
   }
 
   function listenOnRegexChange(changes, areaName) {
@@ -436,19 +479,45 @@ export function createPopup() {
     }
   }
 
-  function injectMainContentScript() {
-    chromeHelper.injectScript({ 
-      target: { tabId: state.tabId }, 
-      files: ['content/content.js'] 
-    }, errorHandler);
-  }
+function injectMainContentScript() {
+  chrome.scripting.executeScript(
+    {
+      target: { tabId: state.tabId },
+      files: ['content/content.js'], // Path to your content script
+    },
+    (result) => {
+      if (chrome.runtime.lastError) {
+        console.error('Error injecting content script:', chrome.runtime.lastError.message);
+      } else {
+        console.log('Content script injected successfully.');
+      }
+    }
+  );
+}
 
-  function pushUrl(url) {
+  async function pushUrl(url) {
     if (!state.isInspecting) return;
     resetOccurancesCounter();
+    let allowedDataLayers = {};
+    await chrome.storage.local.get("allowedLayers").then((result) => {
+      allowedDataLayers = result.allowedLayers || {
+        adobe_dtm: false,
+        adobetags: false,
+        dataLayer: true,
+        digitalLayer: true,
+        google_tag_manager: false,
+        google_tag_manager_push: false,
+        launchdataelements: false,
+        tag_commander: false,
+        tealium: false,
+        utag: true,
+        utag_data: true,
+        var: false
+      };
+    });
     const newUrlData = {
       pageUrl: url,
-      events: [{ name: 'Load', timeStamp: Date.now() }]
+      events: [{ name: 'Load', timeStamp: Date.now() ,settings: {dl: allowedDataLayers}}],
     };
     state.data.push(newUrlData);
     tagView.updateData(state.data);
@@ -483,15 +552,19 @@ export function createPopup() {
   }
 
   function captureDataLayer(message, sender, sendResponse) {
+    if (!state.isInspecting || sender.tab.id !== state.tabId) return;
     if (message.type === "content_click_event" && sender.tab.id === state.tabId && state.isInspecting) {
+      console.log("Content click event detected.");
       pushEvent();
     }
     else if (state.allowedLayers.includes(message.type) && sender.tab.id === state.tabId && state.isInspecting && state.allowedDataLayers[message.type]) {
-      var data = message;
+      const data = { ...message };
       try {
-        data.data = JSON.parse(message.data);
-      } catch (e) {
-        // Ignore parse error
+        if (typeof message.data === "string") {
+          data.data = JSON.parse(message.data); // Parse data if it's a string
+        }
+      } catch (error) {
+        console.error("Error parsing data layer message:", error);
       }
       pushData(data, 'dataLayers', data.type === 'var' ? data.dLN : data.type);
     }
@@ -505,7 +578,7 @@ export function createPopup() {
     dataLayerView.updateData(state.data);
   }
 
-  function pushData(data, name, identifier, icon) {  
+  function pushData(data, name, identifier, icon) {
     try {
       const urlListLength = state.data.length - 1;
       // Ensure state.data[urlListLength] exists
@@ -513,19 +586,61 @@ export function createPopup() {
         console.log("state.data is undefined");
         return;
       }
-      if (!state.data[urlListLength].hasOwnProperty('events')) return;
+
+          // Ensure state.data[urlListLength].events exists
+    if (!state.data[urlListLength].hasOwnProperty('events')) {
+      console.log("state.data[urlListLength].events is undefined");
+      return;
+    }
       const eventListLength = state.data[urlListLength].events.length - 1;
-      
+
+      // Ensure state.data[urlListLength].events[eventListLength] exists
+    if (!state.data[urlListLength].events[eventListLength]) {
+      console.log("state.data[urlListLength].events[eventListLength] is undefined");
+      return;
+    }
+
+    // Ensure state.data[urlListLength].events[eventListLength][name] is initialized as an array
+    if (!state.data[urlListLength].events[eventListLength][name]) {
+      state.data[urlListLength].events[eventListLength][name] = [];
+    }
+    if(state.data[urlListLength].events[eventListLength][name]==undefined){
+      state.data[urlListLength].events[eventListLength][name] = [];
+    }
+    // Check for duplicates
+    const isDuplicate = state.data[urlListLength].events[eventListLength][name].some(o =>
+      JSON.stringify(o) === JSON.stringify(data)
+    );
+
+    if (isDuplicate) return;
+
       // Add domain and impression count to the data
       data.domain = new URL(state.data[urlListLength].pageUrl).hostname; // Add domain name
       data.impressions = state.regexOccurances[identifier]?.occurences || 0; // Add impression count
 
+      // Check if the tag has already been tracked
+      const trackingKey = `${identifier}-${data.domain}`;
+      if (state.trackedTags[trackingKey]) {
+        // console.log(`Tag "${identifier}" for domain "${data.domain}" has already been tracked.`);
+      } else {
+        // Track tag impression in Google Analytics
+        try {
+          const pageUrl = state.data[state.data.length - 1]?.pageUrl || 'unknown';
+          trackTagImpressionEvent(identifier, pageUrl);
+          state.trackedTags[trackingKey] = true; // Mark as tracked
+          // console.log(`Tracked tag "${identifier}" for domain "${data.domain}".`);
+        } catch (error) {
+          console.log('Error tracking tag impression:', error);
+        }
+      }
+
       queueData(data, name, urlListLength, eventListLength, icon);
 
+      chrome.storage.local.set({ savedData: state.data })
       // Update the badge with the total number of tags
       updateBadge();
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   }
 
@@ -536,23 +651,23 @@ export function createPopup() {
         return eventCount + (event.tags ? event.tags.length : 0);
       }, 0);
     }, 0);
-  
+
     // Set the badge text
     chrome.action.setBadgeText({ text: totalTags > 0 ? totalTags.toString() : '' });
-  
+
     // Set the badge background color
     chrome.action.setBadgeBackgroundColor({ color: '#FF0000' }); // Red background
-  
+
     //update filter options
     const tagCounts = getTagCounts();
     state.tagCounts = tagCounts;
     tagView.updateFilterOptions(tagCounts);
-      // Update dropdown with new tagCounts
+    // Update dropdown with new tagCounts
   }
 
   function getTagCounts() {
     const tagCounts = {};
-  
+
     // Iterate through the data to count tags by name
     state.data.forEach((url) => {
       url.events.forEach((event) => {
@@ -565,25 +680,74 @@ export function createPopup() {
         }
       });
     });
-  
+
     // Convert the tagCounts object into an array of objects
     return Object.entries(tagCounts).map(([tagname, count]) => ({ tagname, count }));
   }
 
   function queueData(data, name, urlListLength, eventListLength, icon) {
-    if (state.data[urlListLength].events[eventListLength][name] === undefined) {
-      state.data[urlListLength].events[eventListLength][name] = [];
+    if (data.data !== undefined) {
+      // Convert the object to an array
+      const dataArray = Object.values(data.data);
+
+      // Reverse the array
+      const reversedArray = dataArray.reverse();
+
+      // If needed, you can assign it back to data.data
+      data.data = reversedArray;
+
+   // Now this will be reversed
     }
-    
-    const isDuplicate = state.data[urlListLength].events[eventListLength][name].some(o => 
+    // Ensure state.data[urlListLength] exists
+    if (!state.data[urlListLength]) {
+      console.log("state.data[urlListLength] is undefined");
+      return;
+    }
+
+    // Ensure state.data[urlListLength].events exists
+    if (!state.data[urlListLength].events) {
+      console.log("state.data[urlListLength].events is undefined");
+      return;
+    }
+
+    // Ensure state.data[urlListLength].events[eventListLength] exists
+    if (!state.data[urlListLength].events[eventListLength]) {
+      console.log("state.data[urlListLength].events[eventListLength] is undefined");
+      return;
+    }
+
+  // Ensure state.data[urlListLength].events[eventListLength][name] is initialized as an array
+  if (!state.data[urlListLength].events[eventListLength][name]) {
+    state.data[urlListLength].events[eventListLength][name] = [];
+  }
+
+    const isDuplicate = state.data[urlListLength].events[eventListLength][name].some(o =>
       JSON.stringify(o) === JSON.stringify(data)
     );
-    
     if (isDuplicate) return;
-    
-    var index = state.data[urlListLength].events[eventListLength][name].length;
+    state.data[urlListLength].events[eventListLength][name] =
+      state.data[urlListLength].events[eventListLength][name].filter(element => {
+
+        if (element.data == undefined) return true;
+        let res = !element.data.every(el => 
+          data.data.some(item => JSON.stringify(item) === JSON.stringify(el))
+        );
+        if(res == false)
+        {
+          res = element.data.length == data.data.length;
+        }
+        return res;
+      });
+    const isDuplicate_2=state.data[urlListLength].events[eventListLength][name].some(element => {
+      if (element.data == undefined) return false;
+      return element.data.every(el => 
+        data.data.some(item => JSON.stringify(item) === JSON.stringify(el))
+      ) && element.data.length == data.data.length;
+    });
+
+    if (isDuplicate || isDuplicate_2) return;
+
     if (icon) data.icon = icon;
-    
     state.data[urlListLength].events[eventListLength][name].push(data);
     tagView.updateData(state.data);
     dataLayerView.updateData(state.data);
@@ -631,10 +795,10 @@ export function createPopup() {
       state.exportModalErrors.push('File Name required.');
       return;
     }
-    
+
     var wb = XLSX.utils.book_new();
     const exportData = primeExport();
-    
+
     var wsTags = XLSX.utils.json_to_sheet(exportData.tags);
     XLSX.utils.book_append_sheet(wb, wsTags, "Tags");
 
@@ -651,22 +815,31 @@ export function createPopup() {
 
   function handleTabclosed(tabId) {
     if (tabId === state.tabId) {
-      console.warn("Tab closed. Reloading extension.");
+
+      chrome.storage.local.set({ savedData: state.data }, () => {
+        console.log('Data saved to Chrome storage.');
+      });
+
+      console.log("Tab closed. Reloading extension.");
       chrome.runtime.reload();
     }
+
+
   }
 
   async function toggleInspection() {
     if (state.lockToggling) return;
-
     state.isInspecting = !state.isInspecting;
+    state.trackedTags = {}; // Reset tracked tags
     tagView.setIsInspecting(state.isInspecting);
     dataLayerView.setIsInspecting(state.isInspecting);
-    
+
     if (state.isInspecting) {
+      console.log("Starting inspection...");
       chromeHelper.reloadTab(state.tabId);
       dispatchListeners();
     }
+
   }
 
   function startInspection() {
@@ -706,7 +879,7 @@ export function createPopup() {
     state.showModal = false;
     exportModal.close();
   });
-  
+
   const fileNameInput = exportModal.element.querySelector('#fileName');
   fileNameInput.addEventListener('input', (e) => {
     state.fileName = e.target.value;
@@ -718,55 +891,17 @@ export function createPopup() {
 
 document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme') || 'light';
-    document.body.dataset.theme = savedTheme;
-    // Sync the toggle switch with the saved theme
-    const themeCheckbox = document.getElementById('theme-checkbox');
-    if (themeCheckbox) {
-      themeCheckbox.checked = savedTheme === 'dark';
-    }
-    const app = document.getElementById('app');
-    if (app) {
-      const popup = createPopup();
-      app.appendChild(popup);
-    } else {
-      console.error("No element with id 'app' found.");
-    }
+  document.body.dataset.theme = savedTheme;
+  // Sync the toggle switch with the saved theme
+  const themeCheckbox = document.getElementById('theme-checkbox');
+  if (themeCheckbox) {
+    themeCheckbox.checked = savedTheme === 'dark';
+  }
+  const app = document.getElementById('app');
+  if (app) {
+    const popup = createPopup();
+    app.appendChild(popup);
+  } else {
+    console.log("No element with id 'app' found.");
+  }
 });
-
-// CSS (same as original, include in your stylesheet)
-/*
-* {
-  margin: 0;
-  padding: 0;
-}
-
-.wrapper {
-  max-width: 100%;
-  margin: 0;
-  padding-bottom: 0;
-  position: relative;
-}
-
-.footer {
-  position: absolute;
-  bottom: 0;
-  right: 50%;
-  translate: 50%;
-  margin-bottom: 10px;
-}
-
-.footer-text {
-  font-size: xx-small;
-  font-family: 'Poppins';
-  font-weight: 400;
-}
-
-.heart {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns:svg='http://www.w3.org/2000/svg' xmlns='http://www.w3.org/2000/svg' version='1.0' width='645' height='585' id='svg2'%3E%3Cdefs id='defs4' /%3E%3Cg id='layer1'%3E%3Cpath d='M 297.29747,550.86823 C 283.52243,535.43191 249.1268,505.33855 220.86277,483.99412 C 137.11867,420.75228 125.72108,411.5999 91.719238,380.29088 C 29.03471,322.57071 2.413622,264.58086 2.5048478,185.95124 C 2.5493594,147.56739 5.1656152,132.77929 15.914734,110.15398 C 34.151433,71.768267 61.014996,43.244667 95.360052,25.799457 C 119.68545,13.443675 131.6827,7.9542046 172.30448,7.7296236 C 214.79777,7.4947896 223.74311,12.449347 248.73919,26.181459 C 279.1637,42.895777 310.47909,78.617167 316.95242,103.99205 L 320.95052,119.66445 L 330.81015,98.079942 C 386.52632,-23.892986 564.40851,-22.06811 626.31244,101.11153 C 645.95011,140.18758 648.10608,223.6247 630.69256,270.6244 C 607.97729,331.93377 565.31255,378.67493 466.68622,450.30098 C 402.0054,497.27462 328.80148,568.34684 323.70555,578.32901 C 317.79007,589.91654 323.42339,580.14491 297.29747,550.86823 z' id='path2417' style='fill:%23ff0000' /%3E%3Cg transform='translate(129.28571,-64.285714)' id='g2221' /%3E%3C/g%3E%3C/svg%3E%0A");
-  height: 12px;
-  display: inline-block;
-  width: 12px;
-  background-repeat: no-repeat;
-  background-size: contain;
-}
-*/
