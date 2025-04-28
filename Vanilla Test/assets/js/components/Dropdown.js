@@ -10,6 +10,7 @@ function loadDropdownStyles() {
   }
 }
 
+
 export function createDropdown(filterOptions, onChangeCallback) {
   // Ensure the CSS is loaded
   loadDropdownStyles();
@@ -55,7 +56,6 @@ export function createDropdown(filterOptions, onChangeCallback) {
         const badge = document.createElement('span');
         badge.className = 'badge';
         badge.textContent = option.count; // Display the count from the option data
-
         checkbox.addEventListener('change', () => {
             const selectedFilters = Array.from(dropdownList.querySelectorAll('input[type="checkbox"]:checked'))
               .map(checkbox => checkbox.value);
@@ -76,7 +76,8 @@ export function createDropdown(filterOptions, onChangeCallback) {
    function updateOptions(newFilterOptions) {
     // Clear existing options
     dropdownContainer.innerHTML = '';
-    // Create dropdown button
+
+     
     const dropdownButton = document.createElement('button');
     dropdownButton.className = 'dropdown-button';
     dropdownButton.textContent = 'Select Filters';
