@@ -76,8 +76,6 @@ export function createDropdown(filterOptions, onChangeCallback) {
    function updateOptions(newFilterOptions) {
     // Clear existing options
     dropdownContainer.innerHTML = '';
-
-     
     const dropdownButton = document.createElement('button');
     dropdownButton.className = 'dropdown-button';
     dropdownButton.textContent = 'Select Filters';
