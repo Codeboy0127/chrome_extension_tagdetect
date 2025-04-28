@@ -30,7 +30,7 @@
     if (typeof opts === 'undefined') opts = {
       autoBom: false
     };else if (typeof opts !== 'object') {
-      console.warn('Deprecated: Expected third argument to be a object');
+      console.log('Deprecated: Expected third argument to be a object');
       opts = {
         autoBom: !opts
       };
@@ -56,7 +56,7 @@
     };
 
     xhr.onerror = function () {
-      console.error('could not download file');
+      console.log('could not download file');
     };
 
     xhr.send();

@@ -1,5 +1,5 @@
 // accordion.js - Vanilla JS implementation of Accordion component
-import { addReport, attachScreenshot } from './audit.js'; // Import the addReport function from audit.js
+import { addReport } from './audit.js'; // Import the addReport function from audit.js
 
 function loadAccordionStyles() {
   if (!document.getElementById('accordion-styles')) {
@@ -42,12 +42,12 @@ export function createAccordion(config) {
   }
 
   // Add edit title slot if provided
-  if (config.editTitleSlot) {
-    const editContainer = document.createElement('span');
-    editContainer.addEventListener('click', (e) => e.stopPropagation());
-    editContainer.appendChild(config.editTitleSlot);
-    titleSpan.appendChild(editContainer);
-  }
+  // if (config.editTitleSlot) {
+  //   const editContainer = document.createElement('span');
+  //   editContainer.addEventListener('click', (e) => e.stopPropagation());
+  //   editContainer.appendChild(config.editTitleSlot);
+  //   titleSpan.appendChild(editContainer);
+  // }
 
   header.appendChild(titleSpan);
 
@@ -63,18 +63,21 @@ export function createAccordion(config) {
   // Add Date if provided
     if (config.date) {
 
-// Create dropdown
 const button = document.createElement('button');
-button.textContent = 'Add to Audit';
+button.textContent = 'Report';
 button.className = 'add-report-button';
-button.addEventListener('click', () => {
-  if (config.content) {
-    console.log(config);
-    
-    addReport(config.content);
+button.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (config.tagContent) {
+    // const clonedContent = config.content.cloneNode(true); // Deep clone the content
+    addReport(config.tagContent, config.title);
+    // Clone the content and display it in another element
+    // Reattach event listeners for "Read More" functionality
+  }else if(config.content) {
+    const clonedContent = config.content.cloneNode(true); // Deep clone the content
+    addReport(clonedContent, config.title);
   }
 });
-
 buttonsContainer.appendChild(button);
   const dateSpan = document.createElement('span');
       dateSpan.className = 'date';

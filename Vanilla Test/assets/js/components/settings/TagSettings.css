@@ -53,11 +53,19 @@
 }
 
 .regex-acc-content {
+    display: flex;
     padding: 0 1rem;
     font-size: small;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
+}
+
+.regex-acc-content p {
+    width: 100%;
+    white-space: normal;       /* Allows wrapping */
+    word-break: break-word;    /* Break long words if needed */
+    overflow-wrap: break-word;
 }
 
 .regex-acc.active .acc-btn:after {

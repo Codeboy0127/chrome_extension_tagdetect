@@ -51,8 +51,6 @@ function getUrlsInPage(params){
             }) // url.rel
     }
 
-    console.log({results});
-
     return results
 }
 

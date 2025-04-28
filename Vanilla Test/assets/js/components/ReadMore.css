@@ -1,5 +1,9 @@
 .show-more {
     background-color: #fafafa;
+    width: 100%;
+    white-space: normal;       /* Allows wrapping */
+    word-break: break-word;    /* Break long words if needed */
+    overflow-wrap: break-word;
   }
   
   .show-more a {

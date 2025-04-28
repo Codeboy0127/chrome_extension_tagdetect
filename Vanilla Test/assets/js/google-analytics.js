@@ -5,6 +5,7 @@ const SESSION_EXPIRATION_IN_MIN = 30;
 const DEFAULT_ENGAGEMENT_TIME_IN_MSEC = 100;
 
 async function getOrCreateSessionId() {
+  try {
   // Store session in memory storage
   let { sessionData } = await chrome.storage.session.get("sessionData");
   // Check if session exists and is still valid
@@ -31,6 +32,10 @@ async function getOrCreateSessionId() {
     await chrome.storage.session.set({ sessionData });
   }
   return sessionData.session_id;
+} catch (error) {
+  console.error("Error in getOrCreateSessionId:", error);
+  return null; // Return a fallback value
+}
 }
 
 /**
@@ -43,6 +48,7 @@ async function getOrCreateSessionId() {
  *
  */
 async function getOrCreateClientId() {
+  try {
   const result = await chrome.storage.local.get("clientId");
   let clientId = result.clientId;
   if (!clientId) {
@@ -51,6 +57,10 @@ async function getOrCreateClientId() {
     await chrome.storage.local.set({ clientId });
   }
   return clientId;
+} catch (error) {
+  console.error("Error in getOrCreateClientId:", error);
+  return null; // Return a fallback value
+}
 }
 
 export const pageSelectEvent = async (page) => {
@@ -101,27 +111,65 @@ export const pageInteractionEvent = async (page, interaction) => {
 };
 
 export const trackTagImpressionEvent = async (tagName, pageUrl) => {
+  try {
   const domainName = new URL(pageUrl).hostname; // Extract the domain name from the URL
-  fetch(
-    `${GA_ENDPOINT}?measurement_id=${MEASUREMENT_ID}&api_secret=${API_SECRET}`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        client_id: await getOrCreateClientId(),
-        events: [
-          {
-            name: "tag_impression",
-            params: {
-              session_id: await getOrCreateSessionId(),
-              engagement_time_msec: DEFAULT_ENGAGEMENT_TIME_IN_MSEC,
-              tag_name: tagName,
-              domain_name: domainName,
-              page_url: pageUrl,
-              user_id: await getOrCreateClientId(),
-            },
-          },
-        ],
-      }),
+  const payload = {
+    client_id: await getOrCreateClientId(),
+    events: [
+      {
+        name: "tag_impression",
+        params: {
+          session_id: await getOrCreateSessionId(),
+          engagement_time_msec: DEFAULT_ENGAGEMENT_TIME_IN_MSEC,
+          tag_name: tagName,
+          domain_name: domainName,
+          page_url: pageUrl,
+          user_id: await getOrCreateClientId(),
+        },
+      },
+    ],
+  };
+  // console.log("Sending request to Google Analytics:", {
+  //   url: `${GA_ENDPOINT}?measurement_id=${MEASUREMENT_ID}&api_secret=${API_SECRET}`,
+  //   payload,
+  // });
+
+    const response = await fetch(
+      `${GA_ENDPOINT}?measurement_id=${MEASUREMENT_ID}&api_secret=${API_SECRET}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  );
+
+    // Check if the response has content before parsing
+    // const text = await response.text();
+    // if (text) {
+    //   const jsonResponse = JSON.parse(text);
+    //   // console.log("Google Analytics response:", jsonResponse);
+    // } else {
+    //   // console.log("Google Analytics response: No content");
+    // }
+
+    // if (response.headers.get("Content-Type")?.includes("application/json")) {
+    //   const jsonResponse = await response.json();
+    //   // console.log("Google Analytics response:", jsonResponse);
+    // } else {
+    //   // console.log("Google Analytics response: Non-JSON or empty response");
+    // }
+  } catch (error) {
+    if (error.message.includes("Extension context invalidated")) {
+      console.warn("Extension context invalidated. Skipping fetch.");
+    } else {
+      console.error("Error sending tag impression event:", error);
+    }
+  }
 };
+

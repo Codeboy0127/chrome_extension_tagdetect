@@ -13,7 +13,6 @@ function loadControlBarStyles() {
 }
 
 export function createControlBar(options = {}) {
-  console.log('Creating ControlBar with options:', options);
   // Ensure the CSS is loaded
   loadControlBarStyles();
   // Create container
@@ -33,41 +32,44 @@ export function createControlBar(options = {}) {
   const panel = options.panel || '';
 
   // Create buttons based on config
-  async function renderButtons() {
+async function renderButtons() {
+  try {
     controlBar.innerHTML = '';
     historyMode = await chrome.storage.local.get("historyMode");
-// Record/Pause toggle button
-if (controlBarConfig.record) {
+  // Record/Pause toggle button
+  if (controlBarConfig.record) {
   const inspectBtn = document.createElement('button');
   inspectBtn.className = 'action-btn';
 
   // Set button text based on mode and inspection state
-  if (historyMode) {
-    inspectBtn.textContent = isInspecting ? 'Pause' : 'Record';
-  } else {
-    inspectBtn.textContent = isInspecting ? 'Pause' : 'Record';
-  }
+  inspectBtn.textContent = isInspecting ? 'Pause' : 'Record';
 
   // Add click event listener
   inspectBtn.addEventListener('click', () => {
     if (historyMode) {
       // Toggle inspection state in history mode
       isInspecting = !isInspecting;
-      historyMode = !isInspecting; // Switch to normal mode when recording starts
+      historyMode = !historyMode; // Switch to normal mode when recording starts
+      // if (options.onToggleInspection) options.onToggleInspection();
+      if(document.getElementsByClassName("spinner")[0]){
+        for(let i = 0; i < document.getElementsByClassName("spinner").length; i++){
+        document.getElementsByClassName("spinner")[i].style.display = isInspecting ? 'block' : 'none';; // Hide spinner in history mode
+        }
+      }
     } else {
       // Toggle inspection state in normal mode
       isInspecting = !isInspecting;
     }
 
     // Update button text and re-render buttons
-    renderButtons();
+    // renderButtons();
 
     // Trigger the inspection toggle callback
     if (options.onToggleInspection) options.onToggleInspection();
   });
 
   controlBar.appendChild(inspectBtn);
-}
+  }
 
     // Clear button
     if (controlBarConfig.clear) {
@@ -104,6 +106,13 @@ if (controlBarConfig.record) {
   //     settingsBtn.addEventListener('click', handleToggleSettings);
   //     controlBar.appendChild(settingsBtn);
   //   }
+    } catch (error) {
+      if (error.message.includes("Extension context invalidated")) {
+        console.warn("Extension context invalidated. Skipping renderButtons.");
+      } else {
+        console.error("Error in renderButtons:", error);
+      }
+    }
   }
 
   // Event handlers

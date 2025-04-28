@@ -44,6 +44,7 @@ button.action-btn {
     background-color: #151419;
     border: none;
     color: #b5b5b7;
+    box-shadow: none;
   }  
   
   body[data-theme='dark'] .action-btn:hover {

@@ -160,6 +160,40 @@ body[data-theme='dark'] .sec-btn {
   max-height: -moz-fit-content;
   max-height: fit-content;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.log-settings{
+  background: #ececec;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.log-settings div{
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+.log-settings button{
+  padding: 12px 10px;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  width: 30%;
+  font-size: 24px;
+  height: 30px;
+  transition: background-color 0.3s ease;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

@@ -14,6 +14,6 @@
 }
 
 body[data-theme='dark'] .prevent-btn {
-  background-color: #f44336;
-  color: #b5b5b7;
+  background-color: #4caf50;
+  color: #151419;
 }
