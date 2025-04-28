@@ -64,7 +64,6 @@ export function createDropdown(filterOptions, onChangeCallback) {
               onChangeCallback(selectedFilters);
             }
           });
-
         optionItem.appendChild(checkbox);
         optionItem.appendChild(label);
         optionItem.appendChild(badge);
@@ -89,6 +88,7 @@ export function createDropdown(filterOptions, onChangeCallback) {
     const dropdownList = createDropdownList(newFilterOptions);
     dropdownContainer.appendChild(dropdownList);
   }
+  
   // Public API
   return {
     element: dropdownContainer,
