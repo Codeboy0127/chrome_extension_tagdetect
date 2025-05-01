@@ -5,17 +5,6 @@ body {
   background-color: #f4f6fa;
 }
 
-button {
-  all: unset;
-  font-size: x-small;
-  border: 1px solid rgb(230, 230, 230);
-  border-radius: 5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
 .btn {
   border-radius: 45px;
   display: inline-flex;
